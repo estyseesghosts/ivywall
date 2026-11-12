@@ -4,11 +4,11 @@ The protocol layer every Fediverse server and client builds on: the data model, 
 
 ## Pages
 
-Stubs so far:
+Pages:
 
 - [ActivityStreams 2.0](activitystreams.md) — stub.
-- [ActivityPub server-to-server](activitypub-s2s.md) — stub.
-- [ActivityPub client-to-server](activitypub-c2s.md) — stub.
+- [ActivityPub server-to-server](activitypub-s2s.md) — delivery, addressing and federation responsibilities.
+- [ActivityPub client-to-server](activitypub-c2s.md) — the standard client protocol and server responsibilities.
 - [WebFinger](webfinger.md) — stub.
 - [NodeInfo](nodeinfo.md) — stub.
 - [HTTP signatures and authentication](http-signatures.md) — stub.
@@ -34,3 +34,4 @@ Still planned, in priority order:
 - [ActivityPub (W3C Recommendation)](https://www.w3.org/TR/activitypub/) — the base protocol and its security considerations
 - [ActivityStreams 2.0 Core](https://www.w3.org/TR/activitystreams-core/) — the data model
 - [Fediverse Enhancement Proposals](https://fediverse.codeberg.page/fep/) — extension proposals
+

@@ -4,13 +4,13 @@ Client development has its own problems, separate from federation. Supporting th
 
 ## Pages
 
-Stubs so far:
+Available:
 
-- [Mastodon REST API](apis/mastodon-rest.md) — stub.
+- [Mastodon REST API](apis/mastodon-rest.md) — authentication, posting, pagination, and compatibility boundaries.
 
 Still planned:
 
-- API families — Mastodon REST and streaming, Misskey HTTP and WebSocket, Pleroma/Akkoma extensions, Pixelfed additions, Loops REST.
+- API families — expand streaming and cover Misskey HTTP and WebSocket and other extensions.
 - Authentication — OAuth scopes, MiAuth, token storage.
 - Architecture — an internal capability model, separate API adapters, lossless representations, predictable fallbacks; pagination, caching, offline timelines, multi-account support, live updates, background notifications, media upload.
 - Rendering — safe HTML and MFM rendering.
@@ -24,3 +24,4 @@ Still planned:
 
 - [Mastodon API documentation](https://docs.joinmastodon.org/api/) — REST, streaming and OAuth baseline
 - [Misskey Hub API documentation](https://misskey-hub.net/en/docs/for-developers/api/) — POST-based HTTP endpoints, MiAuth and OAuth
+

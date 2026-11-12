@@ -4,10 +4,11 @@ Lookup material: one version-pinned fact sheet per implementation, one page per 
 
 ## Pages
 
-Stubs so far:
+Available and planned references:
 
 - [Project federation documents](federation-docs/index.md) — stub.
-- [Mastodon fact sheet](software/mastodon.md) — stub.
+- [Mastodon fact sheet](software/mastodon.md) — pinned release and implementation facts.
+- [Misskey fact sheet](software/misskey.md) — pinned release and implementation facts.
 - [FEP-044f](feps/fep-044f.md) — stub.
 - [FEP-521a](feps/fep-521a.md) — stub.
 - [FEP-7628](feps/fep-7628.md) — stub.
@@ -26,3 +27,4 @@ Still planned:
 
 - [Fediverse Enhancement Proposals](https://fediverse.codeberg.page/fep/) — proposal texts and statuses
 - [W3C Social Web Working Group](https://www.w3.org/groups/wg/social/) — the standards behind ActivityPub
+

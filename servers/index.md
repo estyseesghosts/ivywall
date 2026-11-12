@@ -4,16 +4,17 @@ Server engineering is where this wiki aims to be more useful than protocol docum
 
 ## Pages
 
-Stubs so far:
+Case studies:
 
-- [Mastodon case study](case-studies/mastodon.md) — stub.
+- [Mastodon 4.7.3](case-studies/mastodon.md) — architecture, federation and operational paths.
+- [Misskey 2026.10.1](case-studies/misskey.md) — architecture, native API and federation paths.
 
 Still planned:
 
 - Architecture and storage — schema design for actors, objects and activities; single-user versus multi-user designs; worker separation; database contention.
 - Federation pipelines — inbox validation, persistence, moderation and delivery stages; queues, retries, ordering, fan-out; consistency when updates arrive before creates.
 - Performance — caching of profiles, keys, posts and media; search; media pipelines; delivery throughput, p95 latency, queue growth, recovery after outages.
-- Case studies — Mastodon, Misskey, Pleroma, Akkoma, GoToSocial, snac, Pixelfed, Loops, Wafrn, Sharkey, Iceshrimp.NET, Hollo, Friendica, Lemmy, PieFed, Mbin, PeerTube, NodeBB, Bonfire.
+- Further case studies — Pleroma, Akkoma, GoToSocial, snac, Pixelfed, Loops, Wafrn, Sharkey, Iceshrimp.NET, Hollo, Friendica, Lemmy, PieFed, Mbin, PeerTube, NodeBB, Bonfire.
 
 ## Notes and open questions
 
@@ -25,3 +26,4 @@ Version-pinned engineering research already exists locally for Mastodon, Misskey
 - [Misskey source](https://github.com/misskey-dev/misskey) — native API, streaming, reactions
 - [GoToSocial documentation](https://docs.gotosocial.org/) — headless Go server and federation controls
 - [snac2 source](https://codeberg.org/grunfink/snac2) — minimal C implementation
+

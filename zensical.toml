@@ -62,6 +62,7 @@ nav = [
   { "Servers" = [
     { "Overview" = "servers/index.md" },
     { "Mastodon 4.7.3" = "servers/case-studies/mastodon.md" },
+    { "Misskey 2026.10.1" = "servers/case-studies/misskey.md" },
   ] },
   { "Security and privacy" = [
     { "Overview" = "security/index.md" },
@@ -98,9 +99,11 @@ nav = [
     { "FEP-521a: multiple public keys for actors" = "references/feps/fep-521a.md" },
     { "FEP-7628: Move actor" = "references/feps/fep-7628.md" },
     { "Mastodon fact sheet" = "references/software/mastodon.md" },
+    { "Misskey fact sheet" = "references/software/misskey.md" },
   ] },
   { "Guides" = [
     { "Overview" = "guides/index.md" },
     { "Guide: a minimal ActivityPub actor" = "guides/minimal-actor.md" },
   ] },
 ]
+
