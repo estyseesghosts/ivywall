@@ -6,7 +6,7 @@ snac publishes a `FEDERATION.md` describing its own federation behaviour. This p
 
 | Field | Value |
 | ----- | ----- |
-| Upstream file | [FEDERATION.md](https://codeberg.org/grunfink/snac2/src/branch/master/FEDERATION.md) |
+| Upstream file | [FEDERATION.md](https://codeberg.org/grunfink/snac2/src/commit/846137df0991f1745856b865630f5a6c5036742a/FEDERATION.md) |
 | Repository | [codeberg.org/grunfink/snac2](https://codeberg.org/grunfink/snac2) |
 | Mirrored from commit | `846137df0991f1745856b865630f5a6c5036742a` (2026-11-04) |
 | Status | Verbatim copy; headings demoted two levels so they nest under this page. Not yet fact-checked (`[documented]` at best). |

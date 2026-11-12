@@ -19,4 +19,4 @@ Who emits, accepts, partially implements or rejects it: see [quote compatibility
 
 ## Sources
 
-- [Fediverse Enhancement Proposals](https://fediverse.codeberg.page/fep/) — proposal texts and statuses
+- [FEP-044f proposal](https://codeberg.org/fediverse/fep/src/branch/main/fep/044f/fep-044f.md) — proposal text and current status

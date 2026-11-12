@@ -27,6 +27,6 @@ none of this research is my own and i do not assume credit for any of the work p
 
 ## Reading guide
 
-- Jargon is explained on first use and defined in the [glossary](glossary.md).
-- Every claim about behaviour carries an evidence label and a software version. See the labels in [AGENTS.md](AGENTS.md).
+- The [glossary](glossary.md) defines common terms used throughout the wiki.
+- Version-specific behavior should carry an evidence label and cite its source. Stubs and community-written federation documents explicitly mark claims that still need verification; see [AGENTS.md](AGENTS.md) for the evidence rules.
 - Every page ends with Sources. Contributors: read [AGENTS.md](AGENTS.md) first.

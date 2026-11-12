@@ -6,7 +6,7 @@ Loops publishes a `FEDERATION.md` describing its own federation behaviour. This 
 
 | Field | Value |
 | ----- | ----- |
-| Upstream file | [FEDERATION.md](https://github.com/joinloops/loops-server/blob/main/FEDERATION.md) |
+| Upstream file | [FEDERATION.md](https://github.com/joinloops/loops-server/blob/d942be8e8c3a934a86ee9257ae050ca4b041b538/FEDERATION.md) |
 | Repository | [github.com/joinloops/loops-server](https://github.com/joinloops/loops-server) |
 | Mirrored from commit | `d942be8e8c3a934a86ee9257ae050ca4b041b538` (2026-11-04) |
 | Status | Verbatim copy; headings demoted two levels so they nest under this page. Not yet fact-checked (`[documented]` at best). |

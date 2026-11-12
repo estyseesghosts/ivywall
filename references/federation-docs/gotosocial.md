@@ -1,22 +1,12 @@
-# GoToSocial federation behaviour
+# GoToSocial FEDERATION.md
 
-GoToSocial does not ship a `FEDERATION.md` in the checkout this wiki studies (commit `39385374a1`, 2026-11-11). This page is a placeholder for the wiki's own write-up of what GoToSocial sends, accepts and extends, in the same shape the projects that do publish one use.
-
-> **Stub.** Scaffolding only. Nothing on this page has been checked against pinned source yet; treat every statement as `[hypothesis]` unless it carries another label.
-
-## What this page will cover
-
-- Supported federation protocols and standards, and the versions they apply to.
-- Supported FEPs and software-specific vocabularies.
-- Activities and object types emitted and accepted.
-- Authentication on inbox delivery and on fetches.
-- Discovery: WebFinger, NodeInfo, actor documents.
-- Known deviations from the specifications.
+GoToSocial's `FEDERATION.md` at commit `39385374a1a79fffe41f13e80e910ba2269cdd57` points readers to its federation documentation and its Markdown source. It does not enumerate federation behavior in the file itself. `[documented]` [pinned upstream file](https://codeberg.org/superseriousbusiness/gotosocial/src/commit/39385374a1a79fffe41f13e80e910ba2269cdd57/FEDERATION.md).
 
 ## Technical details
 
-> Unknown: everything. To be written from the project's source and documentation at a pinned release, then linked from a software fact sheet under [References](../index.md) when one exists.
+The [federation documentation source at that commit](https://codeberg.org/superseriousbusiness/gotosocial/src/commit/39385374a1a79fffe41f13e80e910ba2269cdd57/docs/federation/) covers actors, posts, HTTP signatures, access control, interaction controls and moderation. For a separate source-level study of GoToSocial v0.22.3, including its own pinned revision, see the [case study](../../servers/case-studies/gotosocial.md). The documentation commit and case-study release are different revisions; do not assume their details are identical.
 
 ## Sources
 
-- [GoToSocial repository](https://codeberg.org/superseriousbusiness/gotosocial) — source studied at commit `39385374a1a79fffe41f13e80e910ba2269cdd57`
+- [GoToSocial FEDERATION.md at commit 39385374a1](https://codeberg.org/superseriousbusiness/gotosocial/src/commit/39385374a1a79fffe41f13e80e910ba2269cdd57/FEDERATION.md) — upstream pointer to federation documentation.
+- [Federation documentation at the same commit](https://codeberg.org/superseriousbusiness/gotosocial/src/commit/39385374a1a79fffe41f13e80e910ba2269cdd57/docs/federation/) — the source files linked by that document.

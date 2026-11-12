@@ -6,11 +6,11 @@ ActivityStreams is the JSON vocabulary that describes who did what to what: an *
 
 ## What the specification requires
 
-Documents are JSON with a `@context`; objects have a `type` and usually an `id` that is a dereferenceable URL. Collections (`Collection`, `OrderedCollection` and their pages) group items. `[spec]` ActivityStreams 2.0 Core.
+ActivityStreams JSON documents SHOULD include the normative `@context`; for `application/activity+json`, a consumer MUST assume it when absent. Objects use `type` and may have an `id`; not every ActivityStreams object must have a dereferenceable URL. ActivityPub adds identifier requirements, including an explicit anonymous-object exception. Collections (`Collection`, `OrderedCollection` and their pages) group items. `[spec]` [ActivityStreams Core §§2.1, 3.1](https://www.w3.org/TR/activitystreams-core/) and [ActivityPub §3.1](https://www.w3.org/TR/2018/REC-activitypub-20180123/#obj-id).
 
 ## What implementations do
 
-Many servers treat documents as plain JSON and ignore [JSON-LD](../glossary.md#json-ld) processing, which makes extension terms and compaction a source of interoperability bugs. To be verified per implementation.
+A server that processes JSON without full [JSON-LD](../glossary.md#json-ld) expansion must account for alternative valid forms; ActivityPub explicitly notes compact representations of the Public audience. Whether a particular server accepts each form must be checked against its version. `[spec]` [ActivityPub §5.6](https://www.w3.org/TR/2018/REC-activitypub-20180123/#public-addressing).
 
 ## Technical details
 

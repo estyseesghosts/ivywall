@@ -1,4 +1,4 @@
-# FEP-521a: multiple public keys for actors
+# FEP-521a: representing actors’ public keys
 
 FEP-521a describes publishing public keys on an actor in a way that allows more than one key and newer key types, which matters for [authentication](../../fundamentals/http-signatures.md) and key rotation.
 
@@ -17,4 +17,4 @@ FEP-521a describes publishing public keys on an actor in a way that allows more 
 
 ## Sources
 
-- [Fediverse Enhancement Proposals](https://fediverse.codeberg.page/fep/) — proposal texts and statuses
+- [FEP-521a proposal](https://codeberg.org/fediverse/fep/src/branch/main/fep/521a/fep-521a.md) — proposal text and current status

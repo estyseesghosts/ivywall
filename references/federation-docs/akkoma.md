@@ -6,7 +6,7 @@ Akkoma publishes a `FEDERATION.md` describing its own federation behaviour. This
 
 | Field | Value |
 | ----- | ----- |
-| Upstream file | [FEDERATION.md](https://akkoma.dev/AkkomaGang/akkoma/src/branch/develop/FEDERATION.md) |
+| Upstream file | [FEDERATION.md](https://akkoma.dev/AkkomaGang/akkoma/src/commit/3e9ad30e1e769f26e2898c93c0df608b8af3c686/FEDERATION.md) |
 | Repository | [akkoma.dev/AkkomaGang/akkoma](https://akkoma.dev/AkkomaGang/akkoma) |
 | Mirrored from commit | `3e9ad30e1e769f26e2898c93c0df608b8af3c686` (2026-10-30) |
 | Status | Verbatim copy; headings demoted two levels so they nest under this page. Not yet fact-checked (`[documented]` at best). |

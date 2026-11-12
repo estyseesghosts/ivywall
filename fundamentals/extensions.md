@@ -1,16 +1,16 @@
 # Extensions and FEPs
 
-ActivityPub deliberately leaves out features users expect: quote posts, reactions, group semantics, follower synchronisation. The Fediverse fills the gaps with community proposals ([FEPs](../glossary.md#fep)), conventions inherited from other software, and vocabularies private to one server. This page explains how to tell these apart.
+ActivityPub and ActivityStreams do not specify every feature or interoperability convention that applications need. Software uses community proposals ([FEPs](../glossary.md#fep)), other shared conventions and implementation-specific vocabulary. A proposal’s existence does not establish that a particular version supports it. This page explains how to tell these apart.
 
 > **Stub.** Scaffolding only. Nothing on this page has been checked against pinned source yet; treat every statement as `[hypothesis]` unless it carries another label.
 
 ## What the specification requires
 
-ActivityStreams allows extension through `@context`. `[spec]` ActivityStreams 2.0 Core.
+ActivityStreams permits additional properties and contexts, but producers MUST NOT redefine the normative context. Unknown extensions may be ignored by consumers. `[spec]` [ActivityStreams Core §§2.1, 5](https://www.w3.org/TR/activitystreams-core/#extensibility).
 
 ## What implementations do
 
-Mastodon's own federation notes describe the extensions needed to interoperate with it; other servers add `EmojiReact`, `_misskey_quote` and similar terms. See the [mirrored federation documents](../references/federation-docs/index.md).
+Mastodon 4.7.3 lists supported and required extensions in its [version-pinned federation statement](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/FEDERATION.md). Misskey 2026.10.1 emits `_misskey_quote` in its [renderer](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/core/activitypub/ApRendererService.ts#L484). See the [quote compatibility record](../federation/compatibility/quotes.md) for direction and limitations. `[documented]` `[source]`
 
 ## Technical details
 
@@ -19,3 +19,5 @@ Mastodon's own federation notes describe the extensions needed to interoperate w
 ## Sources
 
 - [Fediverse Enhancement Proposals](https://fediverse.codeberg.page/fep/) — proposal texts and statuses
+- [ActivityStreams Core §5](https://www.w3.org/TR/activitystreams-core/#extensibility) — extension handling
+- [Mastodon 4.7.3 federation statement](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/FEDERATION.md) — declared implementation extensions

@@ -6,11 +6,11 @@
 
 ## What the specification requires
 
-A discovery document at `/.well-known/nodeinfo` links to a versioned schema document (2.0, 2.1 and later). `[documented]` NodeInfo project.
+The discovery document at `/.well-known/nodeinfo` supplies links with versioned relation types to the server’s NodeInfo documents. A client chooses a schema it understands; the project documents schemas 1.0, 1.1, 2.0 and 2.1. `[documented]` [NodeInfo protocol](https://nodeinfo.diaspora.software/protocol.html) and [schemas](https://nodeinfo.diaspora.software/schema.html).
 
 ## What implementations do
 
-Capability detection by software name and version is common but fragile; forks and renamed builds report their own names. See [client architecture](../clients/index.md).
+Software name and version are metadata, not proof that a particular endpoint or feature is enabled. Check the actual server and handle missing or disabled features. See [client architecture](../clients/index.md).
 
 ## Technical details
 

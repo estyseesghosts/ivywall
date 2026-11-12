@@ -6,7 +6,7 @@ Lookup material: one version-pinned fact sheet per implementation, one page per 
 
 Available and planned references:
 
-- [Project federation documents](federation-docs/index.md) — stub.
+- [Project federation documents](federation-docs/index.md) — pinned upstream statements and community-written references.
 - [Akkoma fact sheet](software/akkoma.md) — source revision and reference facts.
 - [GoToSocial fact sheet](software/gotosocial.md) — source revision and reference facts.
 - [Lemmy fact sheet](software/lemmy.md) — source revision and reference facts.

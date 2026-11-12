@@ -1,16 +1,16 @@
 # Identity and account handles
 
-A Fediverse account has two names: a human handle like `alice@example.com` and an actor id that is a URL. They are linked by [WebFinger](webfinger.md), and they need not share a domain. This page covers how identity is resolved and what happens when an account moves.
+A Fediverse account can have a human handle such as `alice@example.com` and an actor identifier, typically an HTTPS URL. [WebFinger](webfinger.md) can associate the handle with an actor; the domains can differ, subject to implementation-specific verification. This page covers how identity is resolved and what happens when an account moves.
 
 > **Stub.** Scaffolding only. Nothing on this page has been checked against pinned source yet; treat every statement as `[hypothesis]` unless it carries another label.
 
 ## What the specification requires
 
-Actor `id` is the stable identifier; handles are not part of ActivityPub. `[spec]` ActivityPub, section 3.
+ActivityPub actors have an `id` URI, while the specification does not prescribe the `user@domain` handle as their identifier. Identifiers should be treated as distinct from presentation names and handles. `[spec]` [ActivityPub §§3.1, 4](https://www.w3.org/TR/2018/REC-activitypub-20180123/#actors).
 
 ## What implementations do
 
-Handles are derived through WebFinger; account migration uses `Move` activities and `alsoKnownAs`. See [FEP-7628](../references/feps/fep-7628.md).
+Mastodon 4.7.3 uses WebFinger for handle discovery and describes actor moves with `Move` and `alsoKnownAs`. See its [pinned federation documentation](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/FEDERATION.md) and the [Move handler](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/lib/activitypub/activity/move.rb#L6). `[source]`
 
 ## Technical details
 

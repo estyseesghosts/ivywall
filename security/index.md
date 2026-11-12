@@ -6,7 +6,7 @@ Security and privacy are first-class engineering topics here, not an appendix. A
 
 Pages:
 
-- [SSRF and remote fetching](ssrf.md) — stub.
+- [SSRF and remote fetching](ssrf.md) — destination validation, redirects, proxies and testing.
 - [Mastodon security boundaries](mastodon-4-7.md) — signatures, identity, remote fetching and access controls.
 
 Still planned:
@@ -16,7 +16,7 @@ Still planned:
 
 ## Notes and open questions
 
-> Unknown: how each implementation validates remote fetch targets; this needs a source reading per case study.
+> Unknown: remote fetch validation has not been exhaustively tested across implementations; the SSRF page includes one pinned source example.
 
 ## Sources
 

@@ -8,7 +8,7 @@ ActivityPub recommends asynchronous delivery and retries for network failures bu
 
 ## Pick and deduplicate destinations
 
-Mastodon computes reach and queues deliveries to remote inbox URLs. Misskey's delivery manager similarly assembles targets and can use a shared inbox to reduce duplicate HTTP requests. Distinct remote inboxes are a useful predictor of network fan-out, but follower enumeration and local timeline distribution still cost work. This is a source-derived mechanism, not a benchmark. `[source]` [Mastodon distribution](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/workers/activitypub/distribution_worker.rb), [Misskey delivery manager](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/core/activitypub/ApDeliverManagerService.ts).
+Mastodon computes reach and queues deliveries to remote inbox URLs. Misskey's delivery manager similarly assembles targets and can use a shared inbox to reduce duplicate HTTP requests. Distinct remote inboxes are a useful predictor of network fan-out, but follower enumeration and local timeline distribution still cost work. This is a source-derived mechanism, not a benchmark. `[source]` [Mastodon distribution](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/workers/activitypub/distribution_worker.rb#L11), [Misskey delivery manager](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/core/activitypub/ApDeliverManagerService.ts).
 
 ## Handle failure without claiming delivery
 
@@ -18,7 +18,7 @@ Mastodon computes reach and queues deliveries to remote inbox URLs. Misskey's de
 | Backoff | Worker defines a fourth-power delay plus jitter; Sidekiq also applies its jitter. | HTTP-related strategy uses exponential delay with a base capped at eight hours, then adds up to 20% jitter. |
 | Intake | Processing happens in background after inbox receipt. | Header/digest checks precede queueing and `202`; signature and activity processing occur in the inbox worker. |
 
-`[source]` [Mastodon delivery worker](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/workers/activitypub/delivery_worker.rb), [Mastodon processing worker](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/workers/activitypub/processing_worker.rb), [Misskey queue processor](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/queue/QueueProcessorService.ts), [Misskey inbox route](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/server/ActivityPubServerService.ts). Per-worker settings are not a cluster-wide rate limit; configuration and worker count change aggregate behavior.
+`[source]` [Mastodon delivery worker](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/workers/activitypub/delivery_worker.rb#L11), [Mastodon processing worker](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/workers/activitypub/processing_worker.rb), [Misskey queue processor](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/queue/QueueProcessorService.ts#L55), [Misskey inbox route](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/server/ActivityPubServerService.ts). Per-worker settings are not a cluster-wide rate limit; configuration and worker count change aggregate behavior.
 
 ## Technical details
 
@@ -41,6 +41,6 @@ No reproducible benchmark or trace here establishes delivery latency, loss under
 ## Sources
 
 - [ActivityPub Recommendation §7.1](https://www.w3.org/TR/2018/REC-activitypub-20180123/#delivery) — delivery and retry recommendations.
-- [Mastodon 4.7.3 delivery worker](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/workers/activitypub/delivery_worker.rb) — retry and destination handling.
-- [Misskey 2026.10.1 queue processor](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/queue/QueueProcessorService.ts) — worker concurrency and retry strategy.
+- [Mastodon 4.7.3 delivery worker](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/workers/activitypub/delivery_worker.rb#L11) — retry and destination handling.
+- [Misskey 2026.10.1 queue processor](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/queue/QueueProcessorService.ts#L55) — worker concurrency and retry strategy.
 - [Misskey delivery manager](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/core/activitypub/ApDeliverManagerService.ts) — recipient selection and delivery grouping.

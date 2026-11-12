@@ -1,6 +1,6 @@
 # HTTP signatures and authentication
 
-Federation needs a way to know which server sent a request. The Fediverse's answer is an [HTTP signature](../glossary.md#http-signature): the sender signs selected headers with the private key of the sending actor, and the receiver fetches the public key from the actor document to verify it. The mechanics have several incompatible generations, which is the main source of invalid-signature failures.
+Federation needs a way to authenticate a request and decide whether its sender is authorized. Many implementations use an [HTTP signature](../glossary.md#http-signature) over request components and verify it with a public key. Key ownership, delegation, forwarded activities, and authorization require additional checks; a valid signature alone does not prove that an embedded activity is permitted. The legacy draft and RFC 9421 use different formats. `[spec]` [ActivityPub security considerations](https://www.w3.org/TR/2018/REC-activitypub-20180123/#security-considerations), [RFC 9421](https://www.rfc-editor.org/rfc/rfc9421).
 
 > **Stub.** Scaffolding only. Nothing on this page has been checked against pinned source yet; treat every statement as `[hypothesis]` unless it carries another label.
 
@@ -10,7 +10,7 @@ ActivityPub itself requires no particular scheme. `[spec]` ActivityPub leaves au
 
 ## What implementations do
 
-Servers broadly use the draft-cavage HTTP Signatures scheme, with newer servers moving to RFC 9421 HTTP Message Signatures; some also sign `GET` requests ("authorized fetch"). Which software does which, and from which version, is not yet recorded.
+Mastodon 4.7.3 accepts both legacy HTTP signatures and RFC 9421 signatures, requires signed inbox POSTs, and can require signed GETs; its federation document describes direction and algorithms. See [Mastodon security](../security/mastodon-4-7.md) and the [pinned federation statement](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/FEDERATION.md). `[documented]`
 
 ## Technical details
 

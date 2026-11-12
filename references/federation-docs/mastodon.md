@@ -6,7 +6,7 @@ Mastodon publishes a `FEDERATION.md` describing its own federation behaviour. Th
 
 | Field | Value |
 | ----- | ----- |
-| Upstream file | [FEDERATION.md](https://github.com/mastodon/mastodon/blob/main/FEDERATION.md) |
+| Upstream file | [FEDERATION.md](https://github.com/mastodon/mastodon/blob/b31c484d97c9b7f109ecdcc3de140ac2e865fd4d/FEDERATION.md) |
 | Repository | [github.com/mastodon/mastodon](https://github.com/mastodon/mastodon) |
 | Mirrored from commit | `b31c484d97c9b7f109ecdcc3de140ac2e865fd4d` (2026-11-11) |
 | Status | Verbatim copy; headings demoted two levels so they nest under this page. Not yet fact-checked (`[documented]` at best). |

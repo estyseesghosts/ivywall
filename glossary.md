@@ -8,7 +8,7 @@ Plain-language definitions for jargon used across the wiki. Entries are short an
 
 ### ActivityPub (AP)
 
-The W3C standard that lets social servers send each other posts, follows and likes, and (in theory) lets clients talk to servers. Precisely: a protocol built on [ActivityStreams](#activitystreams) with a server-to-server part and a client-to-server part. See [Fundamentals](fundamentals/index.md).
+The W3C standard that defines both a client-to-server protocol and a way for social servers to exchange posts, follows and likes. Precisely: a protocol built on [ActivityStreams](#activitystreams) with a server-to-server part and a client-to-server part. See [Fundamentals](fundamentals/index.md).
 
 <a name="activitystreams"></a>
 
@@ -20,13 +20,13 @@ The JSON vocabulary that describes actors, objects and activities ("Alice create
 
 ### Actor
 
-An account-like entity that can send and receive activities: a person, a group, a service. Each actor has an id (a URL), an inbox and usually an outbox. See [Fundamentals](fundamentals/index.md).
+An account-like entity that can send and receive activities: a person, a group, a service. ActivityPub actors have an identifier and advertise inbox and outbox URLs. [ActivityPub §4](https://www.w3.org/TR/2018/REC-activitypub-20180123/#actors) specifies these properties. See [Fundamentals](fundamentals/index.md).
 
 <a name="inbox"></a>
 
 ### Inbox
 
-The URL where other servers deliver activities addressed to an actor. A **shared inbox** is one server-wide URL that receives an activity once for many local recipients, saving requests. See [Federation](federation/index.md).
+The URL where other servers deliver activities addressed to an actor. A **shared inbox** is an optional endpoint advertised by actors that can receive a delivery for multiple local recipients. See [ActivityPub §7.1.3](https://www.w3.org/TR/2018/REC-activitypub-20180123/#shared-inbox-delivery). See [Federation](federation/index.md).
 
 <a name="fep"></a>
 
@@ -44,13 +44,13 @@ A small JSON document a server publishes about itself: software name, version, e
 
 ### WebFinger
 
-A lookup that turns an address like `user@example.com` into the URL of that account's actor. See [Fundamentals](fundamentals/index.md).
+A resource-discovery protocol that can turn an account address such as `user@example.com` into links including an ActivityPub actor URL; results and checks depend on the service. See [RFC 7033](https://www.rfc-editor.org/rfc/rfc7033). See [Fundamentals](fundamentals/index.md).
 
 <a name="http-signature"></a>
 
 ### HTTP signature
 
-A signature over selected HTTP headers that proves a request came from the server holding a given key. Federation uses it so a server can check who sent an activity. See [Security and privacy](security/index.md).
+A cryptographic signature over selected HTTP request components. A verified signature demonstrates possession of a signing key; the receiver must separately decide whom that key represents and whether the action is authorized. See [RFC 9421](https://www.rfc-editor.org/rfc/rfc9421). See [Security and privacy](security/index.md).
 
 <a name="ssrf"></a>
 
@@ -76,16 +76,16 @@ The six values used in compatibility records for what a server does with a featu
 
 ### MFM (Misskey Flavored Markdown)
 
-Misskey's markup for text effects and rich formatting in posts. Other software shows it as plain text or rewritten HTML. Applies to Misskey and its forks. See [References](references/index.md).
+Misskey's markup for text effects and rich formatting in posts. Other software may retain only the rendered representation. See the [Misskey 2026.10.1 case study](servers/case-studies/misskey.md). See [References](references/index.md).
 
 <a name="mrf"></a>
 
 ### MRF (Message Rewrite Facility)
 
-A pluggable pipeline in Pleroma and Akkoma that inspects and can change or reject each incoming activity, used for moderation policy. See [Moderation](moderation/index.md).
+A pluggable Pleroma-family pipeline that can inspect, modify or reject federated messages for moderation policy. See the [Akkoma v3.20.0 implementation](https://akkoma.dev/AkkomaGang/akkoma/src/commit/98fcccccb1534280960d7123620c03a54b4b2442/lib/pleroma/web/activity_pub/mrf.ex#L66). See [Moderation](moderation/index.md).
 
 <a name="sidekiq"></a>
 
 ### Sidekiq
 
-The background job processor used by Mastodon (and other Ruby software) to run delivery and processing work off the web request. See [Servers](servers/index.md).
+A background job processor used by Mastodon 4.7.3 to run delivery and processing work off the web request. See its [queue configuration](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/config/sidekiq.yml). See [Servers](servers/index.md).

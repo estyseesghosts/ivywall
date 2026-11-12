@@ -1,25 +1,27 @@
 # Failure mode: replies missing on remote threads
 
-A user opens a post on their server and sees only some of the replies that exist on the origin server. Replies are not pushed to every server that shows the post, so a thread is always partly a cache.
-
-> **Stub.** Scaffolding only. Nothing on this page has been checked against pinned source yet; treat every statement as `[hypothesis]` unless it carries another label.
+A user can open a post and see fewer replies on their server than on another server. A reply is delivered to its addressed recipients, not automatically to every server that has cached the parent. The local conversation view also depends on which replies the server has fetched and which the current viewer may see. The conditions below explain a possible failure path; no cross-server reproduction is claimed here. `[spec]` [ActivityPub §7.1](https://www.w3.org/TR/2018/REC-activitypub-20180123/#delivery).
 
 ## Expected and observed behaviour
 
-Expected: all public replies visible. Observed: a subset, depending on who follows whom and what the server fetched `[hypothesis]`.
+A user may expect a public thread to look identical everywhere. ActivityPub does not require every server caching a parent to receive every reply: delivery uses the activity's addresses. A missing reply can therefore reflect recipient selection, delivery failure, policy, access control, incomplete fetching, or a presentation limit. Which cause applies to a particular report needs a trace, not an assumption that the reply was never delivered. `[spec]` [ActivityPub §7.1](https://www.w3.org/TR/2018/REC-activitypub-20180123/#delivery); `[source]` Mastodon 4.7.3 [context controller](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/controllers/api/v1/statuses/contexts_controller.rb#L14).
 
-## Root cause
+## Root cause and affected versions
 
-Replies reach a server only by delivery to a followed actor or by an explicit fetch of the replies collection. Inbox forwarding is optional. See [ActivityPub server-to-server](../../fundamentals/activitypub-s2s.md).
+A reply author addresses an activity to actors and collections. The public audience marker indicates public access but is not itself a delivery endpoint. The Recommendation requires inbox forwarding when its specified conditions all hold, while allowing recipients to filter forwarding under local policy; it does **not** require all replies to be forwarded to every server that knows the parent. See [server-to-server delivery](../../fundamentals/activitypub-s2s.md). `[spec]` [ActivityPub §§5.6, 7.1.1–7.1.2](https://www.w3.org/TR/2018/REC-activitypub-20180123/#delivery).
 
-## Reproduction
+In Mastodon 4.7.3, an authenticated request for the context of a status can schedule an asynchronous reply refresh when `should_fetch_replies?` is true. Its reply-fetching service limits each call to five replies and rejects reply URIs whose host differs from the reference URI as an amplification defense. The context endpoint also imposes response limits; an anonymous request has lower limits than an authenticated one. These facts are about this release, not evidence that it caused a specific missing reply. `[source]` [context controller](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/controllers/api/v1/statuses/contexts_controller.rb#L14), [reply fetch service](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/services/activitypub/fetch_replies_service.rb#L7).
 
-Not yet reproducible; needs the [testing lab](../../testing/index.md).
+## Reproduction and investigation
+
+No observed reproduction is included. On isolated, version-pinned instances, publish a public parent on server A and a reply from server B, with a user viewing the parent on server C. Record each activity's `to` and `cc`, actor and object IDs, HTTP delivery to C, queue outcome, the resulting stored object and the context API response before and after refresh. Repeat while changing follow relationships and authentication. Check C's domain and account policy and the viewer's visibility before attributing the difference to backfill. Use test accounts and redact tokens.
 
 ## Technical details
 
-> Unknown: affected versions and per-implementation backfill behaviour.
+For Mastodon 4.7.3 the context endpoint limits anonymous responses to 40 ancestors, 60 descendants and a descendant depth of 20; the authenticated context uses a 4,096 limit for each direction. A limit can produce a short response even when more objects are stored. A refresh is asynchronous, so a first response and a later response can differ. `[source]` [context controller](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/controllers/api/v1/statuses/contexts_controller.rb#L14).
 
 ## Sources
 
-- [ActivityPub (W3C Recommendation)](https://www.w3.org/TR/activitypub/) — base protocol
+- [ActivityPub Recommendation §§5.6, 7.1–7.1.2](https://www.w3.org/TR/2018/REC-activitypub-20180123/#delivery) — public addressing, delivery and forwarding.
+- [Mastodon 4.7.3 context controller](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/controllers/api/v1/statuses/contexts_controller.rb#L14) — visibility, limits and refresh scheduling.
+- [Mastodon 4.7.3 reply fetch service](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/services/activitypub/fetch_replies_service.rb#L7) — host restriction and per-call limit.

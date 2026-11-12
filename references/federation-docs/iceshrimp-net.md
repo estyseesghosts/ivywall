@@ -6,7 +6,7 @@ Iceshrimp.NET publishes a `FEDERATION.md` describing its own federation behaviou
 
 | Field | Value |
 | ----- | ----- |
-| Upstream file | [FEDERATION.md](https://iceshrimp.dev/iceshrimp/Iceshrimp.NET/src/branch/dev/FEDERATION.md) |
+| Upstream file | [FEDERATION.md](https://iceshrimp.dev/iceshrimp/Iceshrimp.NET/src/commit/52ef47bd05f453b410bd84f5845034ab42987094/FEDERATION.md) |
 | Repository | [iceshrimp.dev/iceshrimp/Iceshrimp.NET](https://iceshrimp.dev/iceshrimp/Iceshrimp.NET) |
 | Mirrored from commit | `52ef47bd05f453b410bd84f5845034ab42987094` (2026-11-11) |
 | Status | Verbatim copy; headings demoted two levels so they nest under this page. Not yet fact-checked (`[documented]` at best). |

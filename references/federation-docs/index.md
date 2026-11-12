@@ -1,6 +1,6 @@
 # Project federation documents
 
-Several Fediverse projects publish a `FEDERATION.md` that states what their software supports. This section keeps one page per studied project. Where upstream publishes one, the page is a verbatim mirror. Where it does not, the page holds a document written for this wiki (marked **community-written**, with a disclaimer that the maintainers did not write it and it may be inaccurate), or a placeholder if none exists yet.
+Several Fediverse projects publish a `FEDERATION.md` that states what their software supports. This section keeps one page per studied project. Where upstream publishes one, the page is a verbatim mirror. Some pages contain a document written for this wiki (marked **community-written**, with a disclaimer that the maintainers did not write it and it may be inaccurate); others explain the relevant upstream documentation or client role.
 
 ## Pages
 
@@ -11,9 +11,9 @@ Several Fediverse projects publish a `FEDERATION.md` that states what their soft
 - [snac](snac2.md) — Mirrored (commit `846137df09`).
 - [NodeBB](nodebb.md) — community-written, not by the maintainers.
 - [Catodon](catodon.md) — community-written, not by the maintainers.
-- [GoToSocial](gotosocial.md) — Placeholder (none upstream).
+- [GoToSocial](gotosocial.md) — upstream document links to federation documentation.
 - [Lemmy](lemmy.md) — community-written, not by the maintainers.
-- [Mastodon for Android](mastodon-android.md) — Placeholder (none upstream).
+- [Mastodon for Android](mastodon-android.md) — client and server responsibilities.
 - [Mbin](mbin.md) — community-written, not by the maintainers.
 - [Misskey](misskey.md) — community-written, not by the maintainers.
 - [Mobilizon](mobilizon.md) — community-written, not by the maintainers.
@@ -25,7 +25,7 @@ Several Fediverse projects publish a `FEDERATION.md` that states what their soft
 
 Mirrored documents are the projects' own claims. Compare them against source before using them in a [compatibility record](../../federation/index.md); until then they are `[documented]` at best.
 
-> Unknown: which of the placeholder projects publish federation notes elsewhere (docs site, wiki, README). Check before writing each page.
+Community-written descriptions are not upstream claims and need source verification for the exact revision; a snapshot does not establish support in other releases.
 
 ## Sources
 

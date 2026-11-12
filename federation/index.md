@@ -12,7 +12,7 @@ Pages:
 - [Compatibility: emoji reactions](compatibility/emoji-reactions.md) — directional representations and loss.
 - [Compatibility: quote posts](compatibility/quotes.md) — legacy fields, consent and translation.
 - [Compatibility: post edits](compatibility/post-edits.md) — edit delivery and remote update handling.
-- [Failure mode: missing replies](failure-modes/missing-replies.md) — stub.
+- [Failure mode: missing replies](failure-modes/missing-replies.md) — delivery, fetching and response limits; reproduction remains open.
 
 Still planned, in priority order:
 
@@ -24,7 +24,7 @@ Still planned, in priority order:
 
 ## Notes and open questions
 
-Compatibility records capture what a server emits and what it accepts, using the values defined under [compatibility values](../glossary.md#compatibility-values). Illustration of the intended depth: Akkoma sends separate `EmojiReact` activities and allows several different reactions per user, while Mastodon's native interaction is a `Like`. The real record will carry versions and evidence for every row.
+Compatibility records capture what a server emits and what it accepts, using the values defined under [compatibility values](../glossary.md#compatibility-values). The current records describe Mastodon 4.7.3 and Misskey 2026.10.1 and identify their supporting source paths.
 
 > Unknown: no matrix has been tested yet. Until the testing lab produces results, rows are filled from pinned source and documentation and labelled `[source]` or `[documented]`, never `[observed]`.
 
