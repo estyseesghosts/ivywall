@@ -8,13 +8,14 @@ Available:
 
 - [Mastodon REST API](apis/mastodon-rest.md) — authentication, posting, pagination, and compatibility boundaries.
 - [Misskey native API](apis/misskey.md) — endpoints, authentication, streaming, and client integration.
+- [Streaming and recovery](architecture/streaming-and-recovery.md) — stream mechanics for Mastodon and Misskey and a reconnect-and-reconcile method.
 - [Client authentication with OAuth](authentication/oauth.md) — one login flow for native and browser clients from RFC 9700, 8252 and 10017.
 
 Not yet covered:
 
-- Streaming recovery for the Mastodon API, and Misskey WebSocket, plus other servers' extensions (Pleroma/Akkoma, Pixelfed, Loops).
+- Other servers' API extensions (Pleroma/Akkoma, Pixelfed, Loops).
 - Authentication — per-server support for PKCE, refresh rotation and revocation; MiAuth and token storage walkthroughs.
-- Architecture — an internal capability model, separate API adapters, lossless representations, predictable fallbacks; pagination, caching, offline timelines, multi-account support, live updates, background notifications, media upload.
+- Architecture — an internal capability model, separate API adapters, lossless representations, predictable fallbacks; pagination, caching, offline timelines, multi-account support, background notifications, media upload, and a translation reference for a client that speaks both the Mastodon and Misskey APIs.
 - Rendering — safe HTML and MFM rendering.
 - Case studies — Tusky, Fedilab, Phanpy, Tokodon, Ice Cubes, native Misskey clients.
 

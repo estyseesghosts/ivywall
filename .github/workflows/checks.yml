@@ -11,6 +11,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: python3 tools/check_docs.py
+      - run: python3 tools/signing_vectors.py verify
+      - run: python3 guides/minimal-actor/selftest.py
+      - run: python3 -c "import glob,json;[json.load(open(f)) for f in glob.glob('testing/fixtures/**/*.json',recursive=True)]"
 
   site:
     name: Build the zensical site

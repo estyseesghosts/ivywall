@@ -29,7 +29,7 @@ On isolated servers with recorded images and commits, create a single-choice pol
 
 ## Vote shapes, closure and tallies across families
 
-The October 2026 [laboratory](../../testing/interoperability/bench-evidence.md) results below are `[reported]`, not rerun here, and peer builds are unrecorded unless stated
+Laboratory results here are `[reported]` and not rerun ([how to read them](../../testing/interoperability/bench-evidence.md))
 
 | Topic | Observed |
 | ----- | -------- |

@@ -1,6 +1,6 @@
 # Compatibility: remote media attachments
 
-A post and its attachment arrive separately. Servers disagree about when the attachment becomes visible through their API, which URL they expose while it is pending, and whether they keep the original bytes. The October 2026 [laboratory](../../testing/interoperability/bench-evidence.md) results below are `[reported]`, not rerun here, and peer builds are unrecorded unless stated
+A post and its attachment arrive separately. Servers disagree about when the attachment becomes visible through their API, which URL they expose while it is pending, and whether they keep the original bytes. Laboratory results here are `[reported]` and not rerun ([how to read them](../../testing/interoperability/bench-evidence.md))
 
 ## Summary
 

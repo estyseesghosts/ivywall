@@ -6,12 +6,13 @@ Security and privacy are first-class engineering topics here, not an appendix. A
 
 Pages:
 
+- [Security invariants for federation code](invariants.md) — what must stay true, a failure seen and a negative test for each, plus who may do what.
 - [SSRF and remote fetching](ssrf.md) — destination validation, redirects, proxies and testing.
 - [Mastodon security boundaries](mastodon-4-7.md) — signatures, identity, remote fetching and access controls.
 
-Not yet covered (SSRF and the Mastodon 4.7.3 analysis above exist):
+Not yet covered:
 
-- Security — key rotation, actor ownership validation, DNS rebinding, malicious redirects, JSON-LD processing, replay attacks, HTML sanitization, oversized objects, resource exhaustion, across more than Mastodon.
+- Per-server audits of the invariants beyond Mastodon: key rotation, replay protection, JSON-LD processing, HTML sanitization, resource limits.
 - Privacy — followers-only visibility, direct messages, recipient leakage, signed fetches, remote caching, deletion limits, and the difference between access controls and enforceable confidentiality.
 
 ## Notes and open questions

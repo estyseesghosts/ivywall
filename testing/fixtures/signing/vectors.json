@@ -1,0 +1,147 @@
+{
+ "note": "Test vectors. The key is a throw-away generated for these vectors; its private half was deleted. Hosts use .example names. Every request is constructed, none captured.",
+ "public_key": "-----BEGIN PUBLIC KEY-----\r\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApWZQsCC9wPrI0PwjYwqo\r\nNTNp6VFLG8rQV7zCkgcTEJE9Y8KjphYpVHjHED+6yJQqxLHjpVwW3UhC4G60+i18\r\n1Ltkc9t+AgtSedaTxT73OngMUSUcqcU1ya3F7ppYiZHgbGoQw16Lf+V0O11ENaWU\r\nXEMqnAwQregyfpo/bTDJFcS6639Zci8Vyog07liVTiU2wAwtRuVawqHfVvvZm3dm\r\n/ZlLyXOlLbnCL/7Ccy9t2TP+XD0V/WD6+vrHfLZ9Rir5QhGulQksuME+9dp5jC6e\r\nOg7QJGTnb/l6QHauSU/zKZl+xr3In9YqGmMbGn3Xjs62/GDLS/je78Aw4pPHN6lr\r\nQwIDAQAB\r\n-----END PUBLIC KEY-----\r\n",
+ "date_used": "Wed, 11 Nov 2026 12:00:00 GMT",
+ "vectors": [
+  {
+   "id": "legacy-valid",
+   "scheme": "legacy",
+   "description": "Valid draft-cavage signature over request-target, host, date and digest.",
+   "method": "POST",
+   "target": "https://b.example/users/bob/inbox",
+   "body": "{\"@context\":\"https://www.w3.org/ns/activitystreams\",\"id\":\"https://a.example/activities/1\",\"type\":\"Like\",\"actor\":\"https://a.example/actor\",\"object\":\"https://b.example/notes/1\"}",
+   "headers": {
+    "host": "b.example",
+    "date": "Wed, 11 Nov 2026 12:00:00 GMT",
+    "digest": "SHA-256=wlvZDcVoAs9MTjJoIKWoqaQ6q07xJrdJ57JjzTtkWVs=",
+    "signature": "keyId=\"https://a.example/actor#main-key\",algorithm=\"rsa-sha256\",headers=\"(request-target) host date digest\",signature=\"VBSyKhnCSrDYdNQm/VYCTHF6rlPnu1IWqoTuz75Yroh5X5sn/xDGA9EOQa7Z3GUIy3kzNeDbQW48P4wbQBwQ9rhvZyh4Aws4Kl+Bro9BQa7+ZUnHQqBFbB7JaDId2Ik93C65rOXw+nnZcjRyJx4hNWp9WJpAFq4GoFmJOF7t5jfR3VLLDoVF/nM3tVOM8zzpXPBflw0uLv2smer0jHdCcp2UsM8+zOC2hD1dqWuhEgISMF95AqOleXaFLYa4tkILf3anQmRw7eK6vVccrY2lzLoRH6M1D8FaUi7NTZEQDr8wDyeT3C0kvh77msPMRx7Wrclol5uPhGPGueif1YzWSA==\""
+   },
+   "expected": {
+    "verifies": true,
+    "reason": ""
+   }
+  },
+  {
+   "id": "legacy-body-modified",
+   "scheme": "legacy",
+   "description": "Body changed after signing: the Digest no longer matches.",
+   "method": "POST",
+   "target": "https://b.example/users/bob/inbox",
+   "body": "{\"@context\":\"https://www.w3.org/ns/activitystreams\",\"id\":\"https://a.example/activities/1\",\"type\":\"Lake\",\"actor\":\"https://a.example/actor\",\"object\":\"https://b.example/notes/1\"}",
+   "headers": {
+    "host": "b.example",
+    "date": "Wed, 11 Nov 2026 12:00:00 GMT",
+    "digest": "SHA-256=wlvZDcVoAs9MTjJoIKWoqaQ6q07xJrdJ57JjzTtkWVs=",
+    "signature": "keyId=\"https://a.example/actor#main-key\",algorithm=\"rsa-sha256\",headers=\"(request-target) host date digest\",signature=\"VBSyKhnCSrDYdNQm/VYCTHF6rlPnu1IWqoTuz75Yroh5X5sn/xDGA9EOQa7Z3GUIy3kzNeDbQW48P4wbQBwQ9rhvZyh4Aws4Kl+Bro9BQa7+ZUnHQqBFbB7JaDId2Ik93C65rOXw+nnZcjRyJx4hNWp9WJpAFq4GoFmJOF7t5jfR3VLLDoVF/nM3tVOM8zzpXPBflw0uLv2smer0jHdCcp2UsM8+zOC2hD1dqWuhEgISMF95AqOleXaFLYa4tkILf3anQmRw7eK6vVccrY2lzLoRH6M1D8FaUi7NTZEQDr8wDyeT3C0kvh77msPMRx7Wrclol5uPhGPGueif1YzWSA==\""
+   },
+   "expected": {
+    "verifies": false,
+    "reason": "digest does not match body"
+   }
+  },
+  {
+   "id": "legacy-digest-not-signed",
+   "scheme": "legacy",
+   "description": "The signature does not cover the Digest header, so the body is unprotected.",
+   "method": "POST",
+   "target": "https://b.example/users/bob/inbox",
+   "body": "{\"@context\":\"https://www.w3.org/ns/activitystreams\",\"id\":\"https://a.example/activities/1\",\"type\":\"Like\",\"actor\":\"https://a.example/actor\",\"object\":\"https://b.example/notes/1\"}",
+   "headers": {
+    "host": "b.example",
+    "date": "Wed, 11 Nov 2026 12:00:00 GMT",
+    "digest": "SHA-256=wlvZDcVoAs9MTjJoIKWoqaQ6q07xJrdJ57JjzTtkWVs=",
+    "signature": "keyId=\"https://a.example/actor#main-key\",algorithm=\"rsa-sha256\",headers=\"(request-target) host date\",signature=\"Z1WGy1d0nMpEBycOkvs1ZtnGgaQ2PgMeamo1JMKV8sjpXxeslI0sMG9bnr/TBdSw+9ZK5xqaATXKhIRQlSbAoCqhveaQYN/mXdl+dtSLIg404KGO/zc5gQE1PkqxXCwCO5wNHiaV8wJPmrpbdziKH7rAW8QzHCT2vq9pry9Ttv7GoM/fJ0Ll5BMwi331cqSTE03TiN4boVmJHSlICNKZMZuLOwP3wsfWbCr8EhfRfpR54UPzvZUQ6UhnXag8o0QC394Nge+7173iUPXPNB2KEd/z6hRbw1ONLEPwADzaE17vDBYw92t5TNXnG+eBhgDiTC+pidVinWlDDMmap7q/wQ==\""
+   },
+   "expected": {
+    "verifies": false,
+    "reason": "digest not signed"
+   }
+  },
+  {
+   "id": "legacy-wrong-path",
+   "scheme": "legacy",
+   "description": "Signed for a different request-target than the one delivered.",
+   "method": "POST",
+   "target": "https://b.example/users/bob/inbox",
+   "body": "{\"@context\":\"https://www.w3.org/ns/activitystreams\",\"id\":\"https://a.example/activities/1\",\"type\":\"Like\",\"actor\":\"https://a.example/actor\",\"object\":\"https://b.example/notes/1\"}",
+   "headers": {
+    "host": "b.example",
+    "date": "Wed, 11 Nov 2026 12:00:00 GMT",
+    "digest": "SHA-256=wlvZDcVoAs9MTjJoIKWoqaQ6q07xJrdJ57JjzTtkWVs=",
+    "signature": "keyId=\"https://a.example/actor#main-key\",algorithm=\"rsa-sha256\",headers=\"(request-target) host date digest\",signature=\"FIZEEpegEvecgE+K/jkUxANS0O25oOuC1b0XvBIhuUoI0npRdUxOh6wP78iu2rt3ueOfJ1nq1Yfvm/HeA/0niGh1+Ys+dzzAajf62UG9B2IPHox8sehUWNYfZUQOSj6LBEpa5BZdzBKhIVnciQZaPuwEM92TGdGaOa6uzRLWtqC3wMXh6iPciWv/dTyLaUYzsq4JUOQL14uKQrn48qcfRvDrBxYFcqWga6f4Joa7rmfuhuKp5Xu6twGSX/mR6KK5t+4ypBUk2oCwWICHeNn1ywAd2oBvCtrq0LbEhCMhTODwMEb6mVMVVy3H/lu/q7UkytsvZcyIbQXJtC5BS5nc1Q==\""
+   },
+   "expected": {
+    "verifies": false,
+    "reason": "signature does not verify"
+   }
+  },
+  {
+   "id": "rfc9421-valid",
+   "scheme": "rfc9421",
+   "description": "Valid RFC 9421 signature with rsa-v1_5-sha256 over @method, @target-uri and content-digest.",
+   "method": "POST",
+   "target": "https://b.example/users/bob/inbox",
+   "body": "{\"@context\":\"https://www.w3.org/ns/activitystreams\",\"id\":\"https://a.example/activities/1\",\"type\":\"Like\",\"actor\":\"https://a.example/actor\",\"object\":\"https://b.example/notes/1\"}",
+   "headers": {
+    "content-digest": "sha-256=:wlvZDcVoAs9MTjJoIKWoqaQ6q07xJrdJ57JjzTtkWVs=:",
+    "signature-input": "sig1=(\"@method\" \"@target-uri\" \"content-digest\");created=1794398400;keyid=\"https://a.example/actor#main-key\";alg=\"rsa-v1_5-sha256\"",
+    "signature": "sig1=:XnSuisSo929QxFTmP5o+Y7cuPeZ32h7rRP37X0w0FANAgssQtmx2NULWbyv53A9rv7inO1C2u+Ztuxl8Wp/OHI/gsl5PHtaMZXpf2F1o356FkkOGfy1aFON68DB4qo5EZzQN0MwD7PjcEF/feptHWabu/fi42VoElqKr5QcU28idoiDQ2F5m4iiAzE6cUreGoK5B+VfT9jl5IRnX20BFncNMhVZhrQ0y0puLu/LnOQLqLTxZ6a/UW9hR9d8zasFMYimbTa2pbrDcbLprH6J67SpT4126CYKoQwPLdXuCWVPw8BNlE+GNr/5UgV5wGd6fD2Xvzn3AGY8hFm5mmaIICA==:"
+   },
+   "expected": {
+    "verifies": true,
+    "reason": ""
+   }
+  },
+  {
+   "id": "rfc9421-body-modified",
+   "scheme": "rfc9421",
+   "description": "Body changed after signing: Content-Digest no longer matches.",
+   "method": "POST",
+   "target": "https://b.example/users/bob/inbox",
+   "body": "{\"@context\":\"https://www.w3.org/ns/activitystreams\",\"id\":\"https://a.example/activities/1\",\"type\":\"Lake\",\"actor\":\"https://a.example/actor\",\"object\":\"https://b.example/notes/1\"}",
+   "headers": {
+    "content-digest": "sha-256=:wlvZDcVoAs9MTjJoIKWoqaQ6q07xJrdJ57JjzTtkWVs=:",
+    "signature-input": "sig1=(\"@method\" \"@target-uri\" \"content-digest\");created=1794398400;keyid=\"https://a.example/actor#main-key\";alg=\"rsa-v1_5-sha256\"",
+    "signature": "sig1=:XnSuisSo929QxFTmP5o+Y7cuPeZ32h7rRP37X0w0FANAgssQtmx2NULWbyv53A9rv7inO1C2u+Ztuxl8Wp/OHI/gsl5PHtaMZXpf2F1o356FkkOGfy1aFON68DB4qo5EZzQN0MwD7PjcEF/feptHWabu/fi42VoElqKr5QcU28idoiDQ2F5m4iiAzE6cUreGoK5B+VfT9jl5IRnX20BFncNMhVZhrQ0y0puLu/LnOQLqLTxZ6a/UW9hR9d8zasFMYimbTa2pbrDcbLprH6J67SpT4126CYKoQwPLdXuCWVPw8BNlE+GNr/5UgV5wGd6fD2Xvzn3AGY8hFm5mmaIICA==:"
+   },
+   "expected": {
+    "verifies": false,
+    "reason": "content-digest does not match body"
+   }
+  },
+  {
+   "id": "rfc9421-digest-not-signed",
+   "scheme": "rfc9421",
+   "description": "content-digest is not a covered component.",
+   "method": "POST",
+   "target": "https://b.example/users/bob/inbox",
+   "body": "{\"@context\":\"https://www.w3.org/ns/activitystreams\",\"id\":\"https://a.example/activities/1\",\"type\":\"Like\",\"actor\":\"https://a.example/actor\",\"object\":\"https://b.example/notes/1\"}",
+   "headers": {
+    "content-digest": "sha-256=:wlvZDcVoAs9MTjJoIKWoqaQ6q07xJrdJ57JjzTtkWVs=:",
+    "signature-input": "sig1=(\"@method\" \"@target-uri\");created=1794398400;keyid=\"https://a.example/actor#main-key\";alg=\"rsa-v1_5-sha256\"",
+    "signature": "sig1=:QlJGWGRR5w5Fd6PZfAIR6xHelZdjmr1OyDDGWgTaT8doJ3XPqMOpuMZ9+cl9iYDpYjIL+HrVkrt6uNMARPrD7r0R5sv/wuCzqj2k5UqYCIMAX2m0xVliZyTq0C1F7xwmT9Flq4J4d3vo6znKuFGHJp8akA3grNN2NG86YC4s0zdTXfK1vkjN/5XWl7bNuDYSEOh+wm+iLqHB0jJY24N27FdpCPz69nFC8L1HY/2hhvcqhG64bnu3w9jxOP0MP16oDVVtlEXFYvSxilfMVUeTQkoamiEc0Fv+KqCGl562Tl8+B+UD3Nwaf+sj7rfur4quJ109cyHF6/hNenS4YFvI6Q==:"
+   },
+   "expected": {
+    "verifies": false,
+    "reason": "content-digest not signed"
+   }
+  },
+  {
+   "id": "rfc9421-wrong-target",
+   "scheme": "rfc9421",
+   "description": "Signed for a different target URI.",
+   "method": "POST",
+   "target": "https://b.example/users/bob/inbox",
+   "body": "{\"@context\":\"https://www.w3.org/ns/activitystreams\",\"id\":\"https://a.example/activities/1\",\"type\":\"Like\",\"actor\":\"https://a.example/actor\",\"object\":\"https://b.example/notes/1\"}",
+   "headers": {
+    "content-digest": "sha-256=:wlvZDcVoAs9MTjJoIKWoqaQ6q07xJrdJ57JjzTtkWVs=:",
+    "signature-input": "sig1=(\"@method\" \"@target-uri\" \"content-digest\");created=1794398400;keyid=\"https://a.example/actor#main-key\";alg=\"rsa-v1_5-sha256\"",
+    "signature": "sig1=:Fav9/CRr6OU3uv+C4yWwqKrAzJ/RcETP8rnHTw3ZMwrkHX4VNas18GDK36nCLU6+VPw+RQCM03mxzzPIaslzj1/wVDsU0XatJREzxI8zkUSTBBoArvnvBcCiKg47WmRgqxrwNlZxDbDB1cndG5MJZxu0PzJ4c0DscX2awbaUu0ZTBOrx396f8BkQQgFGGP38dhiSsXUj9tGnyV6UcESB4JdsnXME4zMYTxlgXoKxueU3Z2KBVrNcepmLTsDYfA4kFZ+ajS9zIAisKb/XdkUVIReXKD11qHVGrE6f/DWi1W57H33zwkMnl1UNW7i8Ze1rvVEnYI24ApJ8GFvJbIoz3w==:"
+   },
+   "expected": {
+    "verifies": false,
+    "reason": "signature does not verify"
+   }
+  }
+ ]
+}

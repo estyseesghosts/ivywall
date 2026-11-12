@@ -22,7 +22,7 @@ security/  moderation/
 testing/             harness/ fixtures/ interoperability/ benchmarks/
 references/          software/ specifications/ feps/ federation-docs/
 guides/              end-to-end walkthroughs
-tools/               check_docs.py (links, anchors, Sources, branding), fep_registry.py
+tools/               check_docs.py (links, anchors, Sources, branding), fep_registry.py, signing_vectors.py
 private-gitignore/   local research input; gitignored, never linked
 site/                generated output; not committed
 ```
@@ -169,6 +169,9 @@ Claim labels inside community documents (in addition to the page-level disclaime
 - Every HTTP trace, JSON example and code sample says where it came from: copied from a spec, captured from a named software version, or written by hand. Hand-written examples say whether they were run.
 - Mark secrets, tokens and private keys in captured traffic as redacted. Never commit real credentials, real private keys or tokens, even expired.
 - Do not publish captured traffic that contains non-public content from real people. Use fixture accounts on test instances.
+- Executable material (code, signing vectors, fixtures) lives beside the page that explains it, states what it was run against, and is checked in CI. The commands are `python3 tools/check_docs.py`, `python3 tools/signing_vectors.py verify` and `python3 guides/minimal-actor/selftest.py`. A page may claim a result only if its command passes; "run against itself" is not interoperability.
+- Every protocol example has a valid form and, where it teaches a check, an invalid form with the reason it fails. Test the harness too: a lab needs its own fake-server and intentionally broken cases.
+- Keep portable artefacts separate from project-specific tooling. Findings must be usable without Pinetree, Birchtree, Rust or a particular database.
 - Test fixtures are machine-readable (JSON) and live under `testing/fixtures/`. Compatibility pages may be generated from them; if so, say which fixture set and run date.
 
 ## Writing guidelines
@@ -205,5 +208,5 @@ zensical build --strict     # same, but fail on a broken link or anchor
 3. Read the relevant `private-gitignore/` research and the upstream source. Verify claims against the pinned version; move anything unverified to open questions with a `[hypothesis]` label.
 4. Draft the Overview in plain language, then complete Technical details.
 5. Add glossary entries for new jargon. Add the page to `nav` and to its section hub, and update neighbouring pages to link back.
-6. Run `python3 tools/check_docs.py` and `zensical build --strict` before committing.
+6. Run `python3 tools/check_docs.py` and `zensical build --strict`, and the executable checks above when you touched code or fixtures, before committing.
 7. Commit as `terezi <jules@foxtails.me>` with a plain message and no attribution trailer of any kind.

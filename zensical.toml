@@ -55,6 +55,8 @@ nav = [
     { "Compatibility: post edits" = "federation/compatibility/post-edits.md" },
     { "Compatibility: polls" = "federation/compatibility/polls.md" },
     { "Compatibility: observed profiles of Mastodon, Misskey, Catodon, Akkoma and Sharkey" = "federation/compatibility/observed-profiles.md" },
+    { "What each server does with an incoming activity" = "federation/compatibility/activity-contracts.md" },
+    { "How remote state spreads and diverges" = "federation/remote-state.md" },
     { "Compatibility: Undo, boosts and unboosts" = "federation/compatibility/undo-and-reposts.md" },
     { "Compatibility: mentions and notifications" = "federation/compatibility/mentions.md" },
     { "Compatibility: remote media attachments" = "federation/compatibility/media-attachments.md" },
@@ -72,6 +74,7 @@ nav = [
     { "Mastodon REST API" = "clients/apis/mastodon-rest.md" },
     { "Misskey native API" = "clients/apis/misskey.md" },
     { "Client authentication with OAuth" = "clients/authentication/oauth.md" },
+    { "Streaming and recovery in a client" = "clients/architecture/streaming-and-recovery.md" },
   ] },
   { "Servers" = [
     { "Overview" = "servers/index.md" },
@@ -93,6 +96,7 @@ nav = [
   { "Security and privacy" = [
     { "Overview" = "security/index.md" },
     { "SSRF and remote fetching" = "security/ssrf.md" },
+    { "Security invariants for federation code" = "security/invariants.md" },
     { "Mastodon security boundaries" = "security/mastodon-4-7.md" },
   ] },
   { "Moderation" = [
@@ -105,6 +109,8 @@ nav = [
     { "An interoperability test matrix for a new server" = "testing/interoperability/test-matrix.md" },
     { "Test oracles that give false federation failures" = "testing/interoperability/test-oracles.md" },
     { "Interoperability result fixture format" = "testing/fixtures/result-schema.md" },
+    { "Fixture corpus" = "testing/fixtures/index.md" },
+    { "A local federation lab" = "testing/harness/local-lab.md" },
   ] },
   { "References" = [
     { "Overview" = "references/index.md" },
@@ -152,5 +158,6 @@ nav = [
   { "Guides" = [
     { "Overview" = "guides/index.md" },
     { "Guide: a minimal ActivityPub actor" = "guides/minimal-actor.md" },
+    { "Federation troubleshooting" = "guides/troubleshooting.md" },
   ] },
 ]

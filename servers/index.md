@@ -22,6 +22,7 @@ Case studies:
 Not yet covered (the Mastodon and Misskey storage and pipeline pages and the ten case studies above exist):
 
 - Storage and pipeline pages for the other studied servers; single-user versus multi-user designs; worker separation; database contention.
+- Architecture decisions compared with measurements: synchronous versus queued inbox, relational versus key-value storage, eager versus lazy remote fetching, cache versus authoritative state, push versus pull recovery.
 - Performance — caching of profiles, keys, posts and media; search; media pipelines; delivery throughput, p95 latency, queue growth, recovery after outages. Nothing has been measured yet.
 - Further case studies — Pleroma, snac, Sharkey, Iceshrimp.NET, Hollo, Friendica, PieFed, Mbin, PeerTube and Bonfire.
 

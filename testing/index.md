@@ -4,6 +4,8 @@ Manual research does not scale, and compatibility claims go stale. This section 
 
 ## Pages
 
+- [A local federation lab](harness/local-lab.md) — the two existing harnesses, what to fix before reuse, and the gates that separate lab faults from software faults.
+- [Fixture corpus](fixtures/index.md) — signing vectors and quote payloads, with provenance and verification status.
 - [FediTest](interoperability/feditest.md) — what the existing test suite covers, and its age.
 - [An interoperability test matrix](interoperability/test-matrix.md) — what a new server should test, per area and direction.
 - [Test oracles that give false federation failures](interoperability/test-oracles.md) — harness mistakes and a five-way outcome model.

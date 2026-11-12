@@ -6,11 +6,12 @@ End-to-end walkthroughs that turn the reference material into working knowledge.
 
 Written so far:
 
-- [A minimal ActivityPub actor](minimal-actor.md) — outline only; no implementation code yet.
+- [A minimal ActivityPub server](minimal-actor.md) — working code with a self-test; not yet run against Mastodon.
+- [Federation troubleshooting](troubleshooting.md) — from a symptom to the stage that broke, with commands.
 
-Not yet covered (the minimal-actor guide above is an outline only):
+Not yet covered:
 
-- Completing the minimal actor guide with code and a pinned-peer test run.
+- The minimal server's run against a pinned Mastodon release.
 - Building a headless server with a Mastodon-compatible API.
 - Adding ActivityPub federation to existing software.
 - Building a native multi-platform client.

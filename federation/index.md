@@ -12,6 +12,8 @@ Pages:
 - [Compatibility: emoji reactions](compatibility/emoji-reactions.md) — directional representations and loss.
 - [Compatibility: quote posts](compatibility/quotes.md) — legacy fields, consent and translation.
 - [Compatibility: post edits](compatibility/post-edits.md) — edit delivery and remote update handling.
+- [How remote state spreads and diverges](remote-state.md) — propagation paths and the rules that keep a server's copy correct.
+- [What each server does with an incoming activity](compatibility/activity-contracts.md) — `Update`, `Undo` and `Announce` by object type.
 - [Observed profiles of Mastodon, Misskey, Catodon, Akkoma and Sharkey](compatibility/observed-profiles.md) — index of laboratory behaviour, by family.
 - [Compatibility: Undo, boosts and unboosts](compatibility/undo-and-reposts.md) — reversing actions across families.
 - [Compatibility: mentions and notifications](compatibility/mentions.md) — text, tag and addressing.
@@ -29,6 +31,7 @@ Not yet covered (the pages above exist; these do not), in priority order:
 
 - Compatibility records still to write: rich text, MFM, Markdown, custom emoji, visibility, hashtags, replies, search, account migration, moderation actions, group federation. This is the highest-priority part of the wiki.
 - Activity lifecycles still to write: delete, update, undo, move and group announce.
+- Measured comparisons that need experiments on pinned releases: the ordering cases in [remote state](remote-state.md) across Mastodon, Akkoma, GoToSocial and Lemmy; what survives a Misskey post (reactions, MFM, poll, quote, language) through each hop to a client API; the same conversation reconstructed on six servers; what survives account migration; group, event and forum federation as one guide; protocol bridges (Wafrn, Bridgy Fed).
 - Delivery: retry schedules and dead-destination handling per server; ordering guarantees.
 - Object types: Note, Article, Question, Group, Video and software-specific types (no page yet).
 - Failure modes still to write: stale profiles, duplicated boosts, lost reactions, invalid signatures, broken mentions, migration failures.
