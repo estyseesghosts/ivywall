@@ -12,6 +12,8 @@ Pages:
 - [Compatibility: emoji reactions](compatibility/emoji-reactions.md) — directional representations and loss.
 - [Compatibility: quote posts](compatibility/quotes.md) — legacy fields, consent and translation.
 - [Compatibility: post edits](compatibility/post-edits.md) — edit delivery and remote update handling.
+- [Compatibility: polls](compatibility/polls.md) — poll shapes, vote handling and limited historical evidence.
+- [Failure mode: media not verifying](failure-modes/media-not-verifying.md) — distinguish missing attachments, fetching and byte comparison.
 - [Failure mode: missing replies](failure-modes/missing-replies.md) — delivery, fetching and response limits; reproduction remains open.
 
 Still planned, in priority order:

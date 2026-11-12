@@ -48,8 +48,15 @@ The activity and object IDs serve different purposes. Retrying delivery with the
 - **A deletion is not a distributed erasure guarantee.** Peers retain control of their own storage and may have copied content.
 - **Do not infer throughput from source.** Measure queue depth, distinct destination inboxes, retry rates and feed fan-out under a stated workload.
 
+## Deletion and delayed convergence in a laboratory run
+
+The 19 October 2026 Pinetree/Birchtree run 5 report lists eight feature checks where a deleted marker remained visible at the original check. The operator reports a later read-only scan found those markers absent from every tested destination user's home timeline. That recheck supports delayed disappearance from those timelines; it does not establish deletion from every cache, database, or downstream server. `[reported]` [run summary](https://github.com/estyseesghosts/pinetree/blob/1c1d00cc955e2ef602d1640d8f7f7d84d985de2a/docs/federation-bench-2026-10-19-phase7-run5.md#L54-L58), [recheck log](https://github.com/estyseesghosts/pinetree/blob/1c1d00cc955e2ef602d1640d8f7f7d84d985de2a/docs/federation-bench-2026-10-19-run5-log.md#L43-L48).
+
+The same report separately records residue in a delete-before-create churn test, with a suspected ordering mechanism for the Birchtree nodes. That is a different scenario from the eight delayed timeline checks; the report does not classify all other nodes' residue. The run identifies Pinetree build `f58be005c558f650` and Birchtree build `e24d75aea1085a06`, but not exact peer versions for every row. A new test should retain activity IDs and record delivery order, queue and final stored state as well as timeline visibility. `[reported]` [run setup and churn](https://github.com/estyseesghosts/pinetree/blob/1c1d00cc955e2ef602d1640d8f7f7d84d985de2a/docs/federation-bench-2026-10-19-phase7-run5.md#L83-L88).
+
 ## Sources
 
 - [ActivityPub Recommendation](https://www.w3.org/TR/2018/REC-activitypub-20180123/) — addressing, Create and server-to-server delivery.
 - [Mastodon 4.7.3 posting service](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/services/post_status_service.rb) and [federation distribution](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/workers/activitypub/distribution_worker.rb#L11) — source-side persistence and fan-out.
 - [Misskey 2026.10.1 inbox route](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/server/ActivityPubServerService.ts) and [inbox processor](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/queue/processors/InboxProcessorService.ts#L66) — receiving and asynchronous authentication.
+- [Run 5 federation benchmark](https://github.com/estyseesghosts/pinetree/blob/1c1d00cc955e2ef602d1640d8f7f7d84d985de2a/docs/federation-bench-2026-10-19-phase7-run5.md#L54-L58) — reported timeline deletion checks and later recheck.

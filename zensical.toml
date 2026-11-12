@@ -53,8 +53,10 @@ nav = [
     { "Compatibility: emoji reactions" = "federation/compatibility/emoji-reactions.md" },
     { "Compatibility: quote posts" = "federation/compatibility/quotes.md" },
     { "Compatibility: post edits" = "federation/compatibility/post-edits.md" },
+    { "Compatibility: polls" = "federation/compatibility/polls.md" },
     { "Delivery queues and retries" = "federation/delivery/queues-and-retries.md" },
     { "Failure mode: replies missing on remote threads" = "federation/failure-modes/missing-replies.md" },
+    { "Failure mode: media not verifying" = "federation/failure-modes/media-not-verifying.md" },
   ] },
   { "Clients" = [
     { "Overview" = "clients/index.md" },
@@ -88,6 +90,7 @@ nav = [
   ] },
   { "Testing" = [
     { "Overview" = "testing/index.md" },
+    { "Reading federation benchmark results" = "testing/interoperability/bench-evidence.md" },
   ] },
   { "References" = [
     { "Overview" = "references/index.md" },
