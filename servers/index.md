@@ -6,6 +6,14 @@ Server engineering is where this wiki aims to be more useful than protocol docum
 
 Case studies:
 
+- [Akkoma case study](case-studies/akkoma.md) — version-pinned architecture and federation.
+- [GoToSocial case study](case-studies/gotosocial.md) — version-pinned architecture and federation.
+- [Lemmy case study](case-studies/lemmy.md) — version-pinned architecture and federation.
+- [Loops case study](case-studies/loops-server.md) — version-pinned architecture and federation.
+- [NodeBB case study](case-studies/nodebb.md) — version-pinned architecture and federation.
+- [Pixelfed case study](case-studies/pixelfed.md) — version-pinned architecture and federation.
+- [Wafrn case study](case-studies/wafrn.md) — version-pinned architecture and federation.
+- [WriteFreely case study](case-studies/writefreely.md) — version-pinned architecture and federation.
 - [Mastodon 4.7.3](case-studies/mastodon.md) — architecture, federation and operational paths.
 - [Misskey 2026.10.1](case-studies/misskey.md) — architecture, native API and federation paths.
 - [Mastodon federation pipeline](federation-pipelines/mastodon-4-7.md) and [Misskey federation pipeline](federation-pipelines/misskey.md) — receipt and delivery.
@@ -16,11 +24,11 @@ Still planned:
 - Architecture and storage — schema design for actors, objects and activities; single-user versus multi-user designs; worker separation; database contention.
 - Federation pipelines — inbox validation, persistence, moderation and delivery stages; queues, retries, ordering, fan-out; consistency when updates arrive before creates.
 - Performance — caching of profiles, keys, posts and media; search; media pipelines; delivery throughput, p95 latency, queue growth, recovery after outages.
-- Further case studies — Pleroma, Akkoma, GoToSocial, snac, Pixelfed, Loops, Wafrn, Sharkey, Iceshrimp.NET, Hollo, Friendica, Lemmy, PieFed, Mbin, PeerTube, NodeBB, Bonfire.
+- Further case studies — Pleroma, snac, Sharkey, Iceshrimp.NET, Hollo, Friendica, PieFed, Mbin, PeerTube and Bonfire.
 
 ## Notes and open questions
 
-Version-pinned engineering research already exists locally for Mastodon, Misskey, Akkoma, Lemmy, Loops, NodeBB, Pixelfed and Wafrn. Case studies are written from it once re-verified against upstream source at the pinned commit.
+The case studies describe specific source revisions. Live interoperability, recovery and capacity findings require separately documented tests.
 
 ## Sources
 

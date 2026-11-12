@@ -7,6 +7,14 @@ Lookup material: one version-pinned fact sheet per implementation, one page per 
 Available and planned references:
 
 - [Project federation documents](federation-docs/index.md) — stub.
+- [Akkoma fact sheet](software/akkoma.md) — source revision and reference facts.
+- [GoToSocial fact sheet](software/gotosocial.md) — source revision and reference facts.
+- [Lemmy fact sheet](software/lemmy.md) — source revision and reference facts.
+- [Loops fact sheet](software/loops-server.md) — source revision and reference facts.
+- [NodeBB fact sheet](software/nodebb.md) — source revision and reference facts.
+- [Pixelfed fact sheet](software/pixelfed.md) — source revision and reference facts.
+- [Wafrn fact sheet](software/wafrn.md) — source revision and reference facts.
+- [WriteFreely fact sheet](software/writefreely.md) — source revision and reference facts.
 - [Mastodon fact sheet](software/mastodon.md) — pinned release and implementation facts.
 - [Misskey fact sheet](software/misskey.md) — pinned release and implementation facts.
 - [FEP-044f](feps/fep-044f.md) — stub.
@@ -15,7 +23,7 @@ Available and planned references:
 
 Still planned:
 
-- Software fact sheets — start with the versions already researched: Mastodon 4.7.3, Misskey 2026.10.1, Akkoma 2026.08, Lemmy 0.19.21, Loops 1.0.0b15, NodeBB 4.16.7, Pixelfed 0.15.2, Wafrn (2026-11-01 snapshot).
+- Additional software fact sheets for releases as they are researched.
 - Specifications — ActivityStreams, ActivityPub, WebFinger, NodeInfo, HTTP Message Signatures.
 - FEP records — each distinguishing proposed, final, withdrawn, experimental and deployed, and listing which software emits, accepts, partially implements or rejects it. First candidates: FEP-044f (consent-based quotes), FEP-521a (public keys), FEP-1b12 (groups), FEP-8fcf (follower synchronization), FEP-7628 (actor moves).
 

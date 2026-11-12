@@ -1,0 +1,53 @@
+# Wafrn 2026.11.01
+
+Wafrn is a social server with a Tumblr-inspired application model, ActivityPub federation and optional AT Protocol integration. Its local posts, identities and visibility controls do not always have one-to-one representations on both networks. This case study describes the [2026.11.01 source](../../references/software/wafrn.md), not the separately versioned mobile app or a live cross-network interoperability test.
+
+## Architecture
+
+The project is a TypeScript/Node.js monorepo with an Express backend and Angular web frontend. PostgreSQL holds persistent application entities; Redis supports caching and BullMQ jobs. HTTP, federation, workers, WebSocket/scheduled work and the optional AT Protocol process have distinct startup paths. Deployment configuration and enabled services determine actual process count. `[source]` [backend manifest](https://codeberg.org/wafrn/wafrn/src/tag/2026.11.01/packages/backend/package.json), [frontend manifest](https://codeberg.org/wafrn/wafrn/src/tag/2026.11.01/packages/frontend/package.json), [Compose](https://codeberg.org/wafrn/wafrn/src/tag/2026.11.01/docker-compose.default.yml), [workers](https://codeberg.org/wafrn/wafrn/src/tag/2026.11.01/packages/backend/utils/workers.ts).
+
+The post model records author, parent/reblog relationship, privacy and content; follow and user records hold separate relationship and actor state. Media can live locally or in object storage. A database snapshot by itself may not preserve media, configuration, secrets or pending Redis work, so recovery must be rehearsed with all configured stores. `[source]` [post model](https://codeberg.org/wafrn/wafrn/src/tag/2026.11.01/packages/backend/models/post.ts), [follows](https://codeberg.org/wafrn/wafrn/src/tag/2026.11.01/packages/backend/models/follows.ts), [media storage](https://codeberg.org/wafrn/wafrn/src/tag/2026.11.01/packages/backend/utils/storage.ts).
+
+## Key code paths
+
+### ActivityPub receipt
+
+The HTTP route checks request information and signatures and queues inbox work. In this release one path responds before awaiting the queue insertion; an HTTP success alone therefore cannot establish durable enqueue. The inbox processor identifies the sender, applies policy and dispatches handlers for known types. `[source]` [ActivityPub route](https://codeberg.org/wafrn/wafrn/src/tag/2026.11.01/packages/backend/routes/activitypub/activitypub.ts), [signature verification](https://codeberg.org/wafrn/wafrn/src/tag/2026.11.01/packages/backend/activitypub/checkFediverseSignature.ts), [inbox processor](https://codeberg.org/wafrn/wafrn/src/tag/2026.11.01/packages/backend/queueProcessors/inbox.ts).
+
+`[hypothesis]` An outage between the response and successful enqueue could lose an activity that the sender believes delivered. Test by interrupting Redis at that boundary and recording both HTTP response and persisted queue state. The inbox processor's top-level catch logs errors; inject a transient database failure to determine whether a particular job is marked successful and bypasses retry. These are source-review questions, not reproduced production incidents. `[source]` [route](https://codeberg.org/wafrn/wafrn/src/tag/2026.11.01/packages/backend/routes/activitypub/activitypub.ts), [processor](https://codeberg.org/wafrn/wafrn/src/tag/2026.11.01/packages/backend/queueProcessors/inbox.ts).
+
+### Publishing and delivery
+
+Local post creation writes application state and triggers subsequent work. Federation preparation selects recipients, constructs ActivityStreams output and queues remote sends; a local write, queued job and successful remote processing are separate outcomes. Recipient grouping and background processing make fan-out tractable, but retries and concurrent operations should be tested for duplicate and reordered delivery. `[source]` [post creation](https://codeberg.org/wafrn/wafrn/src/tag/2026.11.01/packages/backend/services/createPost.ts), [federation trigger](https://codeberg.org/wafrn/wafrn/src/tag/2026.11.01/packages/backend/utils/triggerPostFederation.ts), [delivery preparation](https://codeberg.org/wafrn/wafrn/src/tag/2026.11.01/packages/backend/queueProcessors/prepareSendRemotePost.ts), [serialization](https://codeberg.org/wafrn/wafrn/src/tag/2026.11.01/packages/backend/activitypub/postToJSONLD.ts).
+
+The WebSocket process also runs scheduled work and startup indexing. Operating multiple replicas therefore needs tests for scheduler ownership, repeated tasks and startup impact; number of HTTP replicas alone does not describe the deployment. `[source]` [WebSocket process](https://codeberg.org/wafrn/wafrn/src/tag/2026.11.01/packages/backend/websocket.ts), [Compose](https://codeberg.org/wafrn/wafrn/src/tag/2026.11.01/docker-compose.default.yml).
+
+## API coverage
+
+The bundled frontend uses Wafrn's application API and real-time channel. The source also mounts a Mastodon-compatible API with its own OAuth and scope handling; this is a compatibility surface with endpoint-specific behavior, not full Mastodon equivalence. For example, the announcements endpoint returns a fixed compatibility notice rather than a dynamic announcement system. The inspected aggregator does not establish a Mastodon-compatible streaming endpoint; Wafrn's native WebSocket should not be assumed wire-identical. `[source]` [backend routes](https://codeberg.org/wafrn/wafrn/src/tag/2026.11.01/packages/backend/index.ts), [Mastodon API router](https://codeberg.org/wafrn/wafrn/src/tag/2026.11.01/packages/backend/mastoapi/mastoapi.ts), [OAuth](https://codeberg.org/wafrn/wafrn/src/tag/2026.11.01/packages/backend/mastoapi/oauth.ts), [announcements](https://codeberg.org/wafrn/wafrn/src/tag/2026.11.01/packages/backend/mastoapi/announcements.ts).
+
+## Federation and cross-network behaviour
+
+ActivityPub uses actor discovery and signed requests; inbox processors map supported `Create`, `Update`, `Delete`, `Follow`, `Like`, `Announce` and other activities into local operations. The serializer carries audiences, content, mentions and attachments with extensions for application features. `Move` has a dedicated path, but migration correctness across peers needs explicit tests. `[source]` [inbox](https://codeberg.org/wafrn/wafrn/src/tag/2026.11.01/packages/backend/queueProcessors/inbox.ts), [post serializer](https://codeberg.org/wafrn/wafrn/src/tag/2026.11.01/packages/backend/activitypub/postToJSONLD.ts), [Move processor](https://codeberg.org/wafrn/wafrn/src/tag/2026.11.01/packages/backend/queueProcessors/processors/move.ts).
+
+The optional AT Protocol worker consumes stream events and translates posts through separate conversion logic. Text, facets, media, quotes and reactions can lose information where network representations differ; the existence of a conversion path is not proof of bidirectional fidelity. Public records cannot directly express every followers-only or local-only ActivityPub visibility rule. `[source]` [AT worker](https://codeberg.org/wafrn/wafrn/src/tag/2026.11.01/packages/backend/atproto.ts), [outbound converter](https://codeberg.org/wafrn/wafrn/src/tag/2026.11.01/packages/backend/atproto/utils/postToAtproto.ts), [privacy values](https://codeberg.org/wafrn/wafrn/src/tag/2026.11.01/packages/backend/models/post.ts).
+
+## Security and privacy
+
+Remote HTTP signatures authenticate a request only if the key and actor are correctly bound; they do not make embedded URLs, markup or media trustworthy. The safe-fetch utility checks network destinations, but each network client and redirect path must be audited separately. User and domain blocks, moderation routes and read-side visibility checks operate at different layers. `[source]` [signature handling](https://codeberg.org/wafrn/wafrn/src/tag/2026.11.01/packages/backend/activitypub/checkFediverseSignature.ts), [safe fetch](https://codeberg.org/wafrn/wafrn/src/tag/2026.11.01/packages/backend/utils/ssrfUtils.ts), [visibility](https://codeberg.org/wafrn/wafrn/src/tag/2026.11.01/packages/backend/services/postVisibility.ts), [administration](https://codeberg.org/wafrn/wafrn/src/tag/2026.11.01/packages/backend/routes/admin.ts).
+
+The federated object-fetch path evaluates follower access using remote host information; `[hypothesis]` whether this permits a second actor on that host to retrieve a followers-only object requires a controlled two-actor, signed-request test and review of all earlier checks. Do not treat the code pattern alone as a reproduced vulnerability. `[source]` [object retrieval](https://codeberg.org/wafrn/wafrn/src/tag/2026.11.01/packages/backend/activitypub/handlePostRequest.ts), [follow model](https://codeberg.org/wafrn/wafrn/src/tag/2026.11.01/packages/backend/models/follows.ts).
+
+## Resource usage and tradeoffs
+
+There are no measured resource or throughput results in this study. Distinct remote inboxes, cached timeline hydration, media transformation, queue depth, deployment replica count and AT event volume should be varied in a benchmark. Measure failure recovery and final database/queue state as well as HTTP latency. The broad feature model supports multiple workflows but requires careful translation and privacy tests for every boundary. `[source]` [query service](https://codeberg.org/wafrn/wafrn/src/tag/2026.11.01/packages/backend/services/baseQueryNew.ts), [media optimization](https://codeberg.org/wafrn/wafrn/src/tag/2026.11.01/packages/backend/utils/optimizeMedia.ts).
+
+## Technical details
+
+Recommended tests: exercise ActivityPub signed `Create` and `Undo` with duplicate IDs, worker failures after receipt, key refresh, shared-inbox recipient privacy, and cross-network rendering of rich content and media. Record exact versions, configuration, redacted traffic, queue attempts and final database/API state. Do not equate route presence or an HTTP success with feature-complete interoperability.
+
+## Sources
+
+- [Wafrn 2026.11.01 source](https://codeberg.org/wafrn/wafrn/src/tag/2026.11.01) — pinned architecture and configuration.
+- [ActivityPub route](https://codeberg.org/wafrn/wafrn/src/tag/2026.11.01/packages/backend/routes/activitypub/activitypub.ts), [inbox processor](https://codeberg.org/wafrn/wafrn/src/tag/2026.11.01/packages/backend/queueProcessors/inbox.ts) and [delivery preparation](https://codeberg.org/wafrn/wafrn/src/tag/2026.11.01/packages/backend/queueProcessors/prepareSendRemotePost.ts) — ingress, failure boundaries and outgoing work.
+- [Mastodon-compatible router](https://codeberg.org/wafrn/wafrn/src/tag/2026.11.01/packages/backend/mastoapi/mastoapi.ts) and [AT Protocol converter](https://codeberg.org/wafrn/wafrn/src/tag/2026.11.01/packages/backend/atproto/utils/postToAtproto.ts) — client and cross-network behavior.
