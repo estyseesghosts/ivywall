@@ -10,7 +10,7 @@ A Fediverse client logs in through the server's OAuth authorization endpoint, no
 | Do not use the implicit grant (SHOULD NOT) or the resource owner password grant (MUST NOT) | RFC 9700 §2.1.2, §2.4 |
 | The server compares redirect URIs by exact string match, except the port in a native app's loopback URI | RFC 9700 §2.1 |
 | Refresh tokens for public clients MUST be sender-constrained or rotated on every use | RFC 9700 §2.2.2 |
-| A native app sends the user to the system browser, not an embedded web view | RFC 8252 §4, §8.12 |
+| A native app sends the user to the system browser, not an embedded web view | RFC 8252 §1, §8.12 |
 | Native redirect options: a private-use URI scheme (§7.1), an HTTPS URL the app has claimed with the OS (§7.2), or a loopback address with a variable port for desktop apps (§7.3) | RFC 8252 §7 |
 | A browser app chooses one of three architectures, listed from most to least secure: backend-for-frontend (§6.1), token-mediating backend (§6.2), browser-only OAuth client (§6.3). The older single-domain pattern is discouraged | RFC 10017 §6, §7 |
 

@@ -13,50 +13,21 @@ It serves two readers: a curious human, and a future coding agent implementing o
 ## Repository layout
 
 ```text
-AGENTS.md
-zensical.toml                 # site config: navigation, theme, and what is excluded
-glossary.md                   # global jargon glossary (one file for the whole wiki)
-README.md                     # human landing page
-fundamentals/                 # protocols and federation internals
-  index.md
-  <topic>.md                  # one page per protocol topic (activitypub-s2s.md, webfinger.md...)
-federation/                   # how federation behaves in practice
-  index.md
-  activities/<topic>.md       # lifecycle of one activity family (follow, create, delete, move...)
-  delivery/<topic>.md         # queues, retries, ordering, duplicates
-  object-types/<topic>.md     # Note, Article, Question, Group, Video...
-  compatibility/<feature>.md  # one interoperability record per feature (reactions, quotes...)
-  failure-modes/<symptom>.md  # one reproducible problem per page
-clients/                      # client APIs and client engineering
-  index.md
-  apis/<family>.md            # Mastodon REST, Misskey, Loops...
-  architecture/<topic>.md
-  authentication/<topic>.md
-  rendering/<topic>.md
-  case-studies/<client>.md
-servers/                      # server architecture and performance
-  index.md
-  architecture/<topic>.md
-  storage/<topic>.md
-  federation-pipelines/<topic>.md
-  performance/<topic>.md
-  case-studies/<software>.md  # one source-level study per implementation
-security/<topic>.md           # signatures, SSRF, sanitization, privacy boundaries
-moderation/<topic>.md         # blocks, MRF, reports, audit trails
-testing/
-  harness/ fixtures/ interoperability/ benchmarks/
-references/
-  software/<name>.md          # one version-pinned fact sheet per implementation
-  specifications/<name>.md    # one page per standard (ActivityStreams, ActivityPub, WebFinger...)
-  feps/<number>.md            # one record per FEP
-guides/<task>.md              # end-to-end implementation walkthroughs
-tools/
-  check_docs.py               # link, anchor, Sources-section and evidence checker
-private-gitignore/            # local research input, gitignored, never linked
-site/                         # generated site output (not committed)
+AGENTS.md  README.md  glossary.md  zensical.toml (navigation, exclusions)
+fundamentals/        protocols and federation internals, one page per mechanism
+federation/          activities/ delivery/ object-types/ compatibility/ failure-modes/
+clients/             apis/ authentication/ architecture/ rendering/ case-studies/
+servers/             architecture/ storage/ federation-pipelines/ performance/ case-studies/
+security/  moderation/
+testing/             harness/ fixtures/ interoperability/ benchmarks/
+references/          software/ specifications/ feps/ federation-docs/
+guides/              end-to-end walkthroughs
+tools/               check_docs.py (links, anchors, Sources, branding), fep_registry.py
+private-gitignore/   local research input; gitignored, never linked
+site/                generated output; not committed
 ```
 
-Sections that do not yet have subdirectories get them when the first real page arrives. Do not create empty directories or placeholder pages. File names are kebab-case; one topic per file. Create a new top-level section only when none of the above fits.
+Create a subdirectory when its first real page arrives; no empty directories or placeholder pages. File names are kebab-case, one topic per file. Add a top-level section only when none of the above fits.
 
 ## Core principles
 
@@ -87,38 +58,21 @@ Entry format:
 One to four sentences: plain meaning, then the precise sense. Ends with a link to the canonical page.
 ```
 
-## Page types
+## Page types and shapes
 
-Pick exactly one type per page. If a topic spans types, split into linked pages.
+Pick exactly one type per page; split a topic that spans types. Every page opens with a plain overview of 2–6 sentences, then follows the section order below for its type and ends with `Sources`. Delete a section that genuinely does not apply, but never `Technical details` (where it exists) or `Sources`; if detail is unknown, say what is unknown.
 
-| Type | Where | What it is |
-| ---- | ----- | ---------- |
-| Hub | every section `index.md` | What the section covers, curated links to every page in it |
-| Protocol | `fundamentals/`, `references/specifications/` | One protocol or mechanism: what the spec requires, with real requests and JSON |
-| Lifecycle | `federation/activities/`, `federation/delivery/` | A traced sequence: each HTTP request, database mutation, queued job and notification |
-| Compatibility record | `federation/compatibility/` | One feature across implementations, per version and direction |
-| Failure mode | `federation/failure-modes/` | One reproducible problem, searchable by symptom |
-| Case study | `servers/case-studies/`, `clients/case-studies/` | One implementation studied at source level |
-| Software fact sheet | `references/software/` | Version-pinned reference facts for one implementation |
-| FEP record | `references/feps/` | One proposal and who emits, accepts or rejects it |
-| Engineering | `servers/…`, `clients/…`, `security/`, `moderation/`, `testing/` | A practical problem and how to solve and verify it |
-| Guide | `guides/` | A start-to-finish implementation walkthrough linking to case studies |
-
-## Page shapes
-
-Every page opens with a plain overview of 2–6 sentences, then follows the section order below for its type and ends with `Sources`. Delete a section that genuinely does not apply, but never `Technical details` (where it exists) or `Sources`; if detail is unknown, say what is unknown.
-
-| Type | Sections after the overview |
-| ---- | --------------------------- |
-| Hub | Pages · Notes and open questions · Sources |
-| Protocol | What the specification requires · What implementations do · Technical details · Pitfalls · Sources |
-| Lifecycle | Actors and starting state · Step by step (each step: request, state change, job, notification, failure) · Technical details · Pitfalls · Sources |
-| Compatibility record | Summary table · Information lost in translation · Technical details · Test procedure · Sources |
-| Failure mode | Expected and observed behaviour · Root cause · Affected versions · Code path · Reproduction · Technical details · Sources |
-| Case study | Architecture · Key code paths · API coverage · Federation behaviour · Resource usage · Strengths, bugs and tradeoffs · Technical details · Sources |
-| Engineering page, guide | Before you start · task sections · Technical details · Pitfalls · Open questions · Sources |
-| Software fact sheet | Release, date, commit · facts table with evidence per row · Sources |
-| FEP record | Number, title, status, date checked, repository commit · what it defines · who implements it, per version · Sources |
+| Type (where) | Sections after the overview |
+| ------------ | --------------------------- |
+| Hub (every section `index.md`) | Pages · Notes and open questions · Sources |
+| Protocol (`fundamentals/`, `references/specifications/`) | What the specification requires · What implementations do · Technical details · Pitfalls · Sources |
+| Lifecycle (`federation/activities/`, `federation/delivery/`) | Actors and starting state · Step by step (each step: request, state change, job, notification, failure) · Technical details · Pitfalls · Sources |
+| Compatibility record (`federation/compatibility/`) | Summary table · Information lost in translation · Technical details · Test procedure · Sources |
+| Failure mode (`federation/failure-modes/`) | Expected and observed behaviour · Root cause · Affected versions · Code path · Reproduction · Technical details · Sources |
+| Case study (`servers/case-studies/`, `clients/case-studies/`) | Architecture · Key code paths · API coverage · Federation behaviour · Resource usage · Strengths, bugs and tradeoffs · Technical details · Sources |
+| Engineering page (`servers/…`, `clients/…`, `security/`, `moderation/`, `testing/`) or guide (`guides/`) | Before you start · task sections · Technical details · Pitfalls · Open questions · Sources |
+| Software fact sheet (`references/software/`) | Release, date, commit · facts table with evidence per row · Sources |
+| FEP record (`references/feps/`) | Number, title, status, date checked, repository commit · what it defines · who implements it, per version · Sources |
 
 A compatibility-record summary has one row per directed pair:
 
