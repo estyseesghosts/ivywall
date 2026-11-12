@@ -1,6 +1,6 @@
 # Catodon federation behaviour (community-written)
 
-> **Disclaimer.** This document was **not written by the Catodon maintainers**. It was written for this wiki from the project's source and may be incomplete or inaccurate. Do not cite it as a statement by the project. It follows the structure of [FEP-67ff](../feps/fep-67ff.md) but the project does not publish such a file, so it does not mean Catodon conforms to that FEP.
+> **Not by the Catodon maintainers.** Written for this wiki from the project's source; it may be incomplete or inaccurate and must not be cited as the project's own statement. It follows the structure of [FEP-67ff](../feps/fep-67ff.md); the project publishes no such file.
 
 ## Provenance
 
@@ -13,7 +13,7 @@
 | Other wiki revisions | No Catodon case study or fact sheet exists, so there is no other pinned revision. |
 | Verification | Partial. `[source-verified]` items were read in the local checkout of this commit; `[inferred]` rows rest on references, not on reading the behaviour. The hosting site (CodeFloe) could not be retrieved independently, so the links point at it but were not re-fetched. |
 
-Claim labels used below: `[source-verified]` read in the source at the commit named above; `[upstream-documented]` stated in the project's documentation and not checked in source; `[observed]` seen in a test or captured exchange; `[inferred]` concluded from source without a test; `[unverified]` carried over from an earlier draft and not checked.
+Claim labels (`[source-verified]`, `[upstream-documented]`, `[observed]`, `[inferred]`, `[unverified]`) are defined in [AGENTS.md](../../AGENTS.md#community-written-federation-documents).
 
 ## Document
 
@@ -26,7 +26,7 @@ Catodon is a Misskey-derived server. It is not wire-identical to Misskey; the cl
 | ActivityPub server-to-server | sends and receives; shared inbox and per-user inbox, each with a **64 KiB** body limit | `[source-verified]` [ActivityPubServerService](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/server/ActivityPubServerService.ts) |
 | ActivityPub client-to-server | optional, **on unless an administrator turns off "ActivityPub client API"**; it carries out posted activities through the same endpoints the Misskey and Mastodon APIs use, and answers HTTP 422 with `application/problem+json` where Misskey cannot express the request | `[source-verified]` [COMPATIBILITY.md](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/server/activitypub-c2s/COMPATIBILITY.md) |
 | WebFinger, NodeInfo | served | `[source-verified]` [WellKnownServerService](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/server/WellKnownServerService.ts) |
-| HTTP signatures (draft) and RFC 9421 | verifies both on inboxes; signing and requiring signatures on GET are configurable | `[upstream-documented]` earlier draft; `[unverified]` here |
+| HTTP signatures (draft) and RFC 9421 | verifies both on inboxes; signing and requiring signatures on GET are configurable | `[unverified]` |
 | `RsaSignature2017` linked-data signatures | handled, including for relayed activities | `[source-verified]` [JsonLdService](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/core/activitypub/JsonLdService.ts) exists |
 
 ### Supported FEPs
@@ -48,7 +48,7 @@ Each row is a separate claim with its own evidence. "References" means the FEP n
 | 5837 | content provenance: digital source types read and sent; content credentials read only | both, asymmetric | partial | `[inferred]` references in [ApImageService](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/core/activitypub/models/ApImageService.ts) |
 | d8c2 | `Application` objects identify OAuth clients | emits | partial | `[inferred]` [ApRendererService](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/core/activitypub/ApRendererService.ts) |
 
-An earlier draft listed FEP-67ff as supported; that was wrong (see the disclaimer) and has been removed. Rows marked `[inferred]` need a read of the behaviour before being used in a compatibility claim.
+ Rows marked `[inferred]` need a read of the behaviour before being used in a compatibility claim.
 
 ### Discovery
 

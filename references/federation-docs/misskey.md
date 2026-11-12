@@ -1,6 +1,6 @@
 # Misskey federation behaviour (community-written)
 
-> **Disclaimer.** This document was **not written by the Misskey maintainers**. It was written for this wiki from the project's source and may be incomplete or inaccurate. Do not cite it as a statement by the project. It follows the structure of [FEP-67ff](../feps/fep-67ff.md) but the project does not publish such a file, so it does not mean Misskey conforms to that FEP.
+> **Not by the Misskey maintainers.** Written for this wiki from the project's source; it may be incomplete or inaccurate and must not be cited as the project's own statement. It follows the structure of [FEP-67ff](../feps/fep-67ff.md); the project publishes no such file.
 
 ## Provenance
 
@@ -13,7 +13,7 @@
 | Other wiki revisions | The [Misskey case study](../../servers/case-studies/misskey.md) and [fact sheet](../software/misskey.md) pin release 2026.10.1 (`4840fa6`). Findings below are for a later snapshot; the `Update(Note)` limitation is also recorded for 2026.10.1 on the [post-edits record](../../federation/compatibility/post-edits.md). |
 | Verification | Partial. `[source-verified]` items were read at this commit. |
 
-Claim labels used below: `[source-verified]` read in the source at the commit named above; `[upstream-documented]` stated in the project's documentation and not checked in source; `[observed]` seen in a test or captured exchange; `[inferred]` concluded from source without a test; `[unverified]` carried over from an earlier draft and not checked.
+Claim labels (`[source-verified]`, `[upstream-documented]`, `[observed]`, `[inferred]`, `[unverified]`) are defined in [AGENTS.md](../../AGENTS.md#community-written-federation-documents).
 
 ## Document
 
@@ -28,7 +28,7 @@ Claim labels used below: `[source-verified]` read in the source at the commit na
 
 ### Supported FEPs
 
-No FEP support was established. Misskey-specific terms (`_misskey_quote`, `_misskey_reaction`, `_misskey_votes`) predate or sit beside FEPs; see the extensions below. An earlier draft listed FEP-67ff as supported; that was wrong (see the disclaimer) and has been removed. FEP-044f is not read by Misskey's inbound quote code at this commit (see Quotes).
+No FEP support was established. Misskey-specific terms (`_misskey_quote`, `_misskey_reaction`, `_misskey_votes`) predate or sit beside FEPs; see the extensions below.  FEP-044f is not read by Misskey's inbound quote code at this commit (see Quotes).
 
 ### Discovery
 
@@ -72,7 +72,7 @@ The `Update(Note)` row is the most important single fact in this table: a sender
 | Poll vote | `Create` of a `Note` with `name` = the chosen option, `inReplyTo` = the poll note, addressed `to` the poll owner only; the id uses a `#votes/` fragment | not read | `[source-verified]` outbound, `[unverified]` inbound |
 | Visibility mapping | public: `to` Public, `cc` followers. home: `to` followers, `cc` Public. followers: `to` followers. specified: explicit recipients. Inbound audience is parsed into a visibility and visible users; an empty "specified" audience is raised to public in one case | `[source-verified]` [ApRendererService](https://github.com/misskey-dev/misskey/blob/5163caea120c901017eb52da17332939d527b8f2/packages/backend/src/core/activitypub/ApRendererService.ts), [ApNoteService](https://github.com/misskey-dev/misskey/blob/5163caea120c901017eb52da17332939d527b8f2/packages/backend/src/core/activitypub/models/ApNoteService.ts) |
 
-Consumers should treat the extension terms as optional; older releases and other software may omit them. `[upstream-documented]` [ActivityPub extensions](https://github.com/misskey-dev/misskey/blob/5163caea120c901017eb52da17332939d527b8f2/docs/contributing/activitypub.md)
+**Documented namespace versus this source.** Misskey Hub's [extension namespace](https://misskey-hub.net/ns/) lists twelve terms: `_misskey_content` (marked deprecated), `_misskey_summary`, `_misskey_quote`, `_misskey_reaction`, `_misskey_votes`, `_misskey_talk`, `isCat`, `_misskey_followedMessage`, `_misskey_requireSigninToViewContents`, `_misskey_makeNotesFollowersOnlyBefore`, `_misskey_makeNotesHiddenBefore` and `_misskey_license`. `[upstream-documented]` Eleven appear in the pinned source; `_misskey_talk` does not, and the deprecated `_misskey_content` is still referenced in [ApNoteService](https://github.com/misskey-dev/misskey/blob/5163caea120c901017eb52da17332939d527b8f2/packages/backend/src/core/activitypub/models/ApNoteService.ts). `[source-verified]` (search by name). Treat the terms as optional: older releases and other software omit them.
 
 ### Operational behaviour
 
@@ -113,3 +113,4 @@ A `Like` carrying a reaction, constructed from `renderLike` and not captured fro
 - [Misskey repository](https://github.com/misskey-dev/misskey) — source read at commit `5163caea120c901017eb52da17332939d527b8f2`
 - [ApInboxService.ts](https://github.com/misskey-dev/misskey/blob/5163caea120c901017eb52da17332939d527b8f2/packages/backend/src/core/activitypub/ApInboxService.ts) — dispatcher and handlers
 - [ApRendererService.ts](https://github.com/misskey-dev/misskey/blob/5163caea120c901017eb52da17332939d527b8f2/packages/backend/src/core/activitypub/ApRendererService.ts) — outgoing representations
+- [Misskey Hub extension namespace](https://misskey-hub.net/ns/) — documented extension terms

@@ -1,6 +1,6 @@
 # WriteFreely federation behaviour (community-written)
 
-> **Disclaimer.** This document was **not written by the WriteFreely maintainers**. It was written for this wiki from the project's source and may be incomplete or inaccurate. Do not cite it as a statement by the project. It follows the structure of [FEP-67ff](../feps/fep-67ff.md) but the project does not publish such a file, so it does not mean WriteFreely conforms to that FEP.
+> **Not by the WriteFreely maintainers.** Written for this wiki from the project's source; it may be incomplete or inaccurate and must not be cited as the project's own statement. It follows the structure of [FEP-67ff](../feps/fep-67ff.md); the project publishes no such file.
 
 ## Provenance
 
@@ -13,7 +13,7 @@
 | Other wiki revisions | The [WriteFreely case study](../../servers/case-studies/writefreely.md) and [fact sheet](../software/writefreely.md) pin release 0.17.3 (`d248591`). This snapshot is 12 commits later. |
 | Verification | Partial. `[source-verified]` items were read at this commit; the delivery-reliability findings are read from code and not tested. |
 
-Claim labels used below: `[source-verified]` read in the source at the commit named above; `[upstream-documented]` stated in the project's documentation and not checked in source; `[observed]` seen in a test or captured exchange; `[inferred]` concluded from source without a test; `[unverified]` carried over from an earlier draft and not checked.
+Claim labels (`[source-verified]`, `[upstream-documented]`, `[observed]`, `[inferred]`, `[unverified]`) are defined in [AGENTS.md](../../AGENTS.md#community-written-federation-documents).
 
 ## Document
 
@@ -30,7 +30,7 @@ WriteFreely is a publishing platform, not a general social server. Each blog is 
 
 ### Supported FEPs
 
-No FEP support was established. An earlier draft listed FEP-67ff as supported; that was wrong (see the disclaimer) and has been removed.
+No FEP support was established. 
 
 ### Discovery
 

@@ -4,7 +4,7 @@ A user boosts a remote post. Their own server shows the boost, but the post's or
 
 ## Expected and observed behaviour
 
-Expected: the origin counts the boost. Observed in the laboratory: a test server minted the `Announce` id by editing the boosted post's URI, so the id lived on the origin's host while the actor lived on the booster's host. These were laboratory runs of 19 October 2026 in which two minimal test servers (Pinetree and Birchtree) acted as probes against Mastodon, Misskey, Catodon and Akkoma peers.
+Expected: the origin counts the boost. Observed in the laboratory: a test server minted the `Announce` id by editing the boosted post's URI, so the id lived on the origin's host while the actor lived on the booster's host. The October 2026 [laboratory](../../testing/interoperability/bench-evidence.md) results below are `[reported]`, not rerun here, and peer builds are unrecorded unless stated
 
 | Receiver | Observed |
 | -------- | -------- |

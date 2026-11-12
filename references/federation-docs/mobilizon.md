@@ -1,6 +1,6 @@
 # Mobilizon federation behaviour (community-written)
 
-> **Disclaimer.** This document was **not written by the Mobilizon maintainers**. It was written for this wiki from the project's source and may be incomplete or inaccurate. Do not cite it as a statement by the project. It follows the structure of [FEP-67ff](../feps/fep-67ff.md) but the project does not publish such a file, so it does not mean Mobilizon conforms to that FEP.
+> **Not by the Mobilizon maintainers.** Written for this wiki from the project's source; it may be incomplete or inaccurate and must not be cited as the project's own statement. It follows the structure of [FEP-67ff](../feps/fep-67ff.md); the project publishes no such file.
 
 ## Provenance
 
@@ -13,7 +13,7 @@
 | Other wiki revisions | No Mobilizon case study or fact sheet exists, so there is no other pinned revision. |
 | Verification | Partial. `[source-verified]` items were read in the local checkout of this commit. The hosting site (Framagit) could not be retrieved independently, so the links point at it but were not re-fetched. |
 
-Claim labels used below: `[source-verified]` read in the source at the commit named above; `[upstream-documented]` stated in the project's documentation and not checked in source; `[observed]` seen in a test or captured exchange; `[inferred]` concluded from source without a test; `[unverified]` carried over from an earlier draft and not checked.
+Claim labels (`[source-verified]`, `[upstream-documented]`, `[observed]`, `[inferred]`, `[unverified]`) are defined in [AGENTS.md](../../AGENTS.md#community-written-federation-documents).
 
 ## Document
 
@@ -24,13 +24,13 @@ Mobilizon federates events, people, groups, comments, posts and group membership
 | Standard | Direction | Evidence |
 | -------- | --------- | -------- |
 | ActivityPub server-to-server | sends and receives; actor inbox `POST /@{name}/inbox`, shared inbox `POST /inbox`, relay actor `/relay` and `/relay/inbox` | `[source-verified]` [router.ex](https://framagit.org/kaihuri/mobilizon/-/blob/f2590486f6ee056f01fa05412a16f9a08c65357e/lib/web/router.ex), [activity_pub_controller.ex](https://framagit.org/kaihuri/mobilizon/-/blob/f2590486f6ee056f01fa05412a16f9a08c65357e/lib/web/controllers/activity_pub_controller.ex) |
-| WebFinger and host-meta | serves both; remote lookup tries host-meta first, then falls back to the well-known WebFinger path | `[upstream-documented]` earlier draft; `[unverified]` here |
+| WebFinger and host-meta | serves both; remote lookup tries host-meta first, then falls back to the well-known WebFinger path | `[unverified]` |
 | NodeInfo | `/.well-known/nodeinfo` and `/.well-known/nodeinfo/:version` | `[unverified]` |
 | HTTP signatures (draft) | signs outgoing POSTs over `(request-target)`, `host`, `content-length`, `digest`, `date`; verifies incoming (see below) | `[unverified]` header list; behaviour of the inbox is source-verified |
 
 ### Supported FEPs
 
-None found. No FEP is identified as implemented in this checkout; similar vocabulary is not evidence of conformance. An earlier draft listed FEP-67ff; that was wrong (see the disclaimer) and has been removed. `[unverified]` negative: a search for FEP numbers was not exhaustive.
+None found. No FEP is identified as implemented in this checkout; similar vocabulary is not evidence of conformance.  `[unverified]` negative: a search for FEP numbers was not exhaustive.
 
 ### Discovery
 
@@ -106,7 +106,7 @@ Constructed examples (field names from the converters; not captured):
 ### Operational behaviour
 
 - Inbound signed documents are queued and applied later, so a `200 "ok"` is not proof of application. `[source-verified]`
-- Outgoing delivery expands follower and member collections, prefers shared inboxes, deduplicates inbox URLs and queues one delivery per inbox; with relay support on, public activities are addressed to relay followers and public `Create` is also published through the relay. `[upstream-documented]` earlier draft; the publisher was not re-read.
+- Outgoing delivery expands follower and member collections, prefers shared inboxes, deduplicates inbox URLs and queues one delivery per inbox; with relay support on, public activities are addressed to relay followers and public `Create` is also published through the relay. `[unverified]` publisher not re-read.
 
 ### Failure behaviour
 

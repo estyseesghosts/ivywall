@@ -1,6 +1,6 @@
 # Pixelfed federation behaviour (community-written)
 
-> **Disclaimer.** This document was **not written by the Pixelfed maintainers**. It was written for this wiki from the project's source and may be incomplete or inaccurate. Do not cite it as a statement by the project. It follows the structure of [FEP-67ff](../feps/fep-67ff.md) but the project does not publish such a file, so it does not mean Pixelfed conforms to that FEP.
+> **Not by the Pixelfed maintainers.** Written for this wiki from the project's source; it may be incomplete or inaccurate and must not be cited as the project's own statement. It follows the structure of [FEP-67ff](../feps/fep-67ff.md); the project publishes no such file.
 
 ## Provenance
 
@@ -13,7 +13,7 @@
 | Other wiki revisions | The [Pixelfed case study](../../servers/case-studies/pixelfed.md) and [fact sheet](../software/pixelfed.md) pin release 0.15.2 (`b19607f`). This snapshot is far ahead of that release; do not combine the two without checking. |
 | Verification | Partial. `[source-verified]` items were read at this commit. |
 
-Claim labels used below: `[source-verified]` read in the source at the commit named above; `[upstream-documented]` stated in the project's documentation and not checked in source; `[observed]` seen in a test or captured exchange; `[inferred]` concluded from source without a test; `[unverified]` carried over from an earlier draft and not checked.
+Claim labels (`[source-verified]`, `[upstream-documented]`, `[observed]`, `[inferred]`, `[unverified]`) are defined in [AGENTS.md](../../AGENTS.md#community-written-federation-documents).
 
 ## Document
 
@@ -56,8 +56,6 @@ Support is described by direction and by whether it is full, partial or configur
 | 5837 | Content provenance | **configurable, driver-dependent** | credential metadata; inspection and signing need configuration and a C2PA driver | `[source-verified]` file exists: [ContentCredentialService](https://github.com/pixelfed/pixelfed/blob/2731e6999d47e1dcf05c0d931cae2f1b88e349d1/app/Services/ContentCredentials/ContentCredentialService.php); behaviour `[unverified]` |
 | 6757 | License information | **partial** | media licence vocabulary | `[source-verified]` file exists: [License](https://github.com/pixelfed/pixelfed/blob/2731e6999d47e1dcf05c0d931cae2f1b88e349d1/app/Util/Media/License.php); behaviour `[unverified]` |
 
-An earlier draft listed FEP-67ff as supported; that was wrong (see the disclaimer) and has been removed.
-
 ### Discovery
 
 Controllers in [FederationController](https://github.com/pixelfed/pixelfed/blob/2731e6999d47e1dcf05c0d931cae2f1b88e349d1/app/Http/Controllers/FederationController.php); WebFinger and NodeInfo toggles above. Local and domain URL validation can skip local checks and permit unresolved hosts by configuration, and refuses IP literals, single-label hosts and loopback names before resolution. `[source-verified]` config comments in [config/federation.php](https://github.com/pixelfed/pixelfed/blob/2731e6999d47e1dcf05c0d931cae2f1b88e349d1/config/federation.php)
@@ -70,7 +68,7 @@ Controllers in [FederationController](https://github.com/pixelfed/pixelfed/blob/
 | Date window | accepted only within one day either side of the server clock; otherwise rejected | `[source-verified]` same file |
 | Body | `id` and `actor` required | `[source-verified]` same file |
 | Key host | the activity id and actor must be on the signing key's host; the key's actor is resolved and the signature verified before dispatch | `[source-verified]` same file; the exact host rule is in the file |
-| Replay | processed activity ids are deduplicated | `[upstream-documented]` earlier draft; the dedup code was not re-read |
+| Replay | processed activity ids are deduplicated | `[unverified]` dedup code not re-read |
 
 ### Activity and object matrix
 
@@ -94,7 +92,7 @@ Inbox dispatch cases: `Add`, `Block`, `Create`, `Follow`, `Announce`, `Accept`, 
 ### Operational behaviour
 
 - Inbox is queued ([InboxWorker](https://github.com/pixelfed/pixelfed/blob/2731e6999d47e1dcf05c0d931cae2f1b88e349d1/app/Jobs/InboxPipeline/InboxWorker.php)); delivery uses a configurable concurrency (default 10), chunk size (default 50) and queue. `[source-verified]` config.
-- Fetched ActivityPub responses are capped at **2 MiB** by `MAX_RESPONSE_SIZE`, checked on `Content-Length` and on the body length. `[source-verified]` [ActivityPubFetchService](https://github.com/pixelfed/pixelfed/blob/2731e6999d47e1dcf05c0d931cae2f1b88e349d1/app/Services/ActivityPubFetchService.php). The earlier draft's figure was right.
+- Fetched ActivityPub responses are capped at **2 MiB** by `MAX_RESPONSE_SIZE`, checked on `Content-Length` and on the body length. `[source-verified]` [ActivityPubFetchService](https://github.com/pixelfed/pixelfed/blob/2731e6999d47e1dcf05c0d931cae2f1b88e349d1/app/Services/ActivityPubFetchService.php).
 - A quote `Accept` is retried because the quoting server sends its `QuoteRequest` once. `[source-verified]` comment in [DeliverQuoteActivityPipeline](https://github.com/pixelfed/pixelfed/blob/2731e6999d47e1dcf05c0d931cae2f1b88e349d1/app/Jobs/QuotePipeline/DeliverQuoteActivityPipeline.php)
 
 ### Failure behaviour

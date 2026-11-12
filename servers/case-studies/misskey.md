@@ -10,19 +10,9 @@ The TypeScript backend uses Fastify for HTTP and NestJS services, with PostgreSQ
 
 ## Key code paths
 
-### Receiving an activity
+### Receiving and sending
 
-An **[actor](../../glossary.md#actor)** is an account or service represented on the network. Other servers send activities to an actor's **[inbox](../../glossary.md#inbox)**. The ActivityPub route checks that federation is enabled, parses the HTTP signature, requires `host` and `digest` among signed headers, checks that the host matches its configured host, and verifies the SHA-256 digest against the raw request body. An absent actor is rejected. It then enqueues the activity and returns `202 Accepted`. `[source]` [`ActivityPubServerService.inbox`](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/server/ActivityPubServerService.ts#L109).
-
-The queue worker resolves the signing key, checks federation policy and verifies the HTTP signature and the relationship between the signer and activity actor. It can fall back to a valid `RsaSignature2017` linked-data signature when the HTTP signature or signer check fails. If an activity has an ID, the worker checks its host against the signer. Failures can therefore occur *after* the 202 response. A 202 is not evidence of a persisted post or notification. `[source]` [`InboxProcessorService.process`](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/queue/processors/InboxProcessorService.ts#L66).
-
-`ApInboxService` dispatches recognized activity types. In a `Create` path, the server resolves the object, checks attribution and uses an object lock and existence checks before creating the remote note. A unique remote URI in the note model is another duplicate defense; this does not give every activity exactly-once semantics. Remote replies can require fetching a parent, so missing or inaccessible objects can prevent creation. `[source]` [dispatcher](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/core/activitypub/ApInboxService.ts#L93), [remote notes](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/core/activitypub/models/ApNoteService.ts), [note model](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/models/Note.ts).
-
-### Sending and retrying
-
-A local note enters `NoteCreateService`, which persists it and performs downstream timeline and federation work. The renderer creates an ActivityStreams representation: a normal note becomes a `Create`; an eligible pure renote becomes an `Announce`. Delivery resolves inbox targets, can coalesce followers onto a shared inbox, and queues signed HTTP requests. A successful local write is not proof that remote servers received or applied it. `[source]` [note creation](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/core/NoteCreateService.ts#L443), [renderer](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/core/activitypub/ApRendererService.ts), [delivery worker](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/queue/processors/DeliverProcessorService.ts#L53).
-
-Queue workers distinguish retryable failures from unrecoverable ones. The configured defaults are 128 concurrent delivery jobs and 16 inbox jobs per worker, with rate limits of 128 and 32 per second respectively. The retry function uses exponential backoff with jitter and an eight-hour base cap. These settings are not a global limit across multiple workers or a measured throughput. `[source]` [`QueueProcessorService`](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/queue/QueueProcessorService.ts).
+Inbox checks, the queue worker, dispatch, note creation and delivery with retries are traced step by step on the [federation pipeline](../federation-pipelines/misskey.md) page. In short: the route checks the signature headers, host and digest and returns `202`; the queue verifies the key and signer later, so failures can follow the acknowledgement. `[source]` [`ActivityPubServerService.inbox`](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/server/ActivityPubServerService.ts), [`InboxProcessorService.process`](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/queue/processors/InboxProcessorService.ts).
 
 ### Feeds and notifications
 
@@ -63,11 +53,10 @@ Memory, CPU, storage and network capacity are **unmeasured** here. Fan-out avoid
 
 ## Technical details
 
-Outbound HTTP requests use RSA-SHA256 signatures. GET requests sign `(request-target)`, `date`, and `host`; POST requests also sign `digest`. Key resolution and verification on receipt are separate from request parsing at the route. `[source]` [`ApRequestService`](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/core/activitypub/ApRequestService.ts), [inbox worker](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/queue/processors/InboxProcessorService.ts#L66).
+Signing, queue limits and retry behaviour are on the [federation pipeline](../federation-pipelines/misskey.md) page; storage and recovery are on the [storage](../storage/misskey.md) page.
 
 ## Pitfalls and open questions
 
-- A 202 response means queue acceptance, not successful signature verification or object creation. Inspect queue outcomes and resulting state.
 - A remote `Update Note` is not a general note edit in this release; a cached remote post can remain stale.
 - Exact replay-window enforcement and a persistent ledger of previously processed activity IDs have not been established by this audit. Do not infer them from signature verification or note URI deduplication.
 - The bundled [federation tests](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/test-federation/README.md) describe a two-Misskey setup. A version-pinned cross-software test with captured requests and assertions is still needed for peer compatibility claims.

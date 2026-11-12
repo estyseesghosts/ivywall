@@ -6,12 +6,12 @@ The protocol layer every Fediverse server and client builds on: the data model, 
 
 Pages:
 
-- [ActivityStreams 2.0](activitystreams.md) — data model; JSON-LD handling per server not yet covered.
+- [ActivityStreams 2.0](activitystreams.md) — data model and what JSON-LD processing adds.
 - [ActivityPub server-to-server](activitypub-s2s.md) — delivery, addressing and federation responsibilities.
 - [ActivityPub client-to-server](activitypub-c2s.md) — the standard client protocol and server responsibilities.
 - [WebFinger](webfinger.md) — RFC 7033 lookup and laboratory observations.
 - [NodeInfo](nodeinfo.md) — discovery document; per-server fields not yet covered.
-- [HTTP signatures and authentication](http-signatures.md) — signature schemes and observed behaviour; per-server header lists not yet covered.
+- [HTTP signatures and authentication](http-signatures.md) — legacy and RFC 9421 schemes, digest formats and a per-server matrix.
 - [Identity and account handles](identity.md) — handles, actor ids and moves; per-server `Move` handling not yet covered.
 - [Extensions and FEPs](extensions.md) — how extensions work; the per-extension table lives in the compatibility and FEP records.
 

@@ -66,7 +66,8 @@ Sections that do not yet have subdirectories get them when the first real page a
 4. **Progressive disclosure.** Plain summary up top, exhaustive detail below. A human reads the top; an agent reads the whole page.
 5. **Standard, practice, and one server are three different things.** Always separate what a specification requires, what implementations commonly do, and what only a particular server does. Never write "ActivityPub does X" when you mean "Mastodon does X".
 6. **No global verdicts.** Do not label software best or worst. A poor choice for a large public instance can be an excellent reference for a single-user server. State tradeoffs and the context they apply in.
-7. **Everything is versioned.** Protocol support changes between releases. A statement about an implementation names the version (and, when behaviour depends on code, the commit).
+7. **Say it once.** Each fact lives on one canonical page; others give at most a sentence and a link. Shared caveats (for example how the October 2026 laboratory runs should be read) are written once and linked. A section that restates its neighbour is deleted, not trimmed.
+8. **Everything is versioned.** Protocol support changes between releases. A statement about an implementation names the version (and, when behaviour depends on code, the commit).
 
 ## Jargon and glossary
 
@@ -103,203 +104,28 @@ Pick exactly one type per page. If a topic spans types, split into linked pages.
 | Engineering | `servers/…`, `clients/…`, `security/`, `moderation/`, `testing/` | A practical problem and how to solve and verify it |
 | Guide | `guides/` | A start-to-finish implementation walkthrough linking to case studies |
 
-## Templates
+## Page shapes
 
-Copy the matching template. Delete sections that genuinely don't apply, but never delete `Technical details` or `Sources`. If detail is unknown, say what is unknown.
+Every page opens with a plain overview of 2–6 sentences, then follows the section order below for its type and ends with `Sources`. Delete a section that genuinely does not apply, but never `Technical details` (where it exists) or `Sources`; if detail is unknown, say what is unknown.
 
-### Hub
+| Type | Sections after the overview |
+| ---- | --------------------------- |
+| Hub | Pages · Notes and open questions · Sources |
+| Protocol | What the specification requires · What implementations do · Technical details · Pitfalls · Sources |
+| Lifecycle | Actors and starting state · Step by step (each step: request, state change, job, notification, failure) · Technical details · Pitfalls · Sources |
+| Compatibility record | Summary table · Information lost in translation · Technical details · Test procedure · Sources |
+| Failure mode | Expected and observed behaviour · Root cause · Affected versions · Code path · Reproduction · Technical details · Sources |
+| Case study | Architecture · Key code paths · API coverage · Federation behaviour · Resource usage · Strengths, bugs and tradeoffs · Technical details · Sources |
+| Engineering page, guide | Before you start · task sections · Technical details · Pitfalls · Open questions · Sources |
+| Software fact sheet | Release, date, commit · facts table with evidence per row · Sources |
+| FEP record | Number, title, status, date checked, repository commit · what it defines · who implements it, per version · Sources |
 
-```markdown
-# <Section name>
-
-Plain-language overview: what this section answers and who needs it. 3–5 sentences.
-
-## Pages
-
-- [Page](page.md) — what it covers, in one sentence.
-
-## Notes and open questions
-
-What is not covered yet, what is uncertain.
-
-## Sources
-
-- [Title](URL) — what this source covers
-```
-
-### Protocol page
-
-```markdown
-# <Mechanism name>
-
-Plain-language overview. What problem this solves and where it sits in a federated exchange. 3–6 sentences.
-
-## What the specification requires
-
-Normative behaviour, quoting section numbers. Mark MUST/SHOULD/MAY as the spec does.
-
-## What implementations do
-
-Common practice, and where it departs from the spec. Link to compatibility records and case studies.
-
-## Technical details
-
-Real HTTP requests and responses, JSON examples, headers, state transitions, error codes.
-
-## Pitfalls
-
-Mistakes that cost people time, each with symptom and fix.
-
-## Sources
-
-- [Title](URL) — what this source covers
-```
-
-### Lifecycle page
-
-```markdown
-# <Lifecycle title, e.g. "Life of a federated post">
-
-Plain-language summary of the whole journey. 3–5 sentences.
-
-## Actors and starting state
-
-Which servers and accounts take part, and what each already knows.
-
-## Step by step
-
-One numbered step per event. Each gives: the HTTP request (method, path, key headers), the database change, the queued job, the notification, and what can fail. Where implementations differ, say so and link to the case study.
-
-## Technical details
-
-Full payloads and header sets.
-
-## Pitfalls
-
-## Sources
-```
-
-### Compatibility record
-
-```markdown
-# <Feature, e.g. "Emoji reactions">
-
-Plain-language overview: what users expect from this feature and why implementations disagree. 3–5 sentences.
-
-## Summary
+A compatibility-record summary has one row per directed pair:
 
 | Sender | Receiver | Exact build | Emitted representation | Accepted as | Final state | Evidence | Uncertainty |
 | ------ | -------- | ----------- | ---------------------- | ----------- | ----------- | -------- | ----------- |
 
-One row per directed pair (A to B and B to A are different rows). `Accepted as` takes one of `native`, `translated`, `ignored`, `rejected`, `lossy`, `untested`. `Exact build` is an image digest, tag or commit, or `version not recorded`. `Evidence` carries an evidence label. `Uncertainty` says what would change the row. Define each value in the Technical details section on first use in the record. Rows should be backed by a [result fixture](testing/fixtures/result-schema.md) when one exists.
-
-## Information lost in translation
-
-What a remote feature becomes, or whether it disappears, when another implementation receives it.
-
-## Technical details
-
-Wire format per implementation (JSON excerpt), the code path that produces or consumes it (file at a pinned commit), and the evidence label for every row.
-
-## Test procedure
-
-How to reproduce each row, or why it cannot yet be tested.
-
-## Sources
-```
-
-### Failure-mode page
-
-```markdown
-# <Symptom, e.g. "Replies missing on remote threads">
-
-Plain-language description of what the user sees. 2–4 sentences.
-
-## Expected and observed behaviour
-
-## Root cause
-
-The protocol operation that fails and why.
-
-## Affected versions
-
-| Software | Versions | Status |
-| -------- | -------- | ------ |
-
-## Code path
-
-Files and functions, at a pinned commit.
-
-## Reproduction
-
-Exact steps, or what is missing to make it reproducible.
-
-## Technical details
-
-## Sources
-```
-
-### Case study
-
-```markdown
-# <Software name and version range>
-
-Plain-language overview: what it is, who it is for, what is distinctive about its engineering. 3–6 sentences.
-
-## Architecture
-
-Language, framework, process model, queues, storage. Link the architecture and storage pages instead of restating general designs.
-
-## Key code paths
-
-Inbox receipt, object resolution, delivery, timeline fan-out, media. Each names files and functions at a pinned commit.
-
-## API coverage
-
-## Federation behaviour
-
-What it emits and accepts, linked to compatibility records.
-
-## Resource usage
-
-Measured memory, CPU, database size, with conditions. Unmeasured is stated as unmeasured.
-
-## Strengths, known bugs and tradeoffs
-
-## Technical details
-
-## Sources
-```
-
-### Engineering page and guide
-
-```markdown
-# <Problem-oriented title>
-
-Plain-language overview: which problem this solves, who hits it, the short answer. 2–4 sentences.
-
-## Before you start
-
-Versions the page was checked against, prerequisites.
-
-## <Task sections>
-
-One section per task or decision, in the order a developer meets them. Each gives: what to do, a minimal code, SQL or HTTP example, what to expect, and how it fails. Recommendations say whether they are a measured finding or a design opinion.
-
-## Technical details
-
-## Pitfalls
-
-## Open questions
-
-What has not been measured or verified, and what experiment would settle it.
-
-## Sources
-```
-
-### Software fact sheet and FEP record
-
-A software fact sheet starts with the exact version, release date and commit, then a table of facts, each with its evidence label and source file. A FEP record starts with the FEP number, title, status (`proposed`, `draft`, `final`, `withdrawn`, `experimental`) and date checked, then a table of which software emits, accepts, partially implements or rejects it, per version.
+`Accepted as` is one of `native`, `translated`, `ignored`, `rejected`, `lossy`, `untested`. `Exact build` is an image digest, tag or commit, or `version not recorded`. Back rows with a [result fixture](testing/fixtures/result-schema.md) when one exists. A hub keeps one line per page; it does not repeat what the page says.
 
 ## Evidence labels
 
@@ -323,6 +149,8 @@ Rules:
 - Every engineering recommendation separates measured findings from design opinions.
 - A `[hypothesis]` or `[reported]` never loses its label when copied to another page.
 - Advice such as "X is faster" without a `[measured]` result or a `[source]` mechanism does not belong in the wiki.
+
+**Three layers of evidence.** Prefer the specification, then the project's documented behaviour, then the pinned source for the exact version. When the layers disagree (documentation lists a term the source lacks, or the source skips what the spec allows), record the disagreement on the page instead of picking one. Extract rules, limits and test cases from a source; do not just summarise it.
 
 ## Reviewing normative language
 
@@ -419,7 +247,7 @@ zensical build --strict     # same, but fail on a broken link or anchor
 ## Agent workflow
 
 1. Search the wiki and the glossary for existing coverage. If a canonical page exists, link to it.
-2. Pick the one correct page type, copy its template, use the right directory and a kebab-case name.
+2. Pick the one correct page type, follow its page shape, use the right directory and a kebab-case name.
 3. Read the relevant `private-gitignore/` research and the upstream source. Verify claims against the pinned version; move anything unverified to open questions with a `[hypothesis]` label.
 4. Draft the Overview in plain language, then complete Technical details.
 5. Add glossary entries for new jargon. Add the page to `nav` and to its section hub, and update neighbouring pages to link back.

@@ -1,6 +1,6 @@
 # Test oracles that give false federation failures
 
-An oracle is the check that decides pass or fail. In the laboratory, many apparent federation failures were wrong oracles, and several apparent successes were vacuous. This page lists them so a future harness avoids repeating them. These were laboratory runs of 19 October 2026 in which two minimal test servers (Pinetree and Birchtree) acted as probes against Mastodon, Misskey, Catodon and Akkoma peers.
+An oracle is the check that decides pass or fail. In the laboratory, many apparent federation failures were wrong oracles, and several apparent successes were vacuous. This page lists them so a future harness avoids repeating them. The source is the October 2026 [laboratory](bench-evidence.md), `[reported]` and not rerun here
 
 ## Before you start
 

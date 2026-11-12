@@ -1,6 +1,6 @@
 # Compatibility: remote media attachments
 
-A post and its attachment arrive separately. Servers disagree about when the attachment becomes visible through their API, which URL they expose while it is pending, and whether they keep the original bytes. These were laboratory runs of 19 October 2026 in which two minimal test servers (Pinetree and Birchtree) acted as probes against Mastodon, Misskey, Catodon and Akkoma peers.
+A post and its attachment arrive separately. Servers disagree about when the attachment becomes visible through their API, which URL they expose while it is pending, and whether they keep the original bytes. The October 2026 [laboratory](../../testing/interoperability/bench-evidence.md) results below are `[reported]`, not rerun here, and peer builds are unrecorded unless stated
 
 ## Summary
 
@@ -11,7 +11,7 @@ A post and its attachment arrive separately. Servers disagree about when the att
 | Misskey, Catodon, Akkoma | Delivered media to the lab Mastodon with no attachment visible there in 9 run 5 rows | `[reported]` [run 5](https://github.com/estyseesghosts/pinetree/blob/f1665e6dd2f2ea8c115ce7c5ead98b5791a32fc6/docs/federation-bench-2026-10-19-phase7-run5.md) |
 | Test servers | Different pending models: one hides the file until fetched, one shows a record with `url: null` | `[reported]` [repair notes](https://github.com/estyseesghosts/birchtree/blob/f09ec359af00233530a230b9242f8321578e6e37/docs/federation_repair.md) |
 
-In run 5's media burst, 155 of 202 transfers verified by byte hash. All 47 that did not involved Mastodon: 18 no attachment visible at a Mastodon destination, seven HTTP 404 at a Mastodon destination, and 22 HTTP 200 with different bytes where Mastodon was the source. `[reported]` [run 5](https://github.com/estyseesghosts/pinetree/blob/f1665e6dd2f2ea8c115ce7c5ead98b5791a32fc6/docs/federation-bench-2026-10-19-phase7-run5.md). Maximum arrival delay after settling was 6.1 seconds in that run.
+In run 5's media burst all 47 transfers that failed a byte-hash check involved Mastodon; why, and how the checks misled, is on [media appears missing in federation tests](../failure-modes/media-not-verifying.md). The longest arrival delay after settling was 6.1 seconds. `[reported]` [run 5 report](https://github.com/estyseesghosts/pinetree/blob/f1665e6dd2f2ea8c115ce7c5ead98b5791a32fc6/docs/federation-bench-2026-10-19-phase7-run5.md).
 
 ## Information lost in translation
 
@@ -31,8 +31,6 @@ In run 5's media burst, 155 of 202 transfers verified by byte hash. All 47 that 
 The zero-record case at a Mastodon destination (no attachment at all after delivery) was unexplained: 0 of 34 deliveries into the lab Mastodon from five senders produced an attachment, while a separate direct suite against real Mastodon 4.7.3 did transfer media. The lab's Sidekiq and Rails logs were not retained, so the mechanism is unproven. `[reported]` [media investigation](https://github.com/estyseesghosts/birchtree/blob/f09ec359af00233530a230b9242f8321578e6e37/state/logs/2026-10-20-media-federation.md).
 
 **Coverage limit.** The fixture was a 69-byte PNG. Nothing here speaks for large JPEGs, animated GIFs, video, audio, authenticated fetches, redirect chains or CDN failures. `[reported]` [repair notes](https://github.com/estyseesghosts/birchtree/blob/f09ec359af00233530a230b9242f8321578e6e37/docs/federation_repair.md).
-
-See also [media appears missing in federation tests](../failure-modes/media-not-verifying.md) for how checks mislead.
 
 ## Test procedure
 

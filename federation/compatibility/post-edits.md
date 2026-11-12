@@ -9,7 +9,7 @@ Editing a post can change what a remote reader sees after the original post has 
 | Mastodon | 4.7.3 | native | native | Local edits create snapshots and queue a federation update; incoming supported status updates pass through ownership and age checks. `[source]` [edit service](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/services/update_status_service.rb), [update handler](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/lib/activitypub/activity/update.rb). |
 | Misskey | 2026.10.1 | untested | ignored | The inbound dispatcher handles actors and `Question` updates but skips other resolved object types, including ordinary `Note`; no general `notes/edit` endpoint appears in the endpoint registry. `[source]` [dispatcher](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/core/activitypub/ApInboxService.ts), [endpoint registry](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/server/api/endpoint-list.ts). |
 
-**native** means first-class handling of the feature; **translated** means mapped to another local concept; **lossy** means accepted with information discarded; **ignored** means skipped without applying the feature; **rejected** means refused; **untested** means the evidence does not establish the behavior. Misskey's row is specifically about ordinary `Note` edits, not poll `Question` updates, and says nothing about forks or later releases.
+Values are defined in the [glossary](../../glossary.md#compatibility-values).
 
 ## Information lost in translation
 

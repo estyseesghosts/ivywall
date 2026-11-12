@@ -4,6 +4,7 @@ Manual research does not scale, and compatibility claims go stale. This section 
 
 ## Pages
 
+- [FediTest](interoperability/feditest.md) — what the existing test suite covers, and its age.
 - [An interoperability test matrix](interoperability/test-matrix.md) — what a new server should test, per area and direction.
 - [Test oracles that give false federation failures](interoperability/test-oracles.md) — harness mistakes and a five-way outcome model.
 - [Interoperability result fixture format](fixtures/result-schema.md) — the directional, versioned record each result is stored as.

@@ -1,6 +1,6 @@
 # Compatibility: Undo, boosts and unboosts
 
-Reversing an action is where federation most often goes quietly wrong. A boost or a like arrives, is applied, and later the sender takes it back; whether the origin server reverses it depends on exactly which activity the sender names, which API route the user used, and whether the origin applies an `Undo` it receives. These were laboratory runs of 19 October 2026 in which two minimal test servers (Pinetree and Birchtree) acted as probes against Mastodon, Misskey, Catodon and Akkoma peers.
+Reversing an action is where federation most often goes quietly wrong. A boost or a like arrives, is applied, and later the sender takes it back; whether the origin server reverses it depends on exactly which activity the sender names, which API route the user used, and whether the origin applies an `Undo` it receives. The October 2026 [laboratory](../../testing/interoperability/bench-evidence.md) results below are `[reported]`, not rerun here, and peer builds are unrecorded unless stated
 
 ## Summary
 

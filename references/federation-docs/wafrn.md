@@ -1,6 +1,6 @@
 # Wafrn federation behaviour (community-written)
 
-> **Disclaimer.** This document was **not written by the Wafrn maintainers**. It was written for this wiki from the project's source and may be incomplete or inaccurate. Do not cite it as a statement by the project. It follows the structure of [FEP-67ff](../feps/fep-67ff.md) but the project does not publish such a file, so it does not mean Wafrn conforms to that FEP.
+> **Not by the Wafrn maintainers.** Written for this wiki from the project's source; it may be incomplete or inaccurate and must not be cited as the project's own statement. It follows the structure of [FEP-67ff](../feps/fep-67ff.md); the project publishes no such file.
 
 ## Provenance
 
@@ -13,7 +13,7 @@
 | Other wiki revisions | The [Wafrn case study](../../servers/case-studies/wafrn.md) and [fact sheet](../software/wafrn.md) pin the same commit `f2bdd67`. |
 | Verification | Partial. `[source-verified]` items were read in the local checkout of this commit. The hosting site (Codeberg) was not re-fetched. |
 
-Claim labels used below: `[source-verified]` read in the source at the commit named above; `[upstream-documented]` stated in the project's documentation and not checked in source; `[observed]` seen in a test or captured exchange; `[inferred]` concluded from source without a test; `[unverified]` carried over from an earlier draft and not checked.
+Claim labels (`[source-verified]`, `[upstream-documented]`, `[observed]`, `[inferred]`, `[unverified]`) are defined in [AGENTS.md](../../AGENTS.md#community-written-federation-documents).
 
 ## Document
 
@@ -30,21 +30,21 @@ Partial-support limits come first, because the FEP list alone gives a stronger i
 | "Manual approval" policies | advertised policies with `manualApproval` are treated as automatic by the handlers above | `[source-verified]` same file |
 | FEP-fffd | reads `at://` links and Bridgy URLs to associate a post with its AT Protocol counterpart, only when Bluesky lookup is enabled | `[source-verified]` [getPostThreadRecursive.ts](https://codeberg.org/wafrn/wafrn/src/commit/f2bdd67849f44227d932c9ed0aa91b6af06d512d/packages/backend/activitypub/getPostThreadRecursive.ts) |
 
-Quote requests, acceptances, rejections, authorization and revocation are therefore **not** equally supported: request and acceptance exist, rejection and revocation do not, and the policy is not consulted for quotes. An earlier draft listed FEP-67ff as supported; that was wrong (see the disclaimer) and has been removed.
+Quote requests, acceptances, rejections, authorization and revocation are therefore **not** equally supported: request and acceptance exist, rejection and revocation do not, and the policy is not consulted for quotes. 
 
 ### Protocols and standards
 
 | Standard | Direction | Evidence |
 | -------- | --------- | -------- |
 | ActivityPub server-to-server | sends and receives; inbox is queued | `[source-verified]` [inbox.ts](https://codeberg.org/wafrn/wafrn/src/commit/f2bdd67849f44227d932c9ed0aa91b6af06d512d/packages/backend/queueProcessors/inbox.ts), [routes](https://codeberg.org/wafrn/wafrn/src/commit/f2bdd67849f44227d932c9ed0aa91b6af06d512d/packages/backend/routes/activitypub/activitypub.ts) |
-| WebFinger, NodeInfo 2.0 | served | `[upstream-documented]` earlier draft; `[unverified]` here |
+| WebFinger, NodeInfo 2.0 | served | `[unverified]` |
 | HTTP signatures (RSA-SHA256, draft) | signs outgoing; verifies incoming POSTs | `[source-verified]` [checkFediverseSignature.ts](https://codeberg.org/wafrn/wafrn/src/commit/f2bdd67849f44227d932c9ed0aa91b6af06d512d/packages/backend/activitypub/checkFediverseSignature.ts) |
 | `RsaSignature2017` | verification path for signed activities | `[source-verified]` same file (the code comments "Mastodon allows two kinds of signatures on POST bodies") |
 | AT Protocol | optional integration for threads and posts; see below | `[source-verified]` [`atproto/`](https://codeberg.org/wafrn/wafrn/src/commit/f2bdd67849f44227d932c9ed0aa91b6af06d512d/packages/backend/atproto/) directory |
 
 ### Discovery
 
-Local actors at `/fediverse/blog/:url`; posts at `/fediverse/post/`; quote and reply authorization objects dereferenceable at `/fediverse/quote_authorization/…` and `/fediverse/reply_authorization/…`; following and followers are paginated and subject to visibility settings. `[source-verified]` URLs in [inbox.ts](https://codeberg.org/wafrn/wafrn/src/commit/f2bdd67849f44227d932c9ed0aa91b6af06d512d/packages/backend/queueProcessors/inbox.ts); `[upstream-documented]` earlier draft for collections.
+Local actors at `/fediverse/blog/:url`; posts at `/fediverse/post/`; quote and reply authorization objects dereferenceable at `/fediverse/quote_authorization/…` and `/fediverse/reply_authorization/…`; following and followers are paginated and subject to visibility settings. `[source-verified]` URLs in [inbox.ts](https://codeberg.org/wafrn/wafrn/src/commit/f2bdd67849f44227d932c9ed0aa91b6af06d512d/packages/backend/queueProcessors/inbox.ts); `[unverified]` for collections.
 
 ### Authentication
 
@@ -55,7 +55,7 @@ Local actors at `/fediverse/blog/:url`; posts at `/fediverse/post/`; quote and r
 | Actor binding | the signing actor must match the activity actor | `[source-verified]` |
 | Key refresh | the stored key is refetched if the remote actor was last updated more than 24 hours ago | `[source-verified]` |
 | Cross-account delete | a `#delete` shortcut is rejected when the actor does not match the target account | `[source-verified]` (log text in the inbox) |
-| Enforcement | depends on the route | `[upstream-documented]` earlier draft |
+| Enforcement | depends on the route | `[unverified]` |
 
 ### Activity and object matrix
 

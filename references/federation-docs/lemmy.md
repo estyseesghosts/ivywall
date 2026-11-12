@@ -1,6 +1,6 @@
 # Lemmy federation behaviour (community-written)
 
-> **Disclaimer.** This document was **not written by the Lemmy maintainers**. It was written for this wiki from the project's source and may be incomplete or inaccurate. Do not cite it as a statement by the project. It follows the structure of [FEP-67ff](../feps/fep-67ff.md) but the project does not publish such a file, so it does not mean Lemmy conforms to that FEP.
+> **Not by the Lemmy maintainers.** Written for this wiki from the project's source; it may be incomplete or inaccurate and must not be cited as the project's own statement. It follows the structure of [FEP-67ff](../feps/fep-67ff.md); the project publishes no such file.
 
 ## Provenance
 
@@ -13,7 +13,7 @@
 | Other wiki revisions | The [Lemmy case study](../../servers/case-studies/lemmy.md) and [fact sheet](../software/lemmy.md) pin release 0.19.21 (`2ff971f`), an earlier line with a different activity set. Do not combine this page's findings with that study without checking the differences. |
 | Verification | Partial. `[source-verified]` items were read at this commit. |
 
-Claim labels used below: `[source-verified]` read in the source at the commit named above; `[upstream-documented]` stated in the project's documentation and not checked in source; `[observed]` seen in a test or captured exchange; `[inferred]` concluded from source without a test; `[unverified]` carried over from an earlier draft and not checked.
+Claim labels (`[source-verified]`, `[upstream-documented]`, `[observed]`, `[inferred]`, `[unverified]`) are defined in [AGENTS.md](../../AGENTS.md#community-written-federation-documents).
 
 ## Document
 
@@ -32,7 +32,7 @@ Claim labels used below: `[source-verified]` read in the source at the commit na
 | --- | ------- | -------- |
 | FEP-fe34 (origin-based security) | **partial**: one rule only. A moderation action is trusted without a membership check when the moderator's domain equals the community's domain or the moderated object's domain; otherwise the moderator must be a community moderator or admin and not banned from the community. This is the only fe34-related logic found; it is not a claim of full implementation. | `[source-verified]` [`verify_mod_action`](https://github.com/LemmyNet/lemmy/blob/dae30ee5f41836a2e468cd61e9c184dfe0717aa9/crates/apub/objects/src/utils/functions.rs) cites the FEP in a comment |
 
-No other FEP support was established. An earlier draft listed FEP-67ff as supported; that was wrong (see the disclaimer at the top of this page) and has been removed.
+No other FEP support was established.
 
 ### Discovery
 
@@ -124,3 +124,4 @@ A list of activity names does not promise any combination of activity and object
 - [Lemmy repository](https://github.com/lemmynet/lemmy) — source read at commit `dae30ee5f41836a2e468cd61e9c184dfe0717aa9`
 - [activity_lists.rs](https://github.com/LemmyNet/lemmy/blob/dae30ee5f41836a2e468cd61e9c184dfe0717aa9/crates/apub/activities/src/activity_lists.rs) — shared inbox and announcable activity lists
 - [Test fixtures](https://github.com/LemmyNet/lemmy/tree/dae30ee5f41836a2e468cd61e9c184dfe0717aa9/crates/apub/apub/assets/lemmy/) — representative activity JSON
+- [Lemmy federation documentation](https://join-lemmy.org/docs/contributors/05-federation.html) — upstream payload examples for communities, announcements and moderation (`[upstream-documented]`); its Announce, Block, Lock and Report examples correspond to activities found in the source

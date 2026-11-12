@@ -8,15 +8,17 @@ The Rails process exposes the web UI, REST API and federation endpoints; Postgre
 
 ## Key code paths
 
-| Stage | Pinned entry point | Consequence |
-| --- | --- | --- |
-| Receive | [`ActivityPub::InboxesController#create`](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/controllers/activitypub/inboxes_controller.rb#L12) | Checks payload size and request signature, queues processing, returns 202. An unknown actor's self-`Delete` or self-`Update` can be acknowledged early. `[source]` |
-| Process | [`ActivityPub::ProcessingWorker#perform`](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/workers/activitypub/processing_worker.rb#L8), [`ProcessActivityService#call`](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/services/activitypub/process_activity_service.rb) | The `ingress` queue retries up to eight times. The service parses, checks context and actor identity, handles relayed signatures and dispatches to an activity handler. Invalid JSON is discarded. `[source]` |
-| Resolve | [`ActivityPub::FetchRemoteActorService`](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/services/activitypub/fetch_remote_actor_service.rb), [`ActivityPub::FetchRemoteStatusService`](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/services/activitypub/fetch_remote_status_service.rb) | Remote actor and status resolution are separate from accepting the original delivery. Fetching and identity checks are security boundaries. `[source]` |
-| Create locally | [`PostStatusService#call`](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/services/post_status_service.rb#L51) | Preprocesses visibility, mentions, media and quote state, then saves a status in a database transaction before post-processing. `[source]` |
-| Distribute | [`ActivityPub::DistributionWorker`](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/workers/activitypub/distribution_worker.rb), [`DeliveryWorker`](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/workers/activitypub/delivery_worker.rb#L25) | Selects inboxes from status reach, serializes an activity and delivers signed HTTP POSTs on the `push` queue, independently of local acceptance. `[source]` |
-| Timeline | [`FanOutOnWriteService#call`](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/services/fan_out_on_write_service.rb#L12) | Batches local follower, list and notification work; public streaming distribution is conditional on visibility, boost and account state. `[source]` |
-| Media | [`MediaAttachment`](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/models/media_attachment.rb), [`PostProcessMediaWorker`](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/workers/post_process_media_worker.rb) | Upload and processing are not equivalent to publication; media has its own lifecycle and validation. `[source]` |
+The request-by-request sequences are on the [federation pipeline](../federation-pipelines/mastodon-4-7.md) page. Entry points, all `[source]`:
+
+| Stage | Pinned entry point |
+| --- | --- |
+| Receive | [`ActivityPub::InboxesController#create`](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/controllers/activitypub/inboxes_controller.rb#L12) |
+| Process | [`ActivityPub::ProcessingWorker#perform`](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/workers/activitypub/processing_worker.rb#L8), [`ProcessActivityService#call`](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/services/activitypub/process_activity_service.rb) |
+| Resolve | [`ActivityPub::FetchRemoteActorService`](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/services/activitypub/fetch_remote_actor_service.rb), [`ActivityPub::FetchRemoteStatusService`](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/services/activitypub/fetch_remote_status_service.rb) |
+| Create locally | [`PostStatusService#call`](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/services/post_status_service.rb#L51) |
+| Distribute | [`ActivityPub::DistributionWorker`](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/workers/activitypub/distribution_worker.rb), [`DeliveryWorker`](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/workers/activitypub/delivery_worker.rb#L25) |
+| Timeline | [`FanOutOnWriteService#call`](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/services/fan_out_on_write_service.rb#L12) |
+| Media | [`MediaAttachment`](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/models/media_attachment.rb), [`PostProcessMediaWorker`](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/workers/post_process_media_worker.rb) |
 
 ## API coverage
 
@@ -52,13 +54,10 @@ Version 4.7.3 is affected by the later-disclosed [ActivityPub identifier verific
 
 ## Technical details
 
-A typical inbound path is `POST /inbox` or a per-account inbox → signature and size checks → `ActivityPub::ProcessingWorker` (`ingress`) → `ProcessActivityService` → activity-specific handler. The controller queues the raw body after verifying the request and returns 202; processing can subsequently reject or ignore the activity. `Delete` and `Update` for a previously unknown actor can also receive 202 without queueing. `[source]` [inbox controller](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/controllers/activitypub/inboxes_controller.rb#L12).
-
-For outbound delivery, `DeliveryWorker` uses `application/activity+json`, signs on behalf of the source account, and may add `Collection-Synchronization`. It is configured for 16 retries on the `push` queue, adds jitter to exponential-style retry delay, and uses per-inbox availability tracking and a circuit breaker. Successful, permanent-failure and retryable outcomes are distinct; queueing is not receipt by a peer. `[source]` [delivery worker](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/workers/activitypub/delivery_worker.rb#L25).
-
 Mastodon 4.7.3 compacts JSON-LD when an embedded signature calls for it, but otherwise avoids treating every incoming payload as fully processed JSON-LD; malformed JSON or unsupported contexts do not become activities. The linked-data signature and integrity-proof paths have different forwarding constraints. These are implementation choices, not a general ActivityPub rule. `[source]` [processing service](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/services/activitypub/process_activity_service.rb).
 
 For the detailed request and delivery sequence, see the [federation pipeline](../federation-pipelines/mastodon-4-7.md). For operational state and recovery, see [storage and recovery](../storage/mastodon-4-7.md). The [federation trust boundaries](../../security/mastodon-4-7.md) page covers signature and authorization distinctions.
+
 
 ## Sources
 

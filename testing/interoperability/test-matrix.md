@@ -4,14 +4,15 @@ A list of what to test when a new server must federate with Mastodon, Misskey, C
 
 ## Before you start
 
-Use pinned images and record every version. Fixture accounts only. For each case record the sender, the receiver, the activity payload, the HTTP outcome, and the eventual state at both ends. Success needs evidence of state, not an HTTP 200 or 202. Read [reading federation benchmark results](bench-evidence.md) first.
+Use pinned images and record every version. Fixture accounts only. For each case record the sender, the receiver, the activity payload, the HTTP outcome, and the eventual state at both ends. Success needs evidence of state, not an HTTP 200 or 202. Read [reading federation benchmark results](bench-evidence.md) first; [FediTest](feditest.md) has executable designs for several rows.
 
 ## The matrix
 
 | Area | Required cases | Why (what broke) |
 | ---- | -------------- | ---------------- |
 | Discovery | WebFinger over HTTPS, canonical actor URI, redirects, non-standard ports | HTTPS-only WebFinger is required by RFC 7033; what was Mastodon-specific in the lab was the dropped non-standard port ([WebFinger](../../fundamentals/webfinger.md)) |
-| Signatures | cached-key rotation, PEM whitespace, signed GETs, missing and bad signatures | Akkoma PEM, stale keys ([HTTP signatures](../../fundamentals/http-signatures.md)) |
+| Signatures | key rotation, PEM whitespace, signed GETs, missing or bad signatures, both schemes, `Digest` and `Content-Digest`, malformed digest, modified body | Akkoma PEM, stale keys, scheme mismatch ([HTTP signatures](../../fundamentals/http-signatures.md)) |
+| Serialisation | equivalent JSON-LD forms: alias or compact IRI, array versus single value, nested context | servers that match one shape ([ActivityStreams](../../fundamentals/activitystreams.md)) |
 | Follow | open and locked accounts, Accept, Reject, cancel, `Undo` replay | pending versus accepted; `Undo(Follow)` id reuse ([failure mode](../../federation/failure-modes/undo-ignored-or-deduplicated.md)) |
 | Object identity | same note by inbox and by direct fetch, concurrently | duplicate rows ([failure mode](../../federation/failure-modes/duplicate-remote-objects.md)) |
 | Activity authority | id on the wrong host; actor and object owned by different servers | [wrong-domain ids](../../federation/failure-modes/wrong-domain-activity-ids.md) |

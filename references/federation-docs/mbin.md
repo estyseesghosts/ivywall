@@ -1,6 +1,6 @@
 # Mbin federation behaviour (community-written)
 
-> **Disclaimer.** This document was **not written by the Mbin maintainers**. It was written for this wiki from the project's source and may be incomplete or inaccurate. Do not cite it as a statement by the project. It follows the structure of [FEP-67ff](../feps/fep-67ff.md) but the project does not publish such a file, so it does not mean Mbin conforms to that FEP.
+> **Not by the Mbin maintainers.** Written for this wiki from the project's source; it may be incomplete or inaccurate and must not be cited as the project's own statement. It follows the structure of [FEP-67ff](../feps/fep-67ff.md); the project publishes no such file.
 
 ## Provenance
 
@@ -13,7 +13,7 @@
 | Other wiki revisions | No Mbin case study or fact sheet exists yet, so there is no other pinned revision. |
 | Verification | Partial. `[source-verified]` items were read at this commit; collection and activity shapes come from the project's own developer documentation. |
 
-Claim labels used below: `[source-verified]` read in the source at the commit named above; `[upstream-documented]` stated in the project's documentation and not checked in source; `[observed]` seen in a test or captured exchange; `[inferred]` concluded from source without a test; `[unverified]` carried over from an earlier draft and not checked.
+Claim labels (`[source-verified]`, `[upstream-documented]`, `[observed]`, `[inferred]`, `[unverified]`) are defined in [AGENTS.md](../../AGENTS.md#community-written-federation-documents).
 
 ## Document
 
@@ -32,7 +32,7 @@ Claim labels used below: `[source-verified]` read in the source at the commit na
 | --- | ------- | -------- |
 | FEP-1b12 (group federation) | magazines are `Group` actors and announce members' activities to their audience | `[upstream-documented]` developer docs; the developer docs link a path that does not match the FEP repository's current layout |
 
-An earlier draft listed FEP-67ff as supported; that was wrong (see the disclaimer) and has been removed. No other FEP support was established.
+ No other FEP support was established.
 
 ### Discovery
 

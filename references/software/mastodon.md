@@ -30,3 +30,4 @@ The source checkout is available locally as the `v4.7.3` Git tag. Its release co
 - [Pinned FEDERATION.md](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/FEDERATION.md) — protocols, FEPs, signatures and limits.
 - [Identifier verification advisory](https://github.com/mastodon/mastodon/security/advisories/GHSA-288h-6j8h-6x5j) — affected and fixed versions.
 
+- [Mastodon ActivityPub documentation](https://docs.joinmastodon.org/spec/activitypub/) and [security documentation](https://docs.joinmastodon.org/spec/security/) — wire-level behaviour and signature requirements (`[documented]`, current version of the docs, not pinned to 4.7.3).

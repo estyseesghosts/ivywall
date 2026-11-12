@@ -9,7 +9,7 @@ An emoji reaction records a particular response to a post; a favourite records a
 | Misskey | 2026.10.1 | native | native / translated | Emits a `Like` with emoji fields. Reads `_misskey_reaction`, `content`, then `name`; an absent value falls back to a heart. `[source]` [renderer](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/core/activitypub/ApRendererService.ts), [inbox](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/core/activitypub/ApInboxService.ts), [reaction service](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/core/ReactionService.ts). |
 | Mastodon | 4.7.3 | translated | lossy | Emits a plain `Like` for a favourite. Its incoming `Like` handler creates a favourite without using the emoji fields. `[source]` [serializer](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/serializers/activitypub/like_serializer.rb), [handler](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/lib/activitypub/activity/like.rb). |
 
-The emit and accept columns refer to this feature, not every possible activity. **native** means represented as a first-class emoji reaction; **translated** means mapped into another local concept or its wire format; **lossy** means a feature is accepted while information is discarded; **ignored** means silently dropped; **rejected** means refused; **untested** means no evidence establishes the behavior. The last three are not asserted for either row. These are source-level conclusions conditional on the handler being reached and all relevant access and validation checks passing, not observed success between two servers.
+Values are defined in the [glossary](../../glossary.md#compatibility-values). The rows are source-level conclusions, conditional on the handler being reached and its checks passing, not observed success between two servers.
 
 ## Information lost in translation
 
@@ -37,9 +37,9 @@ Misskey's inbox extracts emoji tags before calling its reaction service and choo
 
 `Undo` must also be tested: Mastodon 4.7.3 has an `Undo(Like)` path that finds the target local status and removes the sender's favourite. A bare referenced activity ID cannot be resolved by its `try_undo_like` fallback in that code. `[source]` [Undo handler](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/lib/activitypub/activity/undo.rb).
 
-## Historical reaction-storm result
+## Reaction-storm result
 
-A 19 October 2026 multi-server laboratory reported 635 resolved and 215 unresolved reaction targets in its reaction-storm check. Its classification was `edge_present_not_visible`; the report leaves timeline indexing versus harness pagination open. This observation does not prove that 215 activities were rejected or lost. The run identified Pinetree binary `f58be005c558f650` and Birchtree binary `e24d75aea1085a06`, but its summary does not pin all peer builds. Those two minimal programs were test subjects, not reference implementations, and these binary identifiers are not established as Git commits. `[reported]` [pinned run report](https://github.com/estyseesghosts/pinetree/blob/1c1d00cc955e2ef602d1640d8f7f7d84d985de2a/docs/federation-bench-2026-10-19-phase7-run5.md#L7-L16), [reaction-storm results](https://github.com/estyseesghosts/pinetree/blob/1c1d00cc955e2ef602d1640d8f7f7d84d985de2a/docs/federation-bench-2026-10-19-phase7-run5.md#L68-L74).
+The October 2026 [laboratory](../../testing/interoperability/bench-evidence.md) reported 635 resolved and 215 unresolved reaction targets, all classified `edge_present_not_visible`; whether timeline indexing or harness paging explains it is open. It does not show that 215 activities were rejected or lost. `[reported]` [run report](https://github.com/estyseesghosts/pinetree/blob/1c1d00cc955e2ef602d1640d8f7f7d84d985de2a/docs/federation-bench-2026-10-19-phase7-run5.md#L7-L16), [results](https://github.com/estyseesghosts/pinetree/blob/1c1d00cc955e2ef602d1640d8f7f7d84d985de2a/docs/federation-bench-2026-10-19-phase7-run5.md#L68-L74).
 
 ## Test procedure
 
@@ -47,7 +47,7 @@ No live two-server result is claimed. On isolated instances of the pinned releas
 
 ## Reaction conventions seen in the October 2026 laboratory
 
-Three conventions were distinguished, `[reported]` from the lab and `[documented]` for Akkoma's model. These were laboratory runs of 19 October 2026 in which two minimal test servers (Pinetree and Birchtree) acted as probes against Mastodon, Misskey, Catodon and Akkoma peers.
+The October 2026 [laboratory](../../testing/interoperability/bench-evidence.md) distinguished three conventions (`[reported]`, not rerun here; Akkoma's model is also `[documented]`)
 
 | Family | Representation | Semantic difference |
 | ------ | -------------- | ------------------- |

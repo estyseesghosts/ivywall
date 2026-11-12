@@ -1,6 +1,6 @@
 # NodeBB federation behaviour (community-written)
 
-> **Disclaimer.** This document was **not written by the NodeBB maintainers**. It was written for this wiki from the project's source and may be incomplete or inaccurate. Do not cite it as a statement by the project. It follows the structure of [FEP-67ff](../feps/fep-67ff.md) but the project does not publish such a file, so it does not mean NodeBB conforms to that FEP.
+> **Not by the NodeBB maintainers.** Written for this wiki from the project's source; it may be incomplete or inaccurate and must not be cited as the project's own statement. It follows the structure of [FEP-67ff](../feps/fep-67ff.md); the project publishes no such file.
 
 ## Provenance
 
@@ -13,7 +13,7 @@
 | Other wiki revisions | The [NodeBB case study](../../servers/case-studies/nodebb.md) and [fact sheet](../software/nodebb.md) pin the 4.16.7 release commit `e10be67`; do not combine findings across the two without checking the diff. |
 | Verification | Partial. Items labelled `[source-verified]` were read at this commit; the FEP positions are copied from NodeBB's documentation site, not from this commit. |
 
-Claim labels used below: `[source-verified]` read in the source at the commit named above; `[upstream-documented]` stated in the project's documentation and not checked in source; `[observed]` seen in a test or captured exchange; `[inferred]` concluded from source without a test; `[unverified]` carried over from an earlier draft and not checked.
+Claim labels (`[source-verified]`, `[upstream-documented]`, `[observed]`, `[inferred]`, `[unverified]`) are defined in [AGENTS.md](../../AGENTS.md#community-written-federation-documents).
 
 ## Document
 
@@ -50,8 +50,6 @@ NodeBB publishes its own FEP position table in its documentation, listing each p
 | 044f | Quote posts | no (positive position) | no evidence found | neither emits nor accepts |
 | c0e0, 9967, 1a11, 8b32 | Emoji reactions, polls, bulk Announce, integrity proofs | no (positive position) | no evidence found | not implemented per upstream |
 
-An earlier draft of this document listed FEP-67ff as a supported FEP. That was wrong for the reason given at the top of the page and has been removed.
-
 ### Discovery
 
 - Application actor `/actor`; users `/uid/:uid` (also `/user/:userslug`); categories `/category/:cid`; topics `/topic/:tid`; posts `/post/:pid`. `[source-verified]` [routes](https://github.com/NodeBB/NodeBB/blob/b04f482eb068e9421bed35c335232164a27fc5b5/src/routes/activitypub.js)
@@ -70,7 +68,7 @@ An earlier draft of this document listed FEP-67ff as a supported FEP. That was w
 
 ### Activity and object matrix
 
-Inbound handlers exist for `Create`, `Update`, `Delete`, `Add`, `Remove`, `Move`, `Like`, `Dislike`, `Announce`, `Follow`, `Accept`, `Undo`, `Reject` and `Flag`. `[source-verified]` [inbox.js](https://github.com/NodeBB/NodeBB/blob/b04f482eb068e9421bed35c335232164a27fc5b5/src/activitypub/inbox.js). Conditions:
+Inbound handlers exist for `Create`, `Update`, `Delete`, `Add`, `Remove`, `Move`, `Like`, `Dislike`, `Announce`, `Follow`, `Accept`, `Undo` and `Reject`. `[source-verified]` [inbox.js](https://github.com/NodeBB/NodeBB/blob/b04f482eb068e9421bed35c335232164a27fc5b5/src/activitypub/inbox.js). Conditions:
 
 | Activity | Object | Accepts | Conditions |
 | -------- | ------ | ------- | ---------- |

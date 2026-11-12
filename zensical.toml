@@ -71,6 +71,7 @@ nav = [
     { "Overview" = "clients/index.md" },
     { "Mastodon REST API" = "clients/apis/mastodon-rest.md" },
     { "Misskey native API" = "clients/apis/misskey.md" },
+    { "Client authentication with OAuth" = "clients/authentication/oauth.md" },
   ] },
   { "Servers" = [
     { "Overview" = "servers/index.md" },
@@ -100,6 +101,7 @@ nav = [
   { "Testing" = [
     { "Overview" = "testing/index.md" },
     { "Reading federation benchmark results" = "testing/interoperability/bench-evidence.md" },
+    { "FediTest" = "testing/interoperability/feditest.md" },
     { "An interoperability test matrix for a new server" = "testing/interoperability/test-matrix.md" },
     { "Test oracles that give false federation failures" = "testing/interoperability/test-oracles.md" },
     { "Interoperability result fixture format" = "testing/fixtures/result-schema.md" },
@@ -132,6 +134,7 @@ nav = [
       ] },
     ] },
     { "FEP-044f: consent-respecting quote posts" = "references/feps/fep-044f.md" },
+    { "FEP registry" = "references/feps/registry.md" },
     { "FEP-521a: multiple public keys for actors" = "references/feps/fep-521a.md" },
     { "FEP-67ff: FEDERATION.md" = "references/feps/fep-67ff.md" },
     { "FEP-7628: Move actor" = "references/feps/fep-7628.md" },

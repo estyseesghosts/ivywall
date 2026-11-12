@@ -1,6 +1,6 @@
 # Compatibility: observed profiles of Mastodon, Misskey, Catodon, Akkoma and Sharkey
 
-A one-page index of how five server families behaved when third-party servers talked to them in the October 2026 laboratory. It is a router into the per-feature records, not a ranking. These were laboratory runs of 19 October 2026 in which two minimal test servers (Pinetree and Birchtree) acted as probes against Mastodon, Misskey, Catodon and Akkoma peers. The cited reports do not record the peer builds, except that the direct Mastodon interop suite names Mastodon 4.7.3; treat every peer result as unversioned. Everything below is `[reported]`: this wiki did not rerun it.
+A one-page index of how five server families behaved when third-party servers talked to them in the October 2026 [laboratory](../../testing/interoperability/bench-evidence.md). It is a router into the per-feature records, not a ranking; results are `[reported]`, not rerun here, and peer builds are unrecorded unless stated.
 
 Sharkey appears only in an earlier four-server suite (Pinetree, Misskey, Sharkey), recorded in Pinetree's smoke notes against Sharkey 2025.4.7 and Misskey 2026.10.1-alpha.0; it was not a node in the ten-node runs. `[reported]` [Pinetree audit](https://github.com/estyseesghosts/pinetree/blob/f1665e6dd2f2ea8c115ce7c5ead98b5791a32fc6/docs/audit-2026-10-16-phase0-to-now.md).
 
@@ -16,13 +16,9 @@ Sharkey appears only in an earlier four-server suite (Pinetree, Misskey, Sharkey
 
 Peer builds were not recorded in the cited reports apart from the Mastodon 4.7.3 direct suite and the Sharkey and Misskey pins above. Add a row with versions when a pinned rerun exists.
 
-## Information lost in translation
+## Reading the results
 
-The strongest result of the runs is a negative one. The basic social graph (follows, posts, replies, likes, boosts, most deletes) exchanged cleanly across all five families once test errors were corrected: run 5's cross-family suite passed 162 of 162 checks. Compatibility degraded around richer behaviour: reactions, poll votes, quote authorization, media and reversing actions. `[reported]` [run 5](https://github.com/estyseesghosts/pinetree/blob/f1665e6dd2f2ea8c115ce7c5ead98b5791a32fc6/docs/federation-bench-2026-10-19-phase7-run5.md).
-
-## Technical details
-
-Counts are from different suites and cannot be combined into one percentage: 9,177 of 9,180 follow edges; 1,108 passing and 62 failing feature checks; 162 of 162 cross-family checks; 22 of 23 direct Mastodon checks, whose one failure is a check that looked for a follow in a home timeline. See [reading federation benchmark results](../../testing/interoperability/bench-evidence.md).
+Basic social-graph activity (follows, posts, replies, likes, boosts, most deletes) exchanged cleanly across all five families in the final run (162 of 162 cross-family checks); the failures cluster in reactions, poll votes, quote authorization, media and reversing actions. The counts come from different suites and are not a compatibility percentage: see [reading federation benchmark results](../../testing/interoperability/bench-evidence.md).
 
 ## Sources
 

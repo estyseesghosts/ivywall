@@ -17,6 +17,7 @@ Available and planned references:
 - [WriteFreely fact sheet](software/writefreely.md) — source revision and reference facts.
 - [Mastodon fact sheet](software/mastodon.md) — pinned release and implementation facts.
 - [Misskey fact sheet](software/misskey.md) — pinned release and implementation facts.
+- [FEP registry](feps/registry.md) — all 154 proposals with status and the implementers each names (generated).
 - [FEP-044f](feps/fep-044f.md) — draft; quote model and stated implementers.
 - [FEP-521a](feps/fep-521a.md) — final; `Multikey` actor keys.
 - [FEP-67ff](feps/fep-67ff.md) — final; the `FEDERATION.md` convention.
@@ -26,7 +27,7 @@ Not yet covered:
 
 - Fact sheets for the studied servers not listed above (for example snac, Sharkey, Iceshrimp.NET, Mbin, Catodon, Mobilizon).
 - Specification pages — ActivityStreams, ActivityPub, WebFinger, NodeInfo, HTTP Message Signatures (none written yet).
-- Further FEP records, each with status and a table of which software emits, accepts, partially implements or rejects it: FEP-1b12 (groups), FEP-8fcf (follower synchronization), FEP-fe34 (origin-based security), and others.
+- Further FEP records for the proposals the studied servers rely on (for example 1b12, 8fcf, fe34, 3b86), each with a per-version support table.
 
 ## Notes and open questions
 
