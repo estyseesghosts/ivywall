@@ -4,7 +4,18 @@ The protocol layer every Fediverse server and client builds on: the data model, 
 
 ## Pages
 
-No topic pages yet. Planned, in priority order:
+Stubs so far:
+
+- [ActivityStreams 2.0](activitystreams.md) — stub.
+- [ActivityPub server-to-server](activitypub-s2s.md) — stub.
+- [ActivityPub client-to-server](activitypub-c2s.md) — stub.
+- [WebFinger](webfinger.md) — stub.
+- [NodeInfo](nodeinfo.md) — stub.
+- [HTTP signatures and authentication](http-signatures.md) — stub.
+- [Identity and account handles](identity.md) — stub.
+- [Extensions and FEPs](extensions.md) — stub.
+
+Still planned, in priority order:
 
 - ActivityStreams 2.0 — actors, objects, activities, collections, JSON-LD contexts.
 - ActivityPub server-to-server — inbox and outbox delivery, shared inboxes, recipient resolution, forwarding.

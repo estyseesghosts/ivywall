@@ -4,7 +4,16 @@ How servers actually behave when they exchange content: the lifecycle of a post 
 
 ## Pages
 
-No topic pages yet. Planned, in priority order:
+Stubs so far:
+
+- [Life of a remote follow](activities/life-of-a-follow.md) — stub.
+- [Life of a federated post](activities/life-of-a-post.md) — stub.
+- [Delivery queues and retries](delivery/queues-and-retries.md) — stub.
+- [Compatibility: emoji reactions](compatibility/emoji-reactions.md) — stub.
+- [Compatibility: quote posts](compatibility/quotes.md) — stub.
+- [Failure mode: missing replies](failure-modes/missing-replies.md) — stub.
+
+Still planned, in priority order:
 
 - Compatibility records, one per feature — rich text, MFM, Markdown, custom emoji, polls, quotes, reactions, edit histories, visibility, mentions, hashtags, media, replies, search, account migration, moderation actions, group federation. This is the highest-priority part of the wiki.
 - Activity lifecycles — the full life of a federated post and of a remote follow, step by step.

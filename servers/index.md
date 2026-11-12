@@ -4,7 +4,11 @@ Server engineering is where this wiki aims to be more useful than protocol docum
 
 ## Pages
 
-No topic pages yet. Planned:
+Stubs so far:
+
+- [Mastodon case study](case-studies/mastodon.md) — stub.
+
+Still planned:
 
 - Architecture and storage — schema design for actors, objects and activities; single-user versus multi-user designs; worker separation; database contention.
 - Federation pipelines — inbox validation, persistence, moderation and delivery stages; queues, retries, ordering, fan-out; consistency when updates arrive before creates.

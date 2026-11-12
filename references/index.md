@@ -4,7 +4,15 @@ Lookup material: one version-pinned fact sheet per implementation, one page per 
 
 ## Pages
 
-No topic pages yet. Planned:
+Stubs so far:
+
+- [Project federation documents](federation-docs/index.md) — stub.
+- [Mastodon fact sheet](software/mastodon.md) — stub.
+- [FEP-044f](feps/fep-044f.md) — stub.
+- [FEP-521a](feps/fep-521a.md) — stub.
+- [FEP-7628](feps/fep-7628.md) — stub.
+
+Still planned:
 
 - Software fact sheets — start with the versions already researched: Mastodon 4.7.3, Misskey 2026.10.1, Akkoma 2026.08, Lemmy 0.19.21, Loops 1.0.0b15, NodeBB 4.16.7, Pixelfed 0.15.2, Wafrn (2026-11-01 snapshot).
 - Specifications — ActivityStreams, ActivityPub, WebFinger, NodeInfo, HTTP Message Signatures.

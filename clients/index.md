@@ -4,7 +4,11 @@ Client development has its own problems, separate from federation. Supporting th
 
 ## Pages
 
-No topic pages yet. Planned:
+Stubs so far:
+
+- [Mastodon REST API](apis/mastodon-rest.md) — stub.
+
+Still planned:
 
 - API families — Mastodon REST and streaming, Misskey HTTP and WebSocket, Pleroma/Akkoma extensions, Pixelfed additions, Loops REST.
 - Authentication — OAuth scopes, MiAuth, token storage.

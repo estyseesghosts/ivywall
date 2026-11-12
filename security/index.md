@@ -4,7 +4,11 @@ Security and privacy are first-class engineering topics here, not an appendix. A
 
 ## Pages
 
-No topic pages yet. Planned:
+Stubs so far:
+
+- [SSRF and remote fetching](ssrf.md) — stub.
+
+Still planned:
 
 - Security — signature verification, key rotation, actor ownership validation, [SSRF](../glossary.md#ssrf), DNS rebinding, malicious redirects, JSON-LD processing, replay attacks, HTML sanitization, oversized objects, resource exhaustion.
 - Privacy — followers-only visibility, direct messages, recipient leakage, signed fetches, remote caching, deletion limits, and the difference between access controls and enforceable confidentiality.

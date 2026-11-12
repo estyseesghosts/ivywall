@@ -4,7 +4,11 @@ End-to-end walkthroughs that turn the reference material into working knowledge.
 
 ## Pages
 
-No guides yet. Planned:
+Stubs so far:
+
+- [A minimal ActivityPub actor](minimal-actor.md) — stub.
+
+Still planned:
 
 - Implementing a minimal ActivityPub actor and server.
 - Building a headless server with a Mastodon-compatible API.
