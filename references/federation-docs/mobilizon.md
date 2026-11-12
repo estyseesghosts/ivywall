@@ -1,66 +1,127 @@
-# Mobilizon FEDERATION.md (community-written)
+# Mobilizon federation behaviour (community-written)
 
-> **Disclaimer.** This document was **not written by the Mobilizon maintainers**. It was written for this wiki, following the `FEDERATION.md` convention, from studying the project's source at the commit below. It may be incomplete or inaccurate. Do not treat it as the project's own statement, and do not cite it as one. Where it matters, verify against the source.
+> **Disclaimer.** This document was **not written by the Mobilizon maintainers**. It was written for this wiki from the project's source and may be incomplete or inaccurate. Do not cite it as a statement by the project. It follows the structure of [FEP-67ff](../feps/fep-67ff.md) but the project does not publish such a file, so it does not mean Mobilizon conforms to that FEP.
 
-Mobilizon does not publish a `FEDERATION.md` of its own. This page holds the wiki's copy of the one written for it, so it can be read and searched alongside the documents the projects publish themselves (see the [index](index.md)).
-
-## Document details
+## Provenance
 
 | Field | Value |
 | ----- | ----- |
-| Author | Written for this wiki, not by upstream |
-| Repository studied | [framagit.org/kaihuri/mobilizon](https://framagit.org/kaihuri/mobilizon) |
-| Studied at commit | `f2590486f6ee056f01fa05412a16f9a08c65357e` (2026-09-30) |
-| Status | Not fact-checked against source (`[hypothesis]` until verified). Headings demoted two levels so they nest under this page. |
+| Authorship | Written for this wiki, not by upstream |
+| Project repository | [framagit.org/kaihuri/mobilizon](https://framagit.org/kaihuri/mobilizon) |
+| Release basis | Release candidate: tag `5.2.5-RC.1` (the commit is that tag). |
+| Commit | `f2590486f6ee056f01fa05412a16f9a08c65357e` (2026-09-30) |
+| Other wiki revisions | No Mobilizon case study or fact sheet exists, so there is no other pinned revision. |
+| Verification | Partial. `[source-verified]` items were read in the local checkout of this commit. The hosting site (Framagit) could not be retrieved independently, so the links point at it but were not re-fetched. |
 
-When the project changes, the document needs re-checking against the new source; update the commit above when it is.
+Claim labels used below: `[source-verified]` read in the source at the commit named above; `[upstream-documented]` stated in the project's documentation and not checked in source; `[observed]` seen in a test or captured exchange; `[inferred]` concluded from source without a test; `[unverified]` carried over from an earlier draft and not checked.
 
 ## Document
 
-### Federation
+Mobilizon federates events, people, groups, comments, posts and group membership. The page records exact contracts for the parts that differ from ordinary microblogging: event attendance, group membership and invitations.
 
-#### Supported federation protocols and standards
+### Protocols and standards
 
-- [ActivityPub](https://www.w3.org/TR/activitypub/) (server-to-server)
-- [WebFinger](https://webfinger.net/) and host-meta for actor discovery
-- [HTTP Signatures](https://datatracker.ietf.org/doc/html/draft-cavage-http-signatures)
-- [NodeInfo](https://nodeinfo.diaspora.software/)
+| Standard | Direction | Evidence |
+| -------- | --------- | -------- |
+| ActivityPub server-to-server | sends and receives; actor inbox `POST /@{name}/inbox`, shared inbox `POST /inbox`, relay actor `/relay` and `/relay/inbox` | `[source-verified]` [router.ex](https://framagit.org/kaihuri/mobilizon/-/blob/f2590486f6ee056f01fa05412a16f9a08c65357e/lib/web/router.ex), [activity_pub_controller.ex](https://framagit.org/kaihuri/mobilizon/-/blob/f2590486f6ee056f01fa05412a16f9a08c65357e/lib/web/controllers/activity_pub_controller.ex) |
+| WebFinger and host-meta | serves both; remote lookup tries host-meta first, then falls back to the well-known WebFinger path | `[upstream-documented]` earlier draft; `[unverified]` here |
+| NodeInfo | `/.well-known/nodeinfo` and `/.well-known/nodeinfo/:version` | `[unverified]` |
+| HTTP signatures (draft) | signs outgoing POSTs over `(request-target)`, `host`, `content-length`, `digest`, `date`; verifies incoming (see below) | `[unverified]` header list; behaviour of the inbox is source-verified |
 
-#### Supported FEPs
+### Supported FEPs
 
-- [FEP-67ff: FEDERATION.md](https://codeberg.org/fediverse/fep/src/branch/main/fep/67ff/fep-67ff.md)
+None found. No FEP is identified as implemented in this checkout; similar vocabulary is not evidence of conformance. An earlier draft listed FEP-67ff; that was wrong (see the disclaimer) and has been removed. `[unverified]` negative: a search for FEP numbers was not exhaustive.
 
-No other FEP is explicitly identified as implemented in this checkout. Similar vocabulary or behavior alone should not be taken as a claim of full conformance to a FEP.
+### Discovery
 
-#### ActivityPub in Mobilizon
+`/@{name}` serves actors via content negotiation; collections under `/@{name}/outbox`, `/following`, `/followers`, `/members`; event and comment URLs can be requested as ActivityPub objects. `[source-verified]` [router.ex](https://framagit.org/kaihuri/mobilizon/-/blob/f2590486f6ee056f01fa05412a16f9a08c65357e/lib/web/router.ex)
 
-Mobilizon federates events, people, groups, comments, posts and group membership. Federation is configurable by the instance administrator. The [ActivityPub routes](https://framagit.org/kaihuri/mobilizon/-/blob/f2590486f6ee056f01fa05412a16f9a08c65357e/lib/web/router.ex), [incoming activity handlers](https://framagit.org/kaihuri/mobilizon/-/blob/f2590486f6ee056f01fa05412a16f9a08c65357e/lib/federation/activity_pub/transmogrifier.ex), and [publisher](https://framagit.org/kaihuri/mobilizon/-/blob/f2590486f6ee056f01fa05412a16f9a08c65357e/lib/federation/activity_pub/publisher.ex) define the behavior described below. Activity and object type support is conditional on their combination and on validation; an activity name in this list does not imply support for every possible object.
+### Authentication and the unsigned-`Create` path
 
-##### Discovery and endpoints
+The inbox controller has four clauses, in this order. `[source-verified]` [activity_pub_controller.ex](https://framagit.org/kaihuri/mobilizon/-/blob/f2590486f6ee056f01fa05412a16f9a08c65357e/lib/web/controllers/activity_pub_controller.ex)
 
-- `/.well-known/webfinger` resolves local actors; `/.well-known/host-meta` advertises discovery information. Remote WebFinger discovery first looks for host-meta and falls back to the well-known WebFinger path. See [WebFinger](https://framagit.org/kaihuri/mobilizon/-/blob/f2590486f6ee056f01fa05412a16f9a08c65357e/lib/federation/web_finger/web_finger.ex).
-- `/.well-known/nodeinfo` advertises NodeInfo; `/.well-known/nodeinfo/:version` serves the versioned document.
-- `/@{name}` serves actor data through ActivityPub content negotiation. Actor outbox, following, followers and members collections are under `/@{name}/outbox`, `/following`, `/followers` and `/members`.
-- `POST /@{name}/inbox` and `POST /inbox` are the actor and shared inboxes. `/relay` exposes the relay actor and `/relay/inbox` its inbox. Event and comment URLs can also be requested as ActivityPub objects.
+| Case | Behaviour |
+| ---- | --------- |
+| Valid signature, **actor inbox** | the recipient actor must be local; the sending actor is fetched; the recipient must be addressed in the message (`recipient_in_message`); the document is queued as `:incoming_ap_doc`; the response is `"ok"` |
+| Valid signature, **shared inbox** | queued without a recipient check; response `"ok"` |
+| **No valid signature, type `Create`** | the controller does **not** trust the submitted object. It calls `fetch_object_from_url` on `object.id` and responds `"ok"` regardless of the result |
+| No valid signature, anything else | not queued; response `"error"` (a debug log hints that the reverse proxy must forward the `Host` header) |
 
-##### Activities and delivery
+The third row is the security-relevant one. It is a relayed-`Create` accommodation: the object is refetched from the URL named in the submission, never taken from the submitted body. This wiki did not read the fetch function or test it, so the following are open: whether the fetched URL is constrained to the sender's origin, whether the fetched object's author is checked against the claimed actor, and whether the fetch passes an SSRF filter. `> Unknown:` until verified. A success response ("ok") does not mean anything was applied.
 
-The inbox handlers include `Create` for `Note`, `Event`, `Article`, actors and `Member` objects, `Update` for events, notes, articles, members and actors, as well as `Delete`, `Follow`, `Accept`, `Reject`, `Announce`, `Undo`, `Join`, `Leave`, `Invite`, `Remove` and `Flag` in the cases implemented by the [transmogrifier](https://framagit.org/kaihuri/mobilizon/-/blob/f2590486f6ee056f01fa05412a16f9a08c65357e/lib/federation/activity_pub/transmogrifier.ex). For example, `Undo` has specific handlers for follows and announces; it is not a general undo implementation. Group membership and events have application-specific semantics.
+### Activity and object matrix
 
-Inbound activities with a valid signature are queued for processing. For an actor inbox, the recipient must also be present in the message or otherwise satisfy the recipient check. For a `Create` without a valid author signature, the controller attempts to fetch the object from its source instead of trusting the submitted object; other activities without a valid signature are not queued by that path. A successful inbox response therefore does not by itself establish that the activity was ultimately applied. See [inbox handling](https://framagit.org/kaihuri/mobilizon/-/blob/f2590486f6ee056f01fa05412a16f9a08c65357e/lib/web/controllers/activity_pub_controller.ex).
+Incoming activities are normalised by `handle_incoming` clauses in [transmogrifier.ex](https://framagit.org/kaihuri/mobilizon/-/blob/f2590486f6ee056f01fa05412a16f9a08c65357e/lib/federation/activity_pub/transmogrifier.ex). `[source-verified]` clause heads:
 
-Outgoing delivery expands follower and member collections to remote recipients, prefers each actor's shared inbox when available, deduplicates inbox URLs and queues one delivery per inbox. If relay support is enabled, public activities are addressed to relay followers and public `Create` activities are also published through the relay. See [publisher](https://framagit.org/kaihuri/mobilizon/-/blob/f2590486f6ee056f01fa05412a16f9a08c65357e/lib/federation/activity_pub/publisher.ex).
+| Activity | Object | Accepts | Meaning and conditions |
+| -------- | ------ | ------- | ---------------------- |
+| `Create` | `Note` | yes | comment |
+| `Create` | `Event` | yes | event |
+| `Create` | `Member` | yes | a membership record: `role` and the group as `object` |
+| `Create` | `Article` | yes | group post; needs `actor` and `attributedTo` |
+| `Create` | `Tombstone` | yes | a deleted object arriving as a create |
+| `Create` | other with an `id` | yes | actor-type creates (`type` is bound from the object) |
+| `Update` | actor types (`Person`, `Group`, `Application`, `Service`, `Organization`) | yes, only remote actors and groups | an update of a **local** actor is refused |
+| `Update` | `Event`, `Note`, `Article`, `Member`, `Tombstone` | yes | each has its own clause |
+| `Follow`, `Accept`, `Reject` | actor | yes | follow flow; whether `Accept`/`Reject` also settle invitations and participation is `[inferred]` and not read |
+| `Announce`, `Undo(Announce)` | object | yes | shares, including announced `Delete` |
+| `Undo` | `Follow` | yes | the only other `Undo` form; not a general undo |
+| `Delete` | object | yes | |
+| `Join` | event | yes | **attendance request**: creates a participation for the actor (`metadata.message` from `participationMessage`); whether it stays pending until an organiser accepts was not read |
+| `Join` | group | yes | **group membership request** `[inferred]`: the same clause calls `Join.join` with whatever object was fetched, so the object's type is expected to decide |
+| `Leave` | event or group | yes | ends attendance or membership; refused with `:only_organizer` when the actor is an event's only organiser |
+| `Invite` | `object` = group, `target` = invited actor | yes | creates a pending **invited** member; the invitee then answers with `Accept` or `Reject` |
+| `Remove` | `object` = member, `origin` = group | yes | a moderator or admin removes a member; the group must be a `Group`, the actor must be allowed to remove, and the person must be a non-rejected member |
+| `Flag` | | yes | report |
 
-##### HTTP Signatures
+How this differs from a follow: `Follow` subscribes to an actor's posts. `Join` on an event is a request to attend and carries an optional message; `Join` on a group is a request for membership with a role. `Invite` is an offer from a group moderator to a person and changes nothing until the person accepts. Which fields of an event propagate on `Update(Event)` was not read. `> Unknown:`
 
-Outgoing inbox POSTs contain `application/activity+json`, a digest, date and HTTP signature. The signed fields include `(request-target)`, `host`, `content-length`, `digest` and `date`. Incoming inbox handling uses the result of signature verification as described above. A reverse proxy must preserve the host used for signature verification. See [publisher](https://framagit.org/kaihuri/mobilizon/-/blob/f2590486f6ee056f01fa05412a16f9a08c65357e/lib/federation/activity_pub/publisher.ex), [signature code](https://framagit.org/kaihuri/mobilizon/-/blob/f2590486f6ee056f01fa05412a16f9a08c65357e/lib/federation/http_signatures/signature.ex), and the [inbox controller](https://framagit.org/kaihuri/mobilizon/-/blob/f2590486f6ee056f01fa05412a16f9a08c65357e/lib/web/controllers/activity_pub_controller.ex).
+### Distinctive behaviour
 
-##### Additional documentation
+- Event attendance, group membership and invitations are first-class activities rather than extensions on `Follow`. `[source-verified]` above.
+- `Member` objects carry a `role` (a string of the role). `[source-verified]` [member converter](https://framagit.org/kaihuri/mobilizon/-/blob/f2590486f6ee056f01fa05412a16f9a08c65357e/lib/federation/activity_stream/converter/member.ex)
 
-- [Federation implementation](https://framagit.org/kaihuri/mobilizon/-/tree/f2590486f6ee056f01fa05412a16f9a08c65357e/lib/federation/)
-- [ActivityPub object and activity converters](https://framagit.org/kaihuri/mobilizon/-/tree/f2590486f6ee056f01fa05412a16f9a08c65357e/lib/federation/activity_pub/)
-- [Web routes](https://framagit.org/kaihuri/mobilizon/-/blob/f2590486f6ee056f01fa05412a16f9a08c65357e/lib/web/router.ex)
+Constructed examples (field names from the converters; not captured):
+
+```json
+{
+  "type": "Join",
+  "id": "https://mobilizon.example/join/1",
+  "actor": "https://other.example/users/alice",
+  "object": "https://mobilizon.example/events/ev1",
+  "participationMessage": "Can I bring a friend?"
+}
+```
+
+```json
+{
+  "type": "Invite",
+  "id": "https://mobilizon.example/invite/7",
+  "actor": "https://mobilizon.example/@moderator",
+  "object": "https://mobilizon.example/@group",
+  "target": "https://other.example/users/bob"
+}
+```
+
+### Operational behaviour
+
+- Inbound signed documents are queued and applied later, so a `200 "ok"` is not proof of application. `[source-verified]`
+- Outgoing delivery expands follower and member collections, prefers shared inboxes, deduplicates inbox URLs and queues one delivery per inbox; with relay support on, public activities are addressed to relay followers and public `Create` is also published through the relay. `[upstream-documented]` earlier draft; the publisher was not re-read.
+
+### Failure behaviour
+
+| Condition | Behaviour | Evidence |
+| --------- | --------- | -------- |
+| Bad signature, non-`Create` | `"error"`, not queued | `[source-verified]` |
+| Unsigned `Create` | object refetched; always `"ok"` | `[source-verified]` |
+| Activity without an `id` | `:error` | `[source-verified]` |
+| `Leave` by an event's only organiser | refused | `[source-verified]` |
+| `Update` of a local actor | refused with `update_not_allowed` | `[source-verified]` |
+| Unmatched activity type | `handle_incoming` falls through to a generic clause | `[source-verified]` (last clause) |
+| Proxy not forwarding `Host` | signature validation fails; debug hint logged | `[source-verified]` |
 
 ## Sources
 
-- [Mobilizon repository](https://framagit.org/kaihuri/mobilizon) — source the document was written from, at commit `f2590486f6ee056f01fa05412a16f9a08c65357e`
+- [Mobilizon repository](https://framagit.org/kaihuri/mobilizon) — source read at commit `f2590486f6ee056f01fa05412a16f9a08c65357e`
+- [transmogrifier.ex](https://framagit.org/kaihuri/mobilizon/-/blob/f2590486f6ee056f01fa05412a16f9a08c65357e/lib/federation/activity_pub/transmogrifier.ex) — incoming activity handlers
+- [activity_pub_controller.ex](https://framagit.org/kaihuri/mobilizon/-/blob/f2590486f6ee056f01fa05412a16f9a08c65357e/lib/web/controllers/activity_pub_controller.ex) — inbox clauses

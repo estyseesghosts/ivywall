@@ -1,62 +1,111 @@
-# Wafrn FEDERATION.md (community-written)
+# Wafrn federation behaviour (community-written)
 
-> **Disclaimer.** This document was **not written by the Wafrn maintainers**. It was written for this wiki, following the `FEDERATION.md` convention, from studying the project's source at the commit below. It may be incomplete or inaccurate. Do not treat it as the project's own statement, and do not cite it as one. Where it matters, verify against the source.
+> **Disclaimer.** This document was **not written by the Wafrn maintainers**. It was written for this wiki from the project's source and may be incomplete or inaccurate. Do not cite it as a statement by the project. It follows the structure of [FEP-67ff](../feps/fep-67ff.md) but the project does not publish such a file, so it does not mean Wafrn conforms to that FEP.
 
-Wafrn does not publish a `FEDERATION.md` of its own. This page holds the wiki's copy of the one written for it, so it can be read and searched alongside the documents the projects publish themselves (see the [index](index.md)).
-
-## Document details
+## Provenance
 
 | Field | Value |
 | ----- | ----- |
-| Author | Written for this wiki, not by upstream |
-| Repository studied | [codeberg.org/wafrn/wafrn](https://codeberg.org/wafrn/wafrn) |
-| Studied at commit | `f2bdd67849f44227d932c9ed0aa91b6af06d512d` (2026-11-05) |
-| Status | Not fact-checked against source (`[hypothesis]` until verified). Headings demoted two levels so they nest under this page. |
+| Authorship | Written for this wiki, not by upstream |
+| Project repository | [codeberg.org/wafrn/wafrn](https://codeberg.org/wafrn/wafrn) |
+| Release basis | Release tag `2026.11.01` (the commit is that tag). |
+| Commit | `f2bdd67849f44227d932c9ed0aa91b6af06d512d` (2026-11-05) |
+| Other wiki revisions | The [Wafrn case study](../../servers/case-studies/wafrn.md) and [fact sheet](../software/wafrn.md) pin the same commit `f2bdd67`. |
+| Verification | Partial. `[source-verified]` items were read in the local checkout of this commit. The hosting site (Codeberg) was not re-fetched. |
 
-When the project changes, the document needs re-checking against the new source; update the commit above when it is.
+Claim labels used below: `[source-verified]` read in the source at the commit named above; `[upstream-documented]` stated in the project's documentation and not checked in source; `[observed]` seen in a test or captured exchange; `[inferred]` concluded from source without a test; `[unverified]` carried over from an earlier draft and not checked.
 
 ## Document
 
-### Federation
+Partial-support limits come first, because the FEP list alone gives a stronger impression than the code supports.
 
-#### Supported federation protocols and standards
+### What is only partly implemented
 
-- [ActivityPub](https://www.w3.org/TR/activitypub/) (server-to-server)
-- [WebFinger](https://webfinger.net/)
-- [HTTP Signatures](https://datatracker.ietf.org/doc/html/draft-cavage-http-signatures)
-- [NodeInfo](https://nodeinfo.diaspora.software/) 2.0
+| Area | What the code does | Evidence |
+| ---- | ------------------ | -------- |
+| FEP-044f quote **requests** | A `QuoteRequest` for a local post is **always accepted** if the post and the quoting post resolve: a quote record is created and an `Accept` carrying a `QuoteAuthorization` URL is sent. There is no policy check, and a code comment says rejecting quotes on the fediverse is a TODO | `[source-verified]` [inbox.ts, `QuoteRequest` case](https://codeberg.org/wafrn/wafrn/src/commit/f2bdd67849f44227d932c9ed0aa91b6af06d512d/packages/backend/queueProcessors/inbox.ts) |
+| FEP-044f quote **rejection / revocation** | not implemented in the incoming handler | `[source-verified]` same TODO; no revocation path found |
+| FEP-6fce `ReplyRequest` | answered automatically with `Accept` or `Reject` from the same audience rule that governs local replies (`canInteract` on the post's reply control); a comment says there is no manual review yet | `[source-verified]` same file |
+| FEP-6fce `AnnounceRequest` | answered automatically from `canInteract` on the post's boost control; the instrument must be on the requester's host; the announce is dereferenced and its actor and object are checked | `[source-verified]` same file |
+| "Manual approval" policies | advertised policies with `manualApproval` are treated as automatic by the handlers above | `[source-verified]` same file |
+| FEP-fffd | reads `at://` links and Bridgy URLs to associate a post with its AT Protocol counterpart, only when Bluesky lookup is enabled | `[source-verified]` [getPostThreadRecursive.ts](https://codeberg.org/wafrn/wafrn/src/commit/f2bdd67849f44227d932c9ed0aa91b6af06d512d/packages/backend/activitypub/getPostThreadRecursive.ts) |
 
-#### Supported FEPs
+Quote requests, acceptances, rejections, authorization and revocation are therefore **not** equally supported: request and acceptance exist, rejection and revocation do not, and the policy is not consulted for quotes. An earlier draft listed FEP-67ff as supported; that was wrong (see the disclaimer) and has been removed.
 
-- [FEP-67ff: FEDERATION.md](https://codeberg.org/fediverse/fep/src/branch/main/fep/67ff/fep-67ff.md)
-- [FEP-044f: Consent-respecting quote posts](https://codeberg.org/fediverse/fep/src/branch/main/fep/044f/fep-044f.md): sends and handles `QuoteRequest`, issues an `Accept` and exposes a `QuoteAuthorization`; rejection is not implemented in the incoming handler.
-- [FEP-fffd](https://codeberg.org/fediverse/fep/src/branch/main/fep/fffd/fep-fffd.md): reads a linked `at://` URL to associate a Bridgy/AT Protocol post with its counterpart when Bluesky lookup is enabled.
-- [FEP-6fce: Interaction Policies](https://codeberg.org/fediverse/fep/src/branch/main/fep/6fce/fep-6fce.md): supports reply and announce requests and authorization for manual approval.
+### Protocols and standards
 
-#### ActivityPub in Wafrn
+| Standard | Direction | Evidence |
+| -------- | --------- | -------- |
+| ActivityPub server-to-server | sends and receives; inbox is queued | `[source-verified]` [inbox.ts](https://codeberg.org/wafrn/wafrn/src/commit/f2bdd67849f44227d932c9ed0aa91b6af06d512d/packages/backend/queueProcessors/inbox.ts), [routes](https://codeberg.org/wafrn/wafrn/src/commit/f2bdd67849f44227d932c9ed0aa91b6af06d512d/packages/backend/routes/activitypub/activitypub.ts) |
+| WebFinger, NodeInfo 2.0 | served | `[upstream-documented]` earlier draft; `[unverified]` here |
+| HTTP signatures (RSA-SHA256, draft) | signs outgoing; verifies incoming POSTs | `[source-verified]` [checkFediverseSignature.ts](https://codeberg.org/wafrn/wafrn/src/commit/f2bdd67849f44227d932c9ed0aa91b6af06d512d/packages/backend/activitypub/checkFediverseSignature.ts) |
+| `RsaSignature2017` | verification path for signed activities | `[source-verified]` same file (the code comments "Mastodon allows two kinds of signatures on POST bodies") |
+| AT Protocol | optional integration for threads and posts; see below | `[source-verified]` [`atproto/`](https://codeberg.org/wafrn/wafrn/src/commit/f2bdd67849f44227d932c9ed0aa91b6af06d512d/packages/backend/atproto/) directory |
 
-Wafrn exchanges ActivityPub activities with remote servers. Its inbox handles posts and replies, follows, reblogs, likes, updates and deletions, among other activities. See the [inbox processor](https://codeberg.org/wafrn/wafrn/src/commit/f2bdd67849f44227d932c9ed0aa91b6af06d512d/packages/backend/queueProcessors/inbox.ts) and [ActivityPub routes](https://codeberg.org/wafrn/wafrn/src/commit/f2bdd67849f44227d932c9ed0aa91b6af06d512d/packages/backend/routes/activitypub/activitypub.ts) for the supported activity handling.
+### Discovery
 
-##### WebFinger
+Local actors at `/fediverse/blog/:url`; posts at `/fediverse/post/`; quote and reply authorization objects dereferenceable at `/fediverse/quote_authorization/…` and `/fediverse/reply_authorization/…`; following and followers are paginated and subject to visibility settings. `[source-verified]` URLs in [inbox.ts](https://codeberg.org/wafrn/wafrn/src/commit/f2bdd67849f44227d932c9ed0aa91b6af06d512d/packages/backend/queueProcessors/inbox.ts); `[upstream-documented]` earlier draft for collections.
 
-Wafrn exposes WebFinger for discovery of local accounts and a NodeInfo 2.0 endpoint. See the [well-known routes](https://codeberg.org/wafrn/wafrn/src/commit/f2bdd67849f44227d932c9ed0aa91b6af06d512d/packages/backend/routes/activitypub/well-known.ts).
+### Authentication
 
-##### HTTP Signatures
+| Item | Behaviour | Evidence |
+| ---- | --------- | -------- |
+| Digest | verified against the raw body for POSTs | `[source-verified]` |
+| Clock skew | one hour ("this one is for threads") | `[source-verified]` |
+| Actor binding | the signing actor must match the activity actor | `[source-verified]` |
+| Key refresh | the stored key is refetched if the remote actor was last updated more than 24 hours ago | `[source-verified]` |
+| Cross-account delete | a `#delete` shortcut is rejected when the actor does not match the target account | `[source-verified]` (log text in the inbox) |
+| Enforcement | depends on the route | `[upstream-documented]` earlier draft |
 
-Outgoing ActivityPub POST requests use RSA-SHA256 HTTP Signatures and a SHA-256 digest, signing `(request-target)`, `host`, `date` and `digest`. The inbound middleware checks those fields for POSTs, allows one hour of clock skew, checks the digest and binds the signing actor to the activity actor; signature enforcement depends on the route. It also has a `RsaSignature2017` verification path for signed activities. See [outbound signing](https://codeberg.org/wafrn/wafrn/src/commit/f2bdd67849f44227d932c9ed0aa91b6af06d512d/packages/backend/activitypub/postPetitionSigned.ts) and [signature verification](https://codeberg.org/wafrn/wafrn/src/commit/f2bdd67849f44227d932c9ed0aa91b6af06d512d/packages/backend/activitypub/checkFediverseSignature.ts).
+### Activity and object matrix
 
-##### Additional documentation
+The inbox dispatch handles `Accept`, `Reject`, `Announce`, `Create` (also `Page`), `Follow`, `Update`, `Undo`, `Like`, `Delete`, `EmojiReact`, `Remove`, `Add`, `Block`, `Move`, `Flag`, `Bite`, `AskQuestion`, `QuoteRequest`, `ReplyRequest`, `AnnounceRequest`, and ignores `CacheFile`, `Playlist`, `Listen`, `View`. `[source-verified]` [inbox.ts](https://codeberg.org/wafrn/wafrn/src/commit/f2bdd67849f44227d932c9ed0aa91b6af06d512d/packages/backend/queueProcessors/inbox.ts)
 
-- [Wafrn documentation](https://codeberg.org/wafrn/wafrn/src/commit/f2bdd67849f44227d932c9ed0aa91b6af06d512d/docs/)
+| Activity | Object | Accepts | Notes |
+| -------- | ------ | ------- | ----- |
+| `EmojiReact` | post | yes | handled separately from `Like` |
+| `Update` | posts and others | yes, after a fixed 5-second wait | |
+| `Bite`, `AskQuestion` | | yes | Wafrn-specific activity types |
+| `QuoteRequest` / `ReplyRequest` / `AnnounceRequest` | local post | yes | see the partial-support table |
+| `Accept` / `Reject` | follows and interaction requests | yes | |
 
-##### Actors, collections and delivery
+### Distinctive behaviour: ActivityPub and AT Protocol boundary
 
-Local actor documents are served at `/fediverse/blog/:url`. Following and followers are exposed as paginated collections, subject to the account's visibility settings. ActivityPub content negotiation, deleted accounts, and access checks affect the response; see the [routes](https://codeberg.org/wafrn/wafrn/src/commit/f2bdd67849f44227d932c9ed0aa91b6af06d512d/packages/backend/routes/activitypub/activitypub.ts). Post objects and replies are served under `/fediverse/post/`.
+Wafrn can resolve a post that is only on AT Protocol (an `at://` URI) when Bluesky lookup is enabled, and it recognises Bridgy Fed's `bsky.brid.gy` URLs, treating those as the original Bluesky posts and avoiding duplicates. It does not itself speak ActivityPub to Bluesky: bridged content arrives as ActivityPub from Bridgy. Where a conversation crosses the boundary, the AP and AT copies are mapped to one post by the lookup code. `[source-verified]` [getPostThreadRecursive.ts](https://codeberg.org/wafrn/wafrn/src/commit/f2bdd67849f44227d932c9ed0aa91b6af06d512d/packages/backend/activitypub/getPostThreadRecursive.ts) lines around the `at://` and `brid.gy` branches; deeper mapping rules `[unverified]`.
 
-The [inbox processor](https://codeberg.org/wafrn/wafrn/src/commit/f2bdd67849f44227d932c9ed0aa91b6af06d512d/packages/backend/queueProcessors/inbox.ts) dispatches `Accept`, `Reject`, `Announce`, `Create`, `Follow`, `Update`, `Undo`, `Like`, `Delete`, `EmojiReact`, `Remove`, `Add`, `Block`, `Move`, `Flag`, quote requests and interaction requests. Handling a type does not imply every object or policy is supported. `ReplyRequest` and `AnnounceRequest` for manual-approval policies are answered automatically according to the existing interaction rules; there is no manual review in those handlers. Request and authorization objects can be dereferenced on the routes above.
+### Operational behaviour
 
-The [post import](https://codeberg.org/wafrn/wafrn/src/commit/f2bdd67849f44227d932c9ed0aa91b6af06d512d/packages/backend/activitypub/getPostThreadRecursive.ts) and [outbound preparation](https://codeberg.org/wafrn/wafrn/src/commit/f2bdd67849f44227d932c9ed0aa91b6af06d512d/packages/backend/queueProcessors/prepareSendRemotePost.ts) contain the detailed mappings and recipient rules. Administrators should consult the [configuration](https://codeberg.org/wafrn/wafrn/src/commit/f2bdd67849f44227d932c9ed0aa91b6af06d512d/packages/backend/environment.example.ts) and deployment documentation for instance-specific behavior.
+- Inbound activities are queued and processed asynchronously. `[source-verified]`
+- An `Update` is deliberately delayed 5 seconds before being applied. `[source-verified]`
+- Outbound delivery is built in `prepareSendRemotePost`; retry details were not read. `[unverified]`
+
+### Failure behaviour
+
+| Condition | Behaviour | Evidence |
+| --------- | --------- | -------- |
+| Missing post or unresolved instrument for a quote or reply request | nothing is sent | `[source-verified]` |
+| Disallowed reply request | `Reject` | `[source-verified]` |
+| Announce request with an instrument on another host, or mismatched actor/object | ignored | `[source-verified]` |
+| Cross-account delete shortcut | rejected | `[source-verified]` |
+| Invalid POST signature | request not processed | `[source-verified]` |
+
+### Examples
+
+An `Accept` for a quote request, as constructed by the handler (not captured):
+
+```json
+{
+  "@context": ["https://www.w3.org/ns/activitystreams", "https://wafrn.example/contexts/litepub-0.1.jsonld"],
+  "type": "Accept",
+  "id": "https://wafrn.example/fediverse/quote_request/123",
+  "actor": "https://wafrn.example/fediverse/blog/alice",
+  "object": { "type": "QuoteRequest", "object": "https://wafrn.example/fediverse/post/…", "instrument": { "id": "https://other.example/notes/9" } },
+  "result": "https://wafrn.example/fediverse/quote_authorization/123"
+}
+```
 
 ## Sources
 
-- [Wafrn repository](https://codeberg.org/wafrn/wafrn) — source the document was written from, at commit `f2bdd67849f44227d932c9ed0aa91b6af06d512d`
+- [Wafrn repository](https://codeberg.org/wafrn/wafrn) — source read at commit `f2bdd67849f44227d932c9ed0aa91b6af06d512d`
+- [inbox.ts](https://codeberg.org/wafrn/wafrn/src/commit/f2bdd67849f44227d932c9ed0aa91b6af06d512d/packages/backend/queueProcessors/inbox.ts) — dispatch and the interaction request handlers
+- [FEP-044f](../feps/fep-044f.md) — quote model

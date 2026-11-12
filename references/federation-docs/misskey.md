@@ -1,82 +1,115 @@
-# Misskey FEDERATION.md (community-written)
+# Misskey federation behaviour (community-written)
 
-> **Disclaimer.** This document was **not written by the Misskey maintainers**. It was written for this wiki, following the `FEDERATION.md` convention, from studying the project's source at the commit below. It may be incomplete or inaccurate. Do not treat it as the project's own statement, and do not cite it as one. Where it matters, verify against the source.
+> **Disclaimer.** This document was **not written by the Misskey maintainers**. It was written for this wiki from the project's source and may be incomplete or inaccurate. Do not cite it as a statement by the project. It follows the structure of [FEP-67ff](../feps/fep-67ff.md) but the project does not publish such a file, so it does not mean Misskey conforms to that FEP.
 
-Misskey does not publish a `FEDERATION.md` of its own. This page holds the wiki's copy of the one written for it, so it can be read and searched alongside the documents the projects publish themselves (see the [index](index.md)).
-
-## Document details
+## Provenance
 
 | Field | Value |
 | ----- | ----- |
-| Author | Written for this wiki, not by upstream |
-| Repository studied | [github.com/misskey-dev/misskey](https://github.com/misskey-dev/misskey) |
-| Studied at commit | `5163caea120c901017eb52da17332939d527b8f2` (2026-11-11) |
-| Status | Not fact-checked against source (`[hypothesis]` until verified). Headings demoted two levels so they nest under this page. |
+| Authorship | Written for this wiki, not by upstream |
+| Project repository | [github.com/misskey-dev/misskey](https://github.com/misskey-dev/misskey) |
+| Release basis | Development snapshot: 8 commits after tag `2026.11.0-beta.1`, a pre-release. |
+| Commit | `5163caea120c901017eb52da17332939d527b8f2` (2026-11-11) |
+| Other wiki revisions | The [Misskey case study](../../servers/case-studies/misskey.md) and [fact sheet](../software/misskey.md) pin release 2026.10.1 (`4840fa6`). Findings below are for a later snapshot; the `Update(Note)` limitation is also recorded for 2026.10.1 on the [post-edits record](../../federation/compatibility/post-edits.md). |
+| Verification | Partial. `[source-verified]` items were read at this commit. |
 
-When the project changes, the document needs re-checking against the new source; update the commit above when it is.
+Claim labels used below: `[source-verified]` read in the source at the commit named above; `[upstream-documented]` stated in the project's documentation and not checked in source; `[observed]` seen in a test or captured exchange; `[inferred]` concluded from source without a test; `[unverified]` carried over from an earlier draft and not checked.
 
 ## Document
 
-### Federation
+### Protocols and standards
 
-#### Supported federation protocols and standards
+| Standard | Direction | Evidence |
+| -------- | --------- | -------- |
+| ActivityPub server-to-server | sends and receives; shared inbox `POST /inbox`, per-user `POST /users/:user/inbox` | `[source-verified]` [ActivityPubServerService](https://github.com/misskey-dev/misskey/blob/5163caea120c901017eb52da17332939d527b8f2/packages/backend/src/server/ActivityPubServerService.ts) |
+| WebFinger, NodeInfo 2.0 and 2.1 | serves | `[source-verified]` [WellKnownServerService](https://github.com/misskey-dev/misskey/blob/5163caea120c901017eb52da17332939d527b8f2/packages/backend/src/server/WellKnownServerService.ts) |
+| HTTP signatures (draft-cavage, `rsa-sha256`) | verifies and signs | `[upstream-documented]`; inbox parsing in the server service |
+| `RsaSignature2017` Linked Data signatures | signs outgoing activities and verifies embedded signatures on relayed ones | `[source-verified]` [`attachLdSignature`](https://github.com/misskey-dev/misskey/blob/5163caea120c901017eb52da17332939d527b8f2/packages/backend/src/core/activitypub/ApRendererService.ts), [JsonLdService](https://github.com/misskey-dev/misskey/blob/5163caea120c901017eb52da17332939d527b8f2/packages/backend/src/core/activitypub/JsonLdService.ts) |
 
-- [ActivityPub](https://www.w3.org/TR/activitypub/) (server-to-server)
-- [WebFinger](https://webfinger.net/)
-- [HTTP Signatures](https://datatracker.ietf.org/doc/html/draft-cavage-http-signatures)
-- [NodeInfo](https://nodeinfo.diaspora.software/)
+### Supported FEPs
 
-#### Supported FEPs
+No FEP support was established. Misskey-specific terms (`_misskey_quote`, `_misskey_reaction`, `_misskey_votes`) predate or sit beside FEPs; see the extensions below. An earlier draft listed FEP-67ff as supported; that was wrong (see the disclaimer) and has been removed. FEP-044f is not read by Misskey's inbound quote code at this commit (see Quotes).
 
-- [FEP-67ff: FEDERATION.md](https://codeberg.org/fediverse/fep/src/branch/main/fep/67ff/fep-67ff.md)
+### Discovery
 
-#### ActivityPub in Misskey
+Actor and note URLs include `/users/{user}` and `/notes/{note}`; ActivityPub representations are chosen by content negotiation. Actors expose public keys and featured collections. `[source-verified]` [ActivityPubServerService](https://github.com/misskey-dev/misskey/blob/5163caea120c901017eb52da17332939d527b8f2/packages/backend/src/server/ActivityPubServerService.ts)
 
-Misskey federates accounts, notes and interactions using ActivityPub. Its ActivityPub vocabulary includes Misskey-specific extensions; peers should not assume every Misskey feature has a direct equivalent in other software.
+### Authentication and limits
 
-- [ActivityPub extensions](https://github.com/misskey-dev/misskey/blob/5163caea120c901017eb52da17332939d527b8f2/docs/contributing/activitypub.md)
-- [ActivityPub types](https://github.com/misskey-dev/misskey/blob/5163caea120c901017eb52da17332939d527b8f2/packages/backend/src/core/activitypub/type.ts)
+| Item | Behaviour | Evidence |
+| ---- | --------- | -------- |
+| Inbox body limit | 64 KiB (`bodyLimit: 1024 * 64`) on both inboxes; larger bodies are rejected | `[source-verified]` same file |
+| Split of work | signature parsing, SHA-256 body digest and host checks at the HTTP endpoint; key resolution and cryptographic verification later in the queued inbox processor | `[source-verified]` [InboxProcessorService](https://github.com/misskey-dev/misskey/blob/5163caea120c901017eb52da17332939d527b8f2/packages/backend/src/queue/processors/InboxProcessorService.ts) |
+| Actor refresh | a remote actor not fetched in the last 24 hours is refreshed when it sends an activity | `[source-verified]` [ApInboxService](https://github.com/misskey-dev/misskey/blob/5163caea120c901017eb52da17332939d527b8f2/packages/backend/src/core/activitypub/ApInboxService.ts) |
 
-##### WebFinger and HTTP Signatures
+### Activity and object matrix
 
-Misskey exposes WebFinger for actor discovery and NodeInfo 2.0 and 2.1 for server metadata. Inbox requests require an HTTP signature covering `(request-target)`, `host`, `date` and `digest`; outbound signatures use `rsa-sha256`.
+The inbox dispatcher recognises `Create`, `Delete`, `Update`, `Follow`, `Accept`, `Reject`, `Add`, `Remove`, `Announce`, `Like`, `Undo`, `Block`, `Flag`, `Move`; anything else returns "unrecognized activity type". `[source-verified]` [`performOneActivity`](https://github.com/misskey-dev/misskey/blob/5163caea120c901017eb52da17332939d527b8f2/packages/backend/src/core/activitypub/ApInboxService.ts). An activity name alone is not support; the object type decides:
 
-- [Discovery endpoints](https://github.com/misskey-dev/misskey/blob/5163caea120c901017eb52da17332939d527b8f2/packages/backend/src/server/WellKnownServerService.ts)
-- [Inbox implementation](https://github.com/misskey-dev/misskey/blob/5163caea120c901017eb52da17332939d527b8f2/packages/backend/src/server/ActivityPubServerService.ts)
-- [Signed requests](https://github.com/misskey-dev/misskey/blob/5163caea120c901017eb52da17332939d527b8f2/packages/backend/src/core/activitypub/ApRequestService.ts)
+| Activity | Object | Accepts | Notes |
+| -------- | ------ | ------- | ----- |
+| `Update` | `Person` and other actors | **yes** | refreshes the actor; the activity actor must equal the stored actor URI |
+| `Update` | `Question` | **yes** | updates the poll's vote totals |
+| `Update` | **`Note`** and other post types | **no** | returns `skip: Unknown type`. A Mastodon-style post edit is not applied |
+| `Create` | post types | yes | |
+| `Delete` | notes, actors | yes | |
+| `Like` | note | yes | becomes a reaction, see below |
+| `Announce` | post | yes | becomes a renote; also from relays |
+| `Undo` | `Follow`, `Block`, `Like`, `Announce`, `Accept` | yes | |
+| `Move` | actor | yes | |
+| `Flag` | | yes | report |
 
-##### Optional extensions
+The `Update(Note)` row is the most important single fact in this table: a sender that edits a post will see the edit federate to Mastodon-family servers but not apply on Misskey 2026.11.0-beta.1 development builds like this one. `[source-verified]` [`update`](https://github.com/misskey-dev/misskey/blob/5163caea120c901017eb52da17332939d527b8f2/packages/backend/src/core/activitypub/ApInboxService.ts); the same behaviour is recorded for the 2026.10.1 release on the [post-edits record](../../federation/compatibility/post-edits.md).
 
-Misskey implements `RsaSignature2017` Linked Data Signatures for activities.
+### Distinctive behaviour
 
-- [Linked Data signature implementation](https://github.com/misskey-dev/misskey/blob/5163caea120c901017eb52da17332939d527b8f2/packages/backend/src/core/activitypub/JsonLdService.ts)
+| Topic | Outbound | Inbound | Evidence |
+| ----- | -------- | ------- | -------- |
+| Reactions | `Like` with `content` and `_misskey_reaction` both set to the reaction; custom emoji add an `Emoji` tag unless local-only | `Like` becomes a reaction using `_misskey_reaction`, else `content`, else `name`; "already reacted" is skipped. There is no `EmojiReact` branch | `[source-verified]` [`renderLike`](https://github.com/misskey-dev/misskey/blob/5163caea120c901017eb52da17332939d527b8f2/packages/backend/src/core/activitypub/ApRendererService.ts), [`like`](https://github.com/misskey-dev/misskey/blob/5163caea120c901017eb52da17332939d527b8f2/packages/backend/src/core/activitypub/ApInboxService.ts) |
+| Quotes | `_misskey_quote` and `quoteUrl`, both the quoted URL | reads `_misskey_quote` or `quoteUrl` only; not `quoteUri`, not FEP-044f `quote`, in the code read | `[source-verified]` [ApNoteService](https://github.com/misskey-dev/misskey/blob/5163caea120c901017eb52da17332939d527b8f2/packages/backend/src/core/activitypub/models/ApNoteService.ts) |
+| Renotes | `Announce` (public, home, followers visibility only; "cannot render non-public note" otherwise) | `Announce` of a post | `[source-verified]` |
+| Polls | `Question` with `oneOf`/`anyOf` choices and `_misskey_votes` per choice | `Question` choices read from `oneOf` or `anyOf` by `name` | `[source-verified]` [`renderQuestion`](https://github.com/misskey-dev/misskey/blob/5163caea120c901017eb52da17332939d527b8f2/packages/backend/src/core/activitypub/ApRendererService.ts), [ApQuestionService](https://github.com/misskey-dev/misskey/blob/5163caea120c901017eb52da17332939d527b8f2/packages/backend/src/core/activitypub/models/ApQuestionService.ts) |
+| Poll vote | `Create` of a `Note` with `name` = the chosen option, `inReplyTo` = the poll note, addressed `to` the poll owner only; the id uses a `#votes/` fragment | not read | `[source-verified]` outbound, `[unverified]` inbound |
+| Visibility mapping | public: `to` Public, `cc` followers. home: `to` followers, `cc` Public. followers: `to` followers. specified: explicit recipients. Inbound audience is parsed into a visibility and visible users; an empty "specified" audience is raised to public in one case | `[source-verified]` [ApRendererService](https://github.com/misskey-dev/misskey/blob/5163caea120c901017eb52da17332939d527b8f2/packages/backend/src/core/activitypub/ApRendererService.ts), [ApNoteService](https://github.com/misskey-dev/misskey/blob/5163caea120c901017eb52da17332939d527b8f2/packages/backend/src/core/activitypub/models/ApNoteService.ts) |
 
-#### Size limits
+Consumers should treat the extension terms as optional; older releases and other software may omit them. `[upstream-documented]` [ActivityPub extensions](https://github.com/misskey-dev/misskey/blob/5163caea120c901017eb52da17332939d527b8f2/docs/contributing/activitypub.md)
 
-| Limited property | Size limit | Consequence of exceeding the limit |
-| --- | --- | --- |
-| Inbox request body | 64 KiB | Request is rejected |
+### Operational behaviour
 
-The limit applies to both the shared inbox and per-user inbox. Other limits apply to imported objects and attachments.
+- Queue-based inbox processing; the HTTP endpoint accepts quickly and verification runs later. `[source-verified]`
+- Object creation takes a per-object Redis lock keyed by the activity URI to avoid concurrent duplicate work. `[source-verified]` [`announceNote`](https://github.com/misskey-dev/misskey/blob/5163caea120c901017eb52da17332939d527b8f2/packages/backend/src/core/activitypub/ApInboxService.ts)
 
-##### Endpoints and supported activity types
+### Failure behaviour
 
-The shared inbox is `POST /inbox`; `POST /users/{user}/inbox` uses the same handler. Actor and note URLs include `/users/{user}` and `/notes/{note}`; ActivityPub representations are selected by content negotiation. Actor endpoints also expose public keys and featured collections. The authoritative routes are in [ActivityPubServerService](https://github.com/misskey-dev/misskey/blob/5163caea120c901017eb52da17332939d527b8f2/packages/backend/src/server/ActivityPubServerService.ts).
+| Condition | Behaviour | Evidence |
+| --------- | --------- | -------- |
+| Suspended remote actor | activity ignored | `[source-verified]` |
+| `Update` actor differs from stored actor | `skip: invalid actor` | `[source-verified]` |
+| `Update` of an unsupported object type | `skip: Unknown type` | `[source-verified]` |
+| `Like` target note not found | `skip: target note not found` | `[source-verified]` |
+| Announce target unresolved or federation-blocked URI | skipped | `[source-verified]` |
+| Body over 64 KiB | rejected | `[source-verified]` |
+| Quote target unfetchable | permanent versus temporary error is distinguished | `[source-verified]` |
+| Retry behaviour of failed inbox jobs | not read | `[unverified]` |
 
-The [inbox dispatcher](https://github.com/misskey-dev/misskey/blob/5163caea120c901017eb52da17332939d527b8f2/packages/backend/src/core/activitypub/ApInboxService.ts) handles `Create`, `Delete`, `Update`, `Follow`, `Accept`, `Reject`, `Add`, `Remove`, `Announce`, `Like`, `Undo`, `Block`, `Flag`, and `Move`, subject to object type and authorization checks. `Undo` handling includes follows, blocks, likes and announces. Support for an activity type does not imply support for every possible object. Notes, attachments, mentions, polls and emoji reactions use the structures and extensions in the [ActivityPub types](https://github.com/misskey-dev/misskey/blob/5163caea120c901017eb52da17332939d527b8f2/packages/backend/src/core/activitypub/type.ts) and [renderers](https://github.com/misskey-dev/misskey/blob/5163caea120c901017eb52da17332939d527b8f2/packages/backend/src/core/activitypub/ApRendererService.ts).
+### Examples
 
-##### Authentication and delivery
+A `Like` carrying a reaction, constructed from `renderLike` and not captured from a server:
 
-The inbox checks a SHA-256 body digest and the signed host; its host must match the configured host. Signature parsing and digest checks occur at the HTTP endpoint, and key resolution and cryptographic verification occur in the queued [inbox processor](https://github.com/misskey-dev/misskey/blob/5163caea120c901017eb52da17332939d527b8f2/packages/backend/src/queue/processors/InboxProcessorService.ts). The processor also handles embedded `RsaSignature2017` signatures when processing relayed activities; it checks the author and signer relationship. POST signatures use `(request-target)`, `date`, `host`, and `digest`; signed GETs omit the body digest. See [request signing](https://github.com/misskey-dev/misskey/blob/5163caea120c901017eb52da17332939d527b8f2/packages/backend/src/core/activitypub/ApRequestService.ts).
-
-Misskey-specific properties such as `_misskey_quote`, `_misskey_reaction`, and `_misskey_votes` are defined in the [JSON-LD context](https://github.com/misskey-dev/misskey/blob/5163caea120c901017eb52da17332939d527b8f2/packages/backend/src/core/activitypub/misc/contexts.ts). Consumers should treat extensions as optional: older releases and other software may omit them. Discovery, delivery, visibility, moderation, and supported content are affected by server settings.
-
-##### Additional documentation
-
-- [Inbox activity processing](https://github.com/misskey-dev/misskey/blob/5163caea120c901017eb52da17332939d527b8f2/packages/backend/src/core/activitypub/ApInboxService.ts)
-- [Remote object resolution](https://github.com/misskey-dev/misskey/blob/5163caea120c901017eb52da17332939d527b8f2/packages/backend/src/core/activitypub/ApResolverService.ts)
-- [ActivityPub payload contribution guide](https://github.com/misskey-dev/misskey/blob/5163caea120c901017eb52da17332939d527b8f2/docs/contributing/activitypub.md)
+```json
+{
+  "type": "Like",
+  "id": "https://misskey.example/likes/abc123",
+  "actor": "https://misskey.example/users/u1",
+  "object": "https://remote.example/notes/n1",
+  "content": ":blobcat:",
+  "_misskey_reaction": ":blobcat:",
+  "tag": [{ "type": "Emoji", "name": ":blobcat:" }]
+}
+```
 
 ## Sources
 
-- [Misskey repository](https://github.com/misskey-dev/misskey) — source the document was written from, at commit `5163caea120c901017eb52da17332939d527b8f2`
+- [Misskey repository](https://github.com/misskey-dev/misskey) — source read at commit `5163caea120c901017eb52da17332939d527b8f2`
+- [ApInboxService.ts](https://github.com/misskey-dev/misskey/blob/5163caea120c901017eb52da17332939d527b8f2/packages/backend/src/core/activitypub/ApInboxService.ts) — dispatcher and handlers
+- [ApRendererService.ts](https://github.com/misskey-dev/misskey/blob/5163caea120c901017eb52da17332939d527b8f2/packages/backend/src/core/activitypub/ApRendererService.ts) — outgoing representations

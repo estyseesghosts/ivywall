@@ -1,89 +1,106 @@
-# Catodon FEDERATION.md (community-written)
+# Catodon federation behaviour (community-written)
 
-> **Disclaimer.** This document was **not written by the Catodon maintainers**. It was written for this wiki, following the `FEDERATION.md` convention, from studying the project's source at the commit below. It may be incomplete or inaccurate. Do not treat it as the project's own statement, and do not cite it as one. Where it matters, verify against the source.
+> **Disclaimer.** This document was **not written by the Catodon maintainers**. It was written for this wiki from the project's source and may be incomplete or inaccurate. Do not cite it as a statement by the project. It follows the structure of [FEP-67ff](../feps/fep-67ff.md) but the project does not publish such a file, so it does not mean Catodon conforms to that FEP.
 
-Catodon does not publish a `FEDERATION.md` of its own. This page holds the wiki's copy of the one written for it, so it can be read and searched alongside the documents the projects publish themselves (see the [index](index.md)).
-
-## Document details
+## Provenance
 
 | Field | Value |
 | ----- | ----- |
-| Author | Written for this wiki, not by upstream |
-| Repository studied | [codefloe.com/catodon/catodon](https://codefloe.com/catodon/catodon) |
-| Studied at commit | `a7319c535ecc4ac0bcb3727637e1f42749019d18` (2026-11-11) |
-| Status | Not fact-checked against source (`[hypothesis]` until verified). Headings demoted two levels so they nest under this page. |
+| Authorship | Written for this wiki, not by upstream |
+| Project repository | [codefloe.com/catodon/catodon](https://codefloe.com/catodon/catodon) |
+| Release basis | Development snapshot: 38 commits after tag `26.11.0-rc.1`, a release candidate. |
+| Commit | `a7319c535ecc4ac0bcb3727637e1f42749019d18` (2026-11-11) |
+| Other wiki revisions | No Catodon case study or fact sheet exists, so there is no other pinned revision. |
+| Verification | Partial. `[source-verified]` items were read in the local checkout of this commit; `[inferred]` rows rest on references, not on reading the behaviour. The hosting site (CodeFloe) could not be retrieved independently, so the links point at it but were not re-fetched. |
 
-When the project changes, the document needs re-checking against the new source; update the commit above when it is.
+Claim labels used below: `[source-verified]` read in the source at the commit named above; `[upstream-documented]` stated in the project's documentation and not checked in source; `[observed]` seen in a test or captured exchange; `[inferred]` concluded from source without a test; `[unverified]` carried over from an earlier draft and not checked.
 
 ## Document
 
-### Federation
+Catodon is a Misskey-derived server. It is not wire-identical to Misskey; the clearest difference found here is that it applies `Update` of ordinary posts (see the matrix). Each claim below is separated so it can be checked on its own.
 
-#### Supported federation protocols and standards
+### Protocols and standards
 
-- [ActivityPub](https://www.w3.org/TR/activitypub/) (server-to-server; optional client-to-server API)
-- [WebFinger](https://webfinger.net/)
-- [HTTP Signatures](https://datatracker.ietf.org/doc/html/draft-cavage-http-signatures) and [HTTP Message Signatures](https://www.rfc-editor.org/rfc/rfc9421)
-- [NodeInfo](https://nodeinfo.diaspora.software/)
+| Standard | Direction | Evidence |
+| -------- | --------- | -------- |
+| ActivityPub server-to-server | sends and receives; shared inbox and per-user inbox, each with a **64 KiB** body limit | `[source-verified]` [ActivityPubServerService](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/server/ActivityPubServerService.ts) |
+| ActivityPub client-to-server | optional, **on unless an administrator turns off "ActivityPub client API"**; it carries out posted activities through the same endpoints the Misskey and Mastodon APIs use, and answers HTTP 422 with `application/problem+json` where Misskey cannot express the request | `[source-verified]` [COMPATIBILITY.md](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/server/activitypub-c2s/COMPATIBILITY.md) |
+| WebFinger, NodeInfo | served | `[source-verified]` [WellKnownServerService](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/server/WellKnownServerService.ts) |
+| HTTP signatures (draft) and RFC 9421 | verifies both on inboxes; signing and requiring signatures on GET are configurable | `[upstream-documented]` earlier draft; `[unverified]` here |
+| `RsaSignature2017` linked-data signatures | handled, including for relayed activities | `[source-verified]` [JsonLdService](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/core/activitypub/JsonLdService.ts) exists |
 
-#### Supported FEPs
+### Supported FEPs
 
-- [FEP-67ff: FEDERATION.md](https://codeberg.org/fediverse/fep/src/branch/main/fep/67ff/fep-67ff.md)
-- [FEP-044f: Consent-respecting quote posts](https://codeberg.org/fediverse/fep/src/branch/main/fep/044f/fep-044f.md): quote policies, requests and authorization stamps.
-- [FEP-1b12: Group federation](https://codeberg.org/fediverse/fep/src/branch/main/fep/1b12/fep-1b12.md): forum Group actors and relayed activities.
-- [FEP-7888](https://codeberg.org/fediverse/fep/src/branch/main/fep/7888/fep-7888.md): preserves an external conversation `context` identifier when rendering a post; it does not advertise local collection URIs for this purpose.
-- [FEP-4f05](https://codeberg.org/fediverse/fep/src/branch/main/fep/4f05/fep-4f05.md): emits a forum `Announce(Undo(Delete))` when restoring a moderator-removed post; receivers without this behavior may retain the tombstone.
-- [FEP-e232](https://codeberg.org/fediverse/fep/src/branch/main/fep/e232/fep-e232.md): reads and emits the legacy Misskey quote link in `tag`, alongside newer quote handling.
-- [FEP-2677: Identifying the Application Actor](https://codeberg.org/fediverse/fep/src/branch/main/fep/2677/fep-2677.md): the application actor is linked from NodeInfo discovery.
-- [FEP-5feb: Search indexing consent for actors](https://codeberg.org/fediverse/fep/src/branch/main/fep/5feb/fep-5feb.md): respects remote actors' indexing preference.
-- [FEP-8a8e: ActivityPub Events](https://codeberg.org/fediverse/fep/src/branch/main/fep/8a8e/fep-8a8e.md): events and attendance, including Join and Leave.
-- [FEP-b2b8: Long-form Text](https://codeberg.org/fediverse/fep/src/branch/main/fep/b2b8/fep-b2b8.md): Article posts.
-- [FEP-ee3a: EXIF metadata](https://codeberg.org/fediverse/fep/src/branch/main/fep/ee3a/fep-ee3a.md): image metadata a user chooses to share.
-- [FEP-5837: Content provenance](https://codeberg.org/fediverse/fep/src/branch/main/fep/5837/fep-5837.md): reads and sends digital source types; content credentials are read only.
-- [FEP-d8c2: Client identification](https://codeberg.org/fediverse/fep/src/branch/main/fep/d8c2/fep-d8c2.md): ActivityPub Application objects can identify OAuth clients.
+Each row is a separate claim with its own evidence. "References" means the FEP number or its distinctive fields appear in the named files; it is weaker than a read of the behaviour.
 
-#### ActivityPub in Catodon
+| FEP | Claim | Direction | Support level | Evidence |
+| --- | ----- | --------- | ------------- | -------- |
+| 044f | quote policies, requests, authorization stamps | accepts `QuoteRequest` and answers `Accept` with a stamp or `Reject`; verifies stamps by dereferencing; emits requests | **substantial**: a dedicated handler checks that the request id host equals the actor host, requires an `instrument`, applies a rate limit and returns `Reject` on refusal | `[source-verified]` [ApInboxService `quoteRequest`](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/core/activitypub/ApInboxService.ts), [check-quote-authorization.ts](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/core/activitypub/misc/check-quote-authorization.ts) |
+| 1b12 | forum `Group` actors relay member activities | emits and accepts | present | `[inferred]` references in [ApInboxService](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/core/activitypub/ApInboxService.ts) and [ApRendererService](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/core/activitypub/ApRendererService.ts) |
+| 7888 | keeps an external conversation `context` | accepts; does not advertise local context collection URIs | partial | `[inferred]` reference in [type.ts](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/core/activitypub/type.ts) |
+| 4f05 | emits `Announce(Undo(Delete))` when restoring a moderator-removed post | emits | partial; receivers without the behaviour may keep the tombstone | `[inferred]` reference in [ForumModerationService](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/core/ForumModerationService.ts) |
+| e232 | reads and emits the legacy Misskey quote link in `tag` | both | compatibility | `[inferred]` references in [ApRendererService](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/core/activitypub/ApRendererService.ts) and [ApNoteService](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/core/activitypub/models/ApNoteService.ts) |
+| 2677 | application actor linked from NodeInfo | emits | present | `[source-verified]` file [fep-2677.ts](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/misc/fep-2677.ts) and [NodeinfoServerService](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/server/NodeinfoServerService.ts) |
+| 5feb | respects remote actors' search-indexing preference | accepts | partial | `[inferred]` references in [ApPersonService](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/core/activitypub/models/ApPersonService.ts) |
+| 8a8e | events and attendance (`Join`, `Leave`, tentative accept/reject) | both | partial; attendance fields vary by peer | `[source-verified]` inbox dispatch handles `Invite`, `Join`, `Leave`, `TentativeAccept`, `TentativeReject`; mapping is in the events guide |
+| b2b8 | long-form `Article` posts | both | present | `[inferred]` [BlogPublishService](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/core/BlogPublishService.ts) |
+| ee3a | EXIF metadata a user chooses to share | both | opt-in | `[inferred]` [ApImageService](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/core/activitypub/models/ApImageService.ts) |
+| 5837 | content provenance: digital source types read and sent; content credentials read only | both, asymmetric | partial | `[inferred]` references in [ApImageService](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/core/activitypub/models/ApImageService.ts) |
+| d8c2 | `Application` objects identify OAuth clients | emits | partial | `[inferred]` [ApRendererService](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/core/activitypub/ApRendererService.ts) |
 
-Catodon federates posts, profiles, forums, events and other activities using ActivityPub. The optional client-to-server API is documented separately, including its supported operations and differences: [ActivityPub client-to-server compatibility](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/server/activitypub-c2s/COMPATIBILITY.md).
+An earlier draft listed FEP-67ff as supported; that was wrong (see the disclaimer) and has been removed. Rows marked `[inferred]` need a read of the behaviour before being used in a compatibility claim.
 
-##### WebFinger
+### Discovery
 
-Catodon exposes WebFinger for local account discovery. See the [well-known server](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/server/WellKnownServerService.ts).
+WebFinger for local accounts; the application actor is linked from NodeInfo (FEP-2677 row). Public upcoming events are exposed through a collection. `[upstream-documented]` [events federation guide](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/docs/events-federation.md)
 
-##### HTTP Signatures
+### Authentication
 
-Catodon verifies both draft HTTP Signatures and RFC 9421 signatures on inbox requests. Signing outgoing GET requests and requiring signatures on GET requests are configurable. See the [ActivityPub server](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/server/ActivityPubServerService.ts), [inbox processor](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/queue/processors/InboxProcessorService.ts) and [configuration](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/config.ts).
+See the protocols table. A received quote authorization is not trusted merely because it is embedded in a post; it is dereferenced and checked. `[source-verified]` [check-quote-authorization.ts](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/core/activitypub/misc/check-quote-authorization.ts) exists and the handler calls into the quote service.
 
-##### Optional extensions
+### Activity and object matrix
 
-Catodon handles `RsaSignature2017` linked-data signatures, including for relayed activities. See [JSON-LD signature handling](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/core/activitypub/JsonLdService.ts).
+Inbox dispatch handles `Create`, `Delete`, `Update`, `Follow`, `Accept`, `Reject`, `Add`, `Remove`, `Announce`, `Like`, `Dislike`, `Undo`, `Block`, `Flag`, `Move`, `QuoteRequest`, `Invite`, `Join`, `Leave`, `TentativeAccept`, `TentativeReject`. `[source-verified]` [ApInboxService `performOneActivity`](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/core/activitypub/ApInboxService.ts)
 
-##### Additional documentation
+| Activity | Object | Accepts | Behaviour |
+| -------- | ------ | ------- | --------- |
+| `Update` | actor | yes | refreshes the actor; the activity actor must equal the stored actor |
+| `Update` | `Question` | yes | creates the poll if unknown; a later edit date is applied as an edit; otherwise only the vote counts are applied |
+| `Update` | post types (`Note`, `Article`, others) and BookWyrm native posts | **yes** | applied as an edit; if the post is unknown it is created instead (this covers Mastodon sending a quote's approval as an `Update` straight after its `Create`) |
+| `QuoteRequest` | quoted post | yes | see FEP-044f row |
+| `Like` / `Dislike` | note | yes | both have handlers |
 
-- [Catodon documentation](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/docs/)
-- [ActivityPub implementation](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/core/activitypub/)
+This differs from Misskey 2026.11.0-beta.1 development builds, whose handler skips `Update` of ordinary posts (see the [Misskey document](misskey.md)). `[source-verified]` [`update`](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/core/activitypub/ApInboxService.ts)
 
+### Distinctive behaviour
 
-##### Actors, content and interoperability
+- Quote posts: can advertise a policy, request authorization, verify dereferenced stamps and process `Accept`/`Reject`; also understands older quote forms. `[source-verified]` handler above and [QuotePolicyService](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/core/QuotePolicyService.ts)
+- Events, places and nearby search are documented in [Nearby federation](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/docs/nearby-federation.md) and the events guide. `[upstream-documented]`
+- The client API advertises OAuth discovery and selected outbox operations; accepted operations and unsupported addressing are listed in the compatibility notes. A post with no addressees becomes visible only to its author, never public by omission. `[source-verified]` [COMPATIBILITY.md](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/server/activitypub-c2s/COMPATIBILITY.md)
 
-Catodon represents accounts as ActivityPub actors and exchanges posts, replies, reposts, reactions, polls, follows, blocks and reports. Forums use `Group` actors and relay member activities; forum moderation and restoration have their own semantics. The [ActivityPub implementation](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/core/activitypub/) and [inbox handling](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/queue/processors/InboxProcessorService.ts) specify which combinations are accepted.
+### Operational behaviour
 
-For quote posts Catodon can advertise a policy, request authorization, verify dereferenced authorization stamps, and process acceptance or rejection. It also understands older quote forms for interoperability. A received authorization is not trusted merely because it is embedded in a post. See [quote handling](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/core/QuotePolicyService.ts) and [post parsing](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/core/activitypub/models/ApNoteService.ts).
+- 64 KiB inbox body limit. `[source-verified]`
+- Inbound `QuoteRequest`s are rate-limited per remote actor and quoted post. `[source-verified]`
+- Per-object locking and retry behaviour for the inbox queue were not read. `[unverified]`
 
-Events contain dates, places, status and attendance information. Public upcoming events are exposed through a collection; the attendance protocol and fields vary by peer. The [events federation guide](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/docs/events-federation.md) documents the mappings, privacy, compatibility exceptions and limitations. Long-form `Article` posts use the [blog publishing implementation](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/core/BlogPublishService.ts). Place search, location privacy, opt-in EXIF and content provenance are detailed in the [Nearby federation guide](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/docs/nearby-federation.md).
+### Failure behaviour
 
-##### Client-to-server API
+| Condition | Behaviour | Evidence |
+| --------- | --------- | -------- |
+| `QuoteRequest` without an id, with a mismatched id host, or without an `instrument` | skipped with a reason | `[source-verified]` |
+| `QuoteRequest` rate-limited, unauthorised, or for a missing post | `Reject` delivered | `[source-verified]` |
+| `Update` with a mismatched actor | `skip: invalid actor` | `[source-verified]` |
+| `Update` of an unsupported type | `skip: Unsupported type for Update` | `[source-verified]` |
+| Client API request Misskey cannot express | HTTP 422 `problem+json` | `[source-verified]` |
+| Body over 64 KiB | rejected | `[source-verified]` |
 
-The optional ActivityPub client API exposes OAuth discovery and selected outbox operations and collections. It is controlled by server policy; accepted operations, scopes, authorization and unsupported addressing are documented in the [client API guide](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/docs/activitypub-client-api.md) and [compatibility matrix](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/server/activitypub-c2s/COMPATIBILITY.md). URL-identified OAuth clients may also use an ActivityPub `Application` or `Service` as described there.
+### Examples
 
-#### Size limits
-
-| Limited property | Size limit | Consequence |
-| --- | --- | --- |
-| Shared and per-user inbox request body | 64 KiB | Request rejected by the HTTP server |
-
-Other validation, media, event, place and configuration limits apply independently. See the [server routes](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/server/ActivityPubServerService.ts) and the linked guides.
+> Unknown: no captured or constructed exchange has been added yet.
 
 ## Sources
 
-- [Catodon repository](https://codefloe.com/catodon/catodon) — source the document was written from, at commit `a7319c535ecc4ac0bcb3727637e1f42749019d18`
+- [Catodon repository](https://codefloe.com/catodon/catodon) — source read at commit `a7319c535ecc4ac0bcb3727637e1f42749019d18`
+- [ActivityPub C2S compatibility notes](https://codefloe.com/catodon/catodon/src/commit/a7319c535ecc4ac0bcb3727637e1f42749019d18/packages/backend/src/server/activitypub-c2s/COMPATIBILITY.md) — upstream list of gaps
+- [FEP-044f](../feps/fep-044f.md) — quote model
