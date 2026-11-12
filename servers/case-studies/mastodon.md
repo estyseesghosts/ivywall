@@ -46,6 +46,8 @@ For outbound delivery, `DeliveryWorker` uses `application/activity+json`, signs 
 
 Mastodon 4.7.3 compacts JSON-LD when an embedded signature calls for it, but otherwise avoids treating every incoming payload as fully processed JSON-LD; malformed JSON or unsupported contexts do not become activities. The linked-data signature and integrity-proof paths have different forwarding constraints. These are implementation choices, not a general ActivityPub rule. `[source]` [processing service](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/services/activitypub/process_activity_service.rb).
 
+For the detailed request and delivery sequence, see the [federation pipeline](../federation-pipelines/mastodon-4-7.md). For operational state and recovery, see [storage and recovery](../storage/mastodon-4-7.md). The [federation trust boundaries](../../security/mastodon-4-7.md) page covers signature and authorization distinctions.
+
 ## Sources
 
 - [Mastodon 4.7.3 release](https://github.com/mastodon/mastodon/releases/tag/v4.7.3) — release and version context.

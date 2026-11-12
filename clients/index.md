@@ -7,6 +7,7 @@ Client development has its own problems, separate from federation. Supporting th
 Available:
 
 - [Mastodon REST API](apis/mastodon-rest.md) — authentication, posting, pagination, and compatibility boundaries.
+- [Misskey native API](apis/misskey.md) — endpoints, authentication, streaming, and client integration.
 
 Still planned:
 
@@ -24,4 +25,3 @@ Still planned:
 
 - [Mastodon API documentation](https://docs.joinmastodon.org/api/) — REST, streaming and OAuth baseline
 - [Misskey Hub API documentation](https://misskey-hub.net/en/docs/for-developers/api/) — POST-based HTTP endpoints, MiAuth and OAuth
-

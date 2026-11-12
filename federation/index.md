@@ -4,13 +4,14 @@ How servers actually behave when they exchange content: the lifecycle of a post 
 
 ## Pages
 
-Stubs so far:
+Pages:
 
-- [Life of a remote follow](activities/life-of-a-follow.md) — stub.
-- [Life of a federated post](activities/life-of-a-post.md) — stub.
-- [Delivery queues and retries](delivery/queues-and-retries.md) — stub.
-- [Compatibility: emoji reactions](compatibility/emoji-reactions.md) — stub.
-- [Compatibility: quote posts](compatibility/quotes.md) — stub.
+- [Life of a remote follow](activities/life-of-a-follow.md) — pending requests, delivery and acceptance.
+- [Life of a federated post](activities/life-of-a-post.md) — source-derived path from posting through remote processing.
+- [Delivery queues and retries](delivery/queues-and-retries.md) — version-specific retry and ordering behavior.
+- [Compatibility: emoji reactions](compatibility/emoji-reactions.md) — directional representations and loss.
+- [Compatibility: quote posts](compatibility/quotes.md) — legacy fields, consent and translation.
+- [Compatibility: post edits](compatibility/post-edits.md) — edit delivery and remote update handling.
 - [Failure mode: missing replies](failure-modes/missing-replies.md) — stub.
 
 Still planned, in priority order:

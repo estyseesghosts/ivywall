@@ -1,0 +1,41 @@
+# Mastodon 4.7.3 federation pipeline
+
+A federated post crosses several boundaries before it appears on another server: HTTP receipt, authentication, background processing, database persistence, local distribution, and remote delivery. These steps can fail separately. This page traces the source paths in [Mastodon 4.7.3](../../references/software/mastodon.md); it is an implementation study, not a claim about all ActivityPub servers or a live network trace.
+
+## Before you start
+
+The examples describe the pinned release and its default code paths. A local account is a person hosted by the instance; a remote account is represented by an **[actor](../../glossary.md#actor)** on another server. A remote server delivers to the actor's **[inbox](../../glossary.md#inbox)**. Enqueueing and delivery are asynchronous, so observe each stage independently. `[source]` [inbox controller](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/controllers/activitypub/inboxes_controller.rb), [processing worker](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/workers/activitypub/processing_worker.rb).
+
+## Receiving a post
+
+1. The inbox controller checks the declared payload size, reads the body and requires an actor signature before enqueueing `ActivityPub::ProcessingWorker`. Its size check returns 413 for an oversized request; it can return 202 early for a self-`Delete` or self-`Update` from an unknown actor. A normal accepted request receives 202 after queuing. This status acknowledges receipt, not successful persistence. `[source]` [inboxes controller](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/controllers/activitypub/inboxes_controller.rb).
+2. The worker uses the `ingress` queue with eight retries. `ProcessActivityService` parses the activity, checks the context and actor, applies signature/proof handling for relayed activities and dispatches through the activity factory. Invalid or irrelevant messages can stop here; a delivery receipt does not establish that every field was accepted. `[source]` [processing worker](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/workers/activitypub/processing_worker.rb), [processing service](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/services/activitypub/process_activity_service.rb).
+3. The `Create` handler resolves or checks the object, checks authority and relevance, then coordinates creation using a lock keyed by object URI. It checks existing status and delete state before persisting the normalized post and related entities. The lock and database constraints reduce duplicates; they are not an end-to-end exactly-once guarantee. `[source]` [Create handler](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/lib/activitypub/activity/create.rb).
+4. Local distribution and later fetches can proceed separately. Parent or reply discovery, media fetching, notification and timeline delivery may be delayed or fail after the database write. Visibility and filtering are checked at read time too, so persistence does not imply every viewer can see a post. `[source]` [Create handler](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/lib/activitypub/activity/create.rb), [status policy](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/policies/status_policy.rb).
+
+## Sending a post
+
+A client creates a status through the [Mastodon REST API](../../clients/apis/mastodon-rest.md). The status service validates the request and writes the status and related state; a successful client response is not evidence of successful remote delivery. `[source]` [post service](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/services/post_status_service.rb).
+
+Local distribution is separate from federation. `FanOutOnWriteService` handles local feed and notification work. `ActivityPub::DistributionWorker` determines remote reach and serializes the activity; `StatusReachFinder` and account inbox preferences determine where it should go. Shared inboxes allow multiple users at one destination to share a delivery. `[source]` [fan-out service](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/services/fan_out_on_write_service.rb), [distribution worker](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/workers/activitypub/distribution_worker.rb), [reach finder](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/lib/status_reach_finder.rb).
+
+`ActivityPub::DeliveryWorker` signs an `application/activity+json` POST on behalf of the originating account. It runs on the `push` queue with 16 configured retries, a per-destination availability check and a circuit breaker. For retryable failures its delay starts from `count**4 + 15` seconds with additional jitter, plus Sidekiq's jitter. It treats successful, unrecoverable and retryable responses differently, and may send `Collection-Synchronization` when enabled and requested by the job. `[source]` [delivery worker](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/workers/activitypub/delivery_worker.rb).
+
+## Technical details
+
+| Situation | Source-level behavior in 4.7.3 | Limit |
+| --- | --- | --- |
+| Duplicate `Create` | Object URI, locking and existing-record checks help prevent duplicate statuses. `[source]` [Create](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/lib/activitypub/activity/create.rb) | Other effects and queues still need their own idempotency. |
+| `Delete` before `Create` | The delete path coordinates with the create lock and records a tombstone and delete-arrived-first state. `[source]` [Delete](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/lib/activitypub/activity/delete.rb) | Do not treat a transient marker as an indefinite distributed deletion guarantee. |
+| Unknown `Update` | An update to an unknown object older than one day is ignored; an eligible recent object can enter the creation path. `[source]` [Update](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/lib/activitypub/activity/update.rb) | Ordering and timestamps affect eventual state. |
+| Remote failure | Delivery is retried with backoff and destination tracking. `[source]` [delivery worker](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/workers/activitypub/delivery_worker.rb) | Retries are bounded; they do not promise eventual receipt. |
+
+## Pitfalls and open questions
+
+When debugging a missing post, distinguish received, queued, validated, stored, distributed and visible. Check signature failures and the ingress queue before assuming a peer never sent it, then inspect visibility, media and delivery queues. This is a troubleshooting recommendation, not an observed incident. Captured request traces and database state from a controlled two-server test would establish exact timing and effects; none are presented here.
+
+## Sources
+
+- [Mastodon 4.7.3 inbox controller](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/controllers/activitypub/inboxes_controller.rb) — receipt, signature gate and acknowledgment.
+- [Create handler](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/lib/activitypub/activity/create.rb), [Update handler](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/lib/activitypub/activity/update.rb) and [Delete handler](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/lib/activitypub/activity/delete.rb) — object handling and ordering.
+- [Distribution](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/workers/activitypub/distribution_worker.rb) and [delivery](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/workers/activitypub/delivery_worker.rb) workers — outbound jobs and retries.

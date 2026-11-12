@@ -52,21 +52,28 @@ nav = [
     { "Life of a federated post" = "federation/activities/life-of-a-post.md" },
     { "Compatibility: emoji reactions" = "federation/compatibility/emoji-reactions.md" },
     { "Compatibility: quote posts" = "federation/compatibility/quotes.md" },
+    { "Compatibility: post edits" = "federation/compatibility/post-edits.md" },
     { "Delivery queues and retries" = "federation/delivery/queues-and-retries.md" },
     { "Failure mode: replies missing on remote threads" = "federation/failure-modes/missing-replies.md" },
   ] },
   { "Clients" = [
     { "Overview" = "clients/index.md" },
     { "Mastodon REST API" = "clients/apis/mastodon-rest.md" },
+    { "Misskey native API" = "clients/apis/misskey.md" },
   ] },
   { "Servers" = [
     { "Overview" = "servers/index.md" },
     { "Mastodon 4.7.3" = "servers/case-studies/mastodon.md" },
     { "Misskey 2026.10.1" = "servers/case-studies/misskey.md" },
+    { "Mastodon federation pipeline" = "servers/federation-pipelines/mastodon-4-7.md" },
+    { "Misskey federation pipeline" = "servers/federation-pipelines/misskey.md" },
+    { "Mastodon storage" = "servers/storage/mastodon-4-7.md" },
+    { "Misskey storage" = "servers/storage/misskey.md" },
   ] },
   { "Security and privacy" = [
     { "Overview" = "security/index.md" },
     { "SSRF and remote fetching" = "security/ssrf.md" },
+    { "Mastodon security boundaries" = "security/mastodon-4-7.md" },
   ] },
   { "Moderation" = [
     { "Overview" = "moderation/index.md" },
@@ -106,4 +113,3 @@ nav = [
     { "Guide: a minimal ActivityPub actor" = "guides/minimal-actor.md" },
   ] },
 ]
-

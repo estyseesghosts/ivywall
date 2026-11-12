@@ -1,31 +1,47 @@
 # Compatibility: emoji reactions
 
-Users expect to react to a post with an emoji. Implementations model that differently, so a reaction sent from one server may be shown, converted to a like, or dropped on another. This is the template record for every feature in this section.
-
-> **Stub.** Scaffolding only. Nothing on this page has been checked against pinned source yet; treat every statement as `[hypothesis]` unless it carries another label.
+An emoji reaction records a particular response to a post; a favourite records a simpler like. Both can travel as an ActivityPub `Like`, but the receiving server may not preserve the chosen emoji. The evidence below describes individual code paths in [Misskey 2026.10.1](../../references/software/misskey.md) and [Mastodon 4.7.3](../../references/software/mastodon.md), not a completed live interoperability matrix.
 
 ## Summary
 
 | Software | Version | Emits | Accepts | Notes |
 | -------- | ------- | ----- | ------- | ----- |
-| Akkoma | 2026.08 | native (`EmojiReact`) | native | Several different reactions per user `[documented]` |
-| Misskey | 2026.10.1 | untested | untested | Reaction part of its own note model |
-| Mastodon | 4.7.3 | untested | untested | Native interaction is `Like` |
+| Misskey | 2026.10.1 | native | native / translated | Emits a `Like` with emoji fields. Reads `_misskey_reaction`, `content`, then `name`; an absent value falls back to a heart. `[source]` [renderer](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/core/activitypub/ApRendererService.ts), [inbox](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/core/activitypub/ApInboxService.ts), [reaction service](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/core/ReactionService.ts). |
+| Mastodon | 4.7.3 | translated | lossy | Emits a plain `Like` for a favourite. Its incoming `Like` handler creates a favourite without using the emoji fields. `[source]` [serializer](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/serializers/activitypub/like_serializer.rb), [handler](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/lib/activitypub/activity/like.rb). |
 
-Values are defined under [compatibility values](../../glossary.md#compatibility-values). Rows not yet checked say `untested`.
+The emit and accept columns refer to this feature, not every possible activity. **native** means represented as a first-class emoji reaction; **translated** means mapped into another local concept or its wire format; **lossy** means a feature is accepted while information is discarded; **ignored** means silently dropped; **rejected** means refused; **untested** means no evidence establishes the behavior. The last three are not asserted for either row. These are source-level conclusions conditional on the handler being reached and all relevant access and validation checks passing, not observed success between two servers.
 
 ## Information lost in translation
 
-> Unknown: what a receiving server shows for an unsupported reaction.
+Misskey's outgoing `Like` contains the chosen emoji, but Mastodon's 4.7.3 handler stores an ordinary favourite for an eligible local status; it does not store that emoji from the activity. A Mastodon favourite has no arbitrary emoji in its outgoing serializer; Misskey's receiver supplies its heart fallback when the activity contains no reaction value. These are directional code-level implications, not captured traffic. `[source]` [Misskey inbox](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/core/activitypub/ApInboxService.ts), [Mastodon Like handler](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/lib/activitypub/activity/like.rb).
+
+Misskey stores a unique `(userId, noteId)` reaction row. It can normalize or replace a custom emoji with a heart, for example when an emoji is unavailable, disallowed, or a post's reaction policy restricts remote reactions. Thus a received `Like` does not necessarily preserve the advertised string even on Misskey. `[source]` [reaction model](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/models/NoteReaction.ts), [reaction service](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/core/ReactionService.ts).
 
 ## Technical details
 
-> Unknown: wire format per implementation and the code paths. Evidence label required on every row before this leaves stub status.
+The following excerpts are hand-written from the cited serializers and have not been run; the hosts, IDs and emoji are illustrative. They show the distinguishing fields, not complete delivery requests or security headers.
+
+Misskey 2026.10.1's `renderLike` emits both fields and may include an `Emoji` tag for a non-local-only custom emoji. `[source]` [renderer](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/core/activitypub/ApRendererService.ts):
+
+```json
+{"id":"https://a.example/likes/123","type":"Like","actor":"https://a.example/users/alice","object":"https://b.example/notes/456","content":"😀","_misskey_reaction":"😀"}
+```
+
+Mastodon 4.7.3's serializer emits the activity ID, type, actor and object but no selected emoji. `[source]` [Like serializer](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/serializers/activitypub/like_serializer.rb):
+
+```json
+{"id":"https://a.example/users/alice#likes/123","type":"Like","actor":"https://a.example/users/alice","object":"https://b.example/notes/456"}
+```
+
+Misskey's inbox extracts emoji tags before calling its reaction service and chooses `_misskey_reaction` over `content`, then `name`. It checks for an existing reaction and skips a duplicate. Mastodon's `Like` handler checks for a local target, an earlier delete and an existing favourite before creating a favourite and scheduling a notification. `[source]` [Misskey inbox](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/core/activitypub/ApInboxService.ts); [Mastodon handler](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/lib/activitypub/activity/like.rb).
+
+`Undo` must also be tested: Mastodon 4.7.3 has an `Undo(Like)` path that finds the target local status and removes the sender's favourite. A bare referenced activity ID cannot be resolved by its `try_undo_like` fallback in that code. `[source]` [Undo handler](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/lib/activitypub/activity/undo.rb).
 
 ## Test procedure
 
-Not yet reproducible; needs the [testing lab](../../testing/index.md).
+No live two-server result is claimed. On isolated instances of the pinned releases, make two fixture users able to see and follow each other; send a Unicode reaction and an allowed custom emoji from Misskey to a Mastodon post, record the delivered activity and inspect the resulting favourite via the Mastodon API. Reverse the direction with a Mastodon favourite and inspect the Misskey reaction value. Repeat with a missing emoji, a restrictive reaction policy, duplicate delivery and Undo; record HTTP status, queues, final API state, activity IDs and timeouts. Redact credentials and use only test content. This separates transport acceptance from persisted result and verifies whether both directions follow the source-level prediction.
 
 ## Sources
 
-- [Akkoma documentation](https://docs.akkoma.dev/) — emoji reaction behaviour
+- [Misskey 2026.10.1 renderer](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/core/activitypub/ApRendererService.ts), [inbox](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/core/activitypub/ApInboxService.ts), [reaction service](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/core/ReactionService.ts) and [model](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/models/NoteReaction.ts) — representation, parsing, restrictions and uniqueness.
+- [Mastodon 4.7.3 Like serializer](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/serializers/activitypub/like_serializer.rb), [Like handler](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/lib/activitypub/activity/like.rb) and [Undo handler](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/lib/activitypub/activity/undo.rb) — outbound favourites, incoming processing and reversal.

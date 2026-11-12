@@ -4,9 +4,10 @@ Security and privacy are first-class engineering topics here, not an appendix. A
 
 ## Pages
 
-Stubs so far:
+Pages:
 
 - [SSRF and remote fetching](ssrf.md) — stub.
+- [Mastodon security boundaries](mastodon-4-7.md) — signatures, identity, remote fetching and access controls.
 
 Still planned:
 

@@ -1,27 +1,55 @@
 # Life of a federated post
 
-A walkthrough of one public post from composing to appearing on followers' timelines on other servers: validation, storage, fan-out, delivery, remote processing and notifications.
-
-> **Stub.** Scaffolding only. Nothing on this page has been checked against pinned source yet; treat every statement as `[hypothesis]` unless it carries another label.
+A post is a sequence of local persistence, fan-out, network delivery and remote processing, not one atomic transaction across servers. This walkthrough follows a public post from Mastodon 4.7.3 to a Misskey 2026.10.1 inbox using their source. The sequence is inferred from code, not an observed end-to-end test; each deployment can also apply local policy. See the [Mastodon](../../servers/case-studies/mastodon.md) and [Misskey](../../servers/case-studies/misskey.md) studies for the pinned releases.
 
 ## Actors and starting state
 
-Alice on A with followers on B and C.
+Alice has an account on a Mastodon server. Bob follows her from a Misskey server; the relationship is already accepted and Alice's server has Bob's remote actor and inbox information. Alice submits a public, text-only original post using a user-authorized Mastodon client. An actor is the network representation of an account; its [inbox](../../glossary.md#inbox) is where activities are delivered.
 
 ## Step by step
 
-1. A stores the post and renders HTML.
-2. A resolves recipients and groups them by [shared inbox](../../glossary.md#inbox).
-3. A queues one delivery job per destination.
-4. Each job signs and POSTs a `Create` activity.
-5. B and C validate, store and fan the post out to local timelines.
-
-Outline only `[hypothesis]`.
+1. **Client request.** `POST /api/v1/statuses` requires a user token with the appropriate write scope. The controller passes text, audience, optional reply/media/poll parameters and `Idempotency-Key` to `PostStatusService`. The service validates the submission and stores a local `Status`; a local success response is not proof of remote receipt. `[source]` [controller](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/controllers/api/v1/statuses_controller.rb), [posting service](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/services/post_status_service.rb). See the [client API](../../clients/apis/mastodon-rest.md) for retry behavior.
+2. **Local distribution.** Mastodon schedules local distribution separately from remote delivery. Its distribution worker and fan-out service put eligible status references into local feed structures and perform related notifications and streaming work. Visibility, filters, audience and relationship state influence who can see the result. `[source]` [distribution worker](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/workers/distribution_worker.rb), [fan-out service](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/services/fan_out_on_write_service.rb).
+3. **Build deliveries.** ActivityPub distribution serializes an original post as `Create` with a `Note` and chooses recipients from its reach. Inbox URLs can be deduplicated, including shared inboxes where appropriate; a server with many recipients need not receive one identical POST per follower. `[source]` [federation distribution worker](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/workers/activitypub/distribution_worker.rb), [raw distribution worker](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/workers/activitypub/raw_distribution_worker.rb).
+4. **Send.** A delivery worker signs and sends the request to each selected destination, with retries and failure tracking. A destination can be slow, unreachable or reject the request; a queued job or HTTP success is not proof that a recipient displayed the post. `[source]` [delivery worker](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/workers/activitypub/delivery_worker.rb).
+5. **Receive on Misskey.** Misskey's inbox route checks federation configuration, signed headers and body digest, enqueues the activity and responds `202`. The inbox worker then resolves the signing key, verifies the signature and actor relationship, and applies federation policy. A 202 can therefore precede a later failure. `[source]` [inbox route](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/server/ActivityPubServerService.ts), [inbox worker](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/queue/processors/InboxProcessorService.ts).
+6. **Persist and show.** The `Create` handler resolves and validates the object, uses a URI lock and existence checks to avoid duplicate notes, then creates the supported remote note. Feed fan-out and read-side visibility are separate: an accepted or stored activity does not ensure Bob's client will show it. Media and referenced objects may require further network fetches. `[source]` [inbox dispatcher](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/core/activitypub/ApInboxService.ts), [remote note service](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/core/activitypub/models/ApNoteService.ts), [timeline service](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/core/FanoutTimelineService.ts).
 
 ## Technical details
 
-> Unknown: everything implementation-specific. To be traced for [Mastodon](../../servers/case-studies/mastodon.md) first.
+This minimal payload is handwritten from the ActivityPub data model and was not sent to either server. Actual payloads and headers vary with the release and post. `Public` is an audience marker, not an inbox URL. HTTP signature and digest headers are omitted here, not optional in the studied receiving path. `[spec]` [ActivityPub §§5.6, 7](https://www.w3.org/TR/2018/REC-activitypub-20180123/).
+
+```json
+{
+  "@context": "https://www.w3.org/ns/activitystreams",
+  "id": "https://a.example/activities/123",
+  "type": "Create",
+  "actor": "https://a.example/users/alice",
+  "to": ["https://www.w3.org/ns/activitystreams#Public"],
+  "cc": ["https://a.example/users/alice/followers"],
+  "object": {
+    "id": "https://a.example/users/alice/statuses/123",
+    "type": "Note",
+    "attributedTo": "https://a.example/users/alice",
+    "to": ["https://www.w3.org/ns/activitystreams#Public"],
+    "cc": ["https://a.example/users/alice/followers"],
+    "content": "<p>Hello</p>"
+  }
+}
+```
+
+The activity and object IDs serve different purposes. Retrying delivery with the same activity ID supports deduplication, but URI locking for a Note is not a general exactly-once guarantee. `Update` and `Delete` can arrive late or out of order, and a remote server may not implement every object update. Misskey 2026.10.1's dispatcher does not process a general incoming `Update` of a `Note`; see its [case study](../../servers/case-studies/misskey.md). `[source]` [Misskey dispatcher](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/core/activitypub/ApInboxService.ts).
+
+## Pitfalls
+
+- **A 202 is not a persisted post.** Inspect queue processing, signature and policy decisions after the response.
+- **A stored post is not visible to everyone.** Check addressing, follow state, visibility and read-side filters.
+- **A reply can be missing.** Parent resolution, authorization or delivery can fail independently; a server's copy of a conversation is incomplete.
+- **A deletion is not a distributed erasure guarantee.** Peers retain control of their own storage and may have copied content.
+- **Do not infer throughput from source.** Measure queue depth, distinct destination inboxes, retry rates and feed fan-out under a stated workload.
 
 ## Sources
 
-- [ActivityPub (W3C Recommendation)](https://www.w3.org/TR/activitypub/) — base protocol
+- [ActivityPub Recommendation](https://www.w3.org/TR/2018/REC-activitypub-20180123/) — addressing, Create and server-to-server delivery.
+- [Mastodon 4.7.3 posting service](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/services/post_status_service.rb) and [federation distribution](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/workers/activitypub/distribution_worker.rb) — source-side persistence and fan-out.
+- [Misskey 2026.10.1 inbox route](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/server/ActivityPubServerService.ts) and [inbox processor](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/queue/processors/InboxProcessorService.ts) — receiving and asynchronous authentication.

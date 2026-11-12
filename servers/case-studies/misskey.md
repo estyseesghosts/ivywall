@@ -2,6 +2,8 @@
 
 Misskey is a social server with its own web client, native client API, and federation code. A local post becomes a database record, may be inserted into many timeline lists, and may be sent to other servers in background jobs. An accepted network request is only the beginning of that process. This page follows [the pinned release](../../references/software/misskey.md); it does not claim behavior for forks or later versions.
 
+For deeper implementation paths, see the [native client API](../../clients/apis/misskey.md), [federation pipeline](../federation-pipelines/misskey.md), and [storage and recovery](../storage/misskey.md).
+
 ## Architecture
 
 The TypeScript backend uses Fastify for HTTP and NestJS services, with PostgreSQL for durable relational entities and Redis for job queues, timeline lists, notifications and messaging. Media bytes may reside on local or S3-compatible storage. In clustered mode the primary and workers can run different server and queue roles; deployment options affect the process layout. These are code paths, not a measured capacity claim. `[source]` [startup](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/boot/master.ts), [configuration](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/.config/example.yml), [queue workers](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/queue/QueueProcessorService.ts).

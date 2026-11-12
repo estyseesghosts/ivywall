@@ -8,6 +8,8 @@ Case studies:
 
 - [Mastodon 4.7.3](case-studies/mastodon.md) — architecture, federation and operational paths.
 - [Misskey 2026.10.1](case-studies/misskey.md) — architecture, native API and federation paths.
+- [Mastodon federation pipeline](federation-pipelines/mastodon-4-7.md) and [Misskey federation pipeline](federation-pipelines/misskey.md) — receipt and delivery.
+- [Mastodon storage](storage/mastodon-4-7.md) and [Misskey storage](storage/misskey.md) — persistence, queues, caches and recovery.
 
 Still planned:
 
@@ -26,4 +28,3 @@ Version-pinned engineering research already exists locally for Mastodon, Misskey
 - [Misskey source](https://github.com/misskey-dev/misskey) — native API, streaming, reactions
 - [GoToSocial documentation](https://docs.gotosocial.org/) — headless Go server and federation controls
 - [snac2 source](https://codeberg.org/grunfink/snac2) — minimal C implementation
-
