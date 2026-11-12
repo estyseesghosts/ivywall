@@ -10,13 +10,13 @@ The client MUST discover the actor's `outbox` property and POST to that URL usin
 
 The **outbox** is the actor's published-activity collection, an `OrderedCollection`, filtered according to the reader's permissions. An actor's **[inbox](../glossary.md#inbox)** is a separate collection of received activities; its contents are likewise subject to access controls. Ordered collections are presented consistently in reverse chronological order. `[spec]` §§5, 5.1–5.2.
 
-On accepted submission, the server MUST ignore a client-supplied activity `id`, allocate a new activity ID, and return `201 Created` with its ID in `Location` unless transient. It MUST add the activity to the outbox, though its visible appearance can be delayed or temporary. An endpoint without client-to-server support SHOULD respond to a submission with `405 Method Not Allowed`. `[spec]` §6.
+On accepted submission, the server MUST ignore a client-supplied activity `id`, allocate a new activity ID, and return `201 Created`; unless the activity is transient, it MUST include its ID in `Location`. It MUST add the activity to the outbox, though its visible appearance can be delayed or temporary. An endpoint without client-to-server support SHOULD respond to a submission with `405 Method Not Allowed`. `[spec]` §6.
 
 A bare object submitted to the outbox MUST be wrapped in `Create`; for non-transient objects both wrapper and object receive IDs. The server MUST copy the object's `to`, `bto`, `cc`, `bcc` and `audience` fields to the wrapper. The client is responsible for addressing: delivery considers those fields, not mentions alone. `bto` and `bcc` determine recipients but MUST be stripped before delivery. `[spec]` §§6, 6.1, 6.2.1.
 
 ### Activity side effects
 
-`Create`, `Update`, `Delete`, `Follow`, `Add`, `Remove`, `Like`, `Block`, and `Undo` submitted by clients MUST have an `object`; `Add` and `Remove` also require `target`. `[spec]` §6.1.
+When delivering to another server, `Create`, `Update`, `Delete`, `Follow`, `Add`, `Remove`, `Like`, `Block`, and `Undo` activities MUST have an `object`; `Add` and `Remove` also require `target`. These are server-to-server delivery requirements, rather than a blanket rule for every client submission. `[spec]` §7.
 
 | Activity | Client-to-server effect |
 | --- | --- |
