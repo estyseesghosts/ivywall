@@ -9,6 +9,7 @@ Loops publishes a `FEDERATION.md` describing its own federation behaviour. This 
 | Upstream file | [FEDERATION.md](https://github.com/joinloops/loops-server/blob/d942be8e8c3a934a86ee9257ae050ca4b041b538/FEDERATION.md) |
 | Repository | [github.com/joinloops/loops-server](https://github.com/joinloops/loops-server) |
 | Mirrored from commit | `d942be8e8c3a934a86ee9257ae050ca4b041b538` (2026-11-04) |
+| Licence of the upstream repository | GNU AGPL-3.0, per the repository's `LICENSE` file at the mirrored commit; the mirrored text stays under it and is attributed to the project's authors. |
 | Status | Verbatim copy; headings demoted two levels so they nest under this page. Not yet fact-checked (`[documented]` at best). |
 
 When the upstream file changes, re-mirror it and update the commit above. Do not edit the mirrored text; corrections go in this wiki's own pages and link here.

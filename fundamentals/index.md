@@ -6,24 +6,21 @@ The protocol layer every Fediverse server and client builds on: the data model, 
 
 Pages:
 
-- [ActivityStreams 2.0](activitystreams.md) — stub.
+- [ActivityStreams 2.0](activitystreams.md) — data model; JSON-LD handling per server not yet covered.
 - [ActivityPub server-to-server](activitypub-s2s.md) — delivery, addressing and federation responsibilities.
 - [ActivityPub client-to-server](activitypub-c2s.md) — the standard client protocol and server responsibilities.
-- [WebFinger](webfinger.md) — stub.
-- [NodeInfo](nodeinfo.md) — stub.
-- [HTTP signatures and authentication](http-signatures.md) — stub.
-- [Identity and account handles](identity.md) — stub.
-- [Extensions and FEPs](extensions.md) — stub.
+- [WebFinger](webfinger.md) — RFC 7033 lookup and laboratory observations.
+- [NodeInfo](nodeinfo.md) — discovery document; per-server fields not yet covered.
+- [HTTP signatures and authentication](http-signatures.md) — signature schemes and observed behaviour; per-server header lists not yet covered.
+- [Identity and account handles](identity.md) — handles, actor ids and moves; per-server `Move` handling not yet covered.
+- [Extensions and FEPs](extensions.md) — how extensions work; the per-extension table lives in the compatibility and FEP records.
 
-Still planned, in priority order:
+Not yet covered (each topic above has a page; these gaps remain):
 
-- ActivityStreams 2.0 — actors, objects, activities, collections, JSON-LD contexts.
-- ActivityPub server-to-server — inbox and outbox delivery, shared inboxes, recipient resolution, forwarding.
-- ActivityPub client-to-server — the standard client protocol and why few servers implement it.
-- Discovery — WebFinger, NodeInfo, actor lookup, remote object resolution.
-- Authentication — HTTP signatures, signed fetches, key discovery and rotation, OAuth.
-- Identity — actor ids, account handles, multiple domains, migration.
-- Extensions — FEPs, LitePub conventions, software-specific vocabularies.
+- Remote object resolution and actor lookup, per server.
+- OAuth for apps and signed-fetch ("authorized fetch") behaviour per server.
+- Collections and paging beyond the outline in the ActivityPub pages.
+- LitePub conventions and software-specific vocabularies beyond FEPs.
 
 ## Notes and open questions
 

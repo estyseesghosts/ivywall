@@ -2,7 +2,7 @@
 
 [NodeInfo](../glossary.md#nodeinfo) is a small JSON document a server publishes to say what software and version it runs and which protocols it speaks. It is how clients and other servers guess capabilities, and it is only a hint: servers can report anything.
 
-> **Stub.** Scaffolding only. Nothing on this page has been checked against pinned source yet; treat every statement as `[hypothesis]` unless it carries another label.
+> **Coverage incomplete.** The discovery document and schema are described from the NodeInfo project. Not yet covered: the fields each studied server reports, which expose `metadata` extensions, and whether administrators can change the reported software name.
 
 ## What the specification requires
 

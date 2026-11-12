@@ -9,9 +9,9 @@ Pages:
 - [SSRF and remote fetching](ssrf.md) — destination validation, redirects, proxies and testing.
 - [Mastodon security boundaries](mastodon-4-7.md) — signatures, identity, remote fetching and access controls.
 
-Still planned:
+Not yet covered (SSRF and the Mastodon 4.7.3 analysis above exist):
 
-- Security — signature verification, key rotation, actor ownership validation, [SSRF](../glossary.md#ssrf), DNS rebinding, malicious redirects, JSON-LD processing, replay attacks, HTML sanitization, oversized objects, resource exhaustion.
+- Security — key rotation, actor ownership validation, DNS rebinding, malicious redirects, JSON-LD processing, replay attacks, HTML sanitization, oversized objects, resource exhaustion, across more than Mastodon.
 - Privacy — followers-only visibility, direct messages, recipient leakage, signed fetches, remote caching, deletion limits, and the difference between access controls and enforceable confidentiality.
 
 ## Notes and open questions

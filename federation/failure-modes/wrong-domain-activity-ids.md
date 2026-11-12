@@ -38,7 +38,17 @@ The sender's id host differed from the actor's host. A strict receiver compares 
 }
 ```
 
-Hand-written illustration of the shape; the id host differs from the actor host. Rule for senders: mint ids from the acting actor's own host. Rule for receivers: verify that the id host and actor host match, and never accept a forged authority; being lenient, as Mastodon was here, is a choice with security consequences. A sender-only fix cannot be tested against the lenient receiver alone: Mastodon and the permissive test server both passed the broken ids.
+Hand-written illustration of the shape; the id host differs from the actor host.
+
+**Requirement versus implementation policy.** These are different things and should not be conflated.
+
+| Level | Statement | Status |
+| ----- | --------- | ------ |
+| Specification | A receiver must not trust an identifier or object it cannot attribute to the right authority, and it should guard against spoofing: an activity must not let one origin speak for another. `[spec]` ActivityPub 2018 §7 and security considerations B.* | requirement, but it names the goal (origin authorization), not a method |
+| Implementation policy | Compare the host of the activity `id` with the host of the `actor` and refuse if they differ | a common, defensible check; it is stricter than the specification and would also refuse an arrangement where one organisation legitimately serves identifiers from a delegated or split domain |
+| Sender convention | Mint the activity id on the acting actor's own host | what interoperates with strict receivers; follow it unless you control every peer |
+
+So the lab results show that a hostname check is common among receivers, not that ActivityPub requires literal hostname equality. A receiver that is lenient, as Mastodon was here, still has to establish authority some other way, for example by refetching the object from its claimed origin; leniency without that is a security weakness. A sender-only fix cannot be tested against lenient receivers alone: Mastodon and the permissive test server both accepted the broken ids.
 
 The same defect affected the `Undo(Announce)` id, so unboosts "passed" vacuously while the boost they undid had never arrived. `[reported]` [repair notes](https://github.com/estyseesghosts/birchtree/blob/f09ec359af00233530a230b9242f8321578e6e37/docs/federation_repair.md).
 

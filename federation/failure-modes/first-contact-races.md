@@ -6,7 +6,7 @@ Everything works between two servers that already know each other, but the very 
 
 | Where | Observed | Evidence |
 | ----- | -------- | -------- |
-| Mastodon as receiver | A new server's first inbound `Follow` was handled about 17 seconds after arrival: Mastodon's proxy logged 499 and Sidekiq `elapsed=10.028`, then it succeeded on retry. Cause on the sender: RSA key generation on first use, longer than Mastodon's 10-second timeout | `[reported]` [Birchtree phase 6 verification](https://github.com/estyseesghosts/birchtree/blob/f09ec359af00233530a230b9242f8321578e6e37/docs/logs/2026-10-17-phase-6-verification.md), [phase 6 log](https://github.com/estyseesghosts/birchtree/blob/f09ec359af00233530a230b9242f8321578e6e37/state/logs/2026-10-17-phase-6-federation.md) |
+| Mastodon as receiver | A new server's first inbound `Follow` was handled about 17 seconds after arrival: Mastodon's proxy logged 499 and Sidekiq `elapsed=10.028`, then it succeeded on retry. Cause on the sender: RSA key generation on first use, longer than the 10-second limit seen in the lab (see below for what is and is not established) | `[reported]` [Birchtree phase 6 verification](https://github.com/estyseesghosts/birchtree/blob/f09ec359af00233530a230b9242f8321578e6e37/docs/logs/2026-10-17-phase-6-verification.md), [phase 6 log](https://github.com/estyseesghosts/birchtree/blob/f09ec359af00233530a230b9242f8321578e6e37/state/logs/2026-10-17-phase-6-federation.md) |
 | Mastodon as receiver | About one in 9,180 first-contact follows from a Misskey user got HTTP 422; Misskey did not retry a permanent 4xx. In run 5 three edges stayed missing, all `mastodon/u0` following Misskey or Catodon users. Cause unclassified | `[reported]` [problem log items 35 and 57](https://github.com/estyseesghosts/pinetree/blob/f1665e6dd2f2ea8c115ce7c5ead98b5791a32fc6/docs/federation-bench-2026-10-18-session2-problems.md) |
 | Misskey as the resolver | Two concurrent first lookups of a remote server sometimes failed with a duplicate-key insert; not fixed upstream in the lab, the harness retried after 2 seconds | `[reported]` [problem log item 21](https://github.com/estyseesghosts/pinetree/blob/f1665e6dd2f2ea8c115ce7c5ead98b5791a32fc6/docs/federation-bench-2026-10-18-session2-problems.md) |
 | A test sender | Two concurrent requests created two different keys for one actor, so peers cached a key that was then replaced | `[reported]` [problem log item 18](https://github.com/estyseesghosts/pinetree/blob/f1665e6dd2f2ea8c115ce7c5ead98b5791a32fc6/docs/federation-bench-2026-10-18-session2-problems.md) |
@@ -25,7 +25,15 @@ Lazy initialisation on the first request, non-atomic creation of remote-account 
 
 ## Technical details
 
-Invariants for a new implementation: generate actor keys at account creation, never on the first request; create remote actors atomically (insert-or-fetch); keep a bounded forced key refresh after a verification failure; make first-contact failures observable. Mastodon's 10-second inbound handling window is the budget to stay within. `[reported]` [Birchtree phase 6 log](https://github.com/estyseesghosts/birchtree/blob/f09ec359af00233530a230b9242f8321578e6e37/state/logs/2026-10-17-phase-6-federation.md).
+Invariants for a new implementation: generate actor keys at account creation, never on the first request; create remote actors atomically (insert-or-fetch); keep a bounded forced key refresh after a verification failure; make first-contact failures observable. Three levels need separating when you size the budget for first contact:
+
+| Level | Statement |
+| ----- | --------- |
+| Protocol | ActivityPub sets no deadline for answering a delivery; it says only that delivery should be retried on network failure. `[spec]` ActivityPub 2018 §7.1 |
+| Laboratory observation | In the described lab, the first `Follow` took about 17 seconds and the receiving side's log showed a 10-second job elapsed time with a 499 at its proxy. That is a timeout in that deployment's configuration, not a measured Mastodon constant. `[reported]` |
+| Server defaults | Whether the stock 4.7.3 configuration uses the same limit is not established here. > Unknown: read the pinned Mastodon source and default proxy configuration before quoting a number. |
+
+Keep first-contact work short regardless, since slow responses are retried and can arrive twice. `[reported]` [Birchtree phase 6 log](https://github.com/estyseesghosts/birchtree/blob/f09ec359af00233530a230b9242f8321578e6e37/state/logs/2026-10-17-phase-6-federation.md).
 
 ## Reproduction
 

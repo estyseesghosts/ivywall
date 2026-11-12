@@ -2,7 +2,7 @@
 
 ActivityPub and ActivityStreams do not specify every feature or interoperability convention that applications need. Software uses community proposals ([FEPs](../glossary.md#fep)), other shared conventions and implementation-specific vocabulary. A proposal’s existence does not establish that a particular version supports it. This page explains how to tell these apart.
 
-> **Stub.** Scaffolding only. Nothing on this page has been checked against pinned source yet; treat every statement as `[hypothesis]` unless it carries another label.
+> **Coverage incomplete.** The ActivityStreams extension mechanism is stated from the specification. Not yet covered: a table of which software emits and accepts which extension (kept in the compatibility and FEP records). Statements without an evidence label are general background.
 
 ## What the specification requires
 

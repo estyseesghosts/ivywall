@@ -9,6 +9,7 @@ Akkoma publishes a `FEDERATION.md` describing its own federation behaviour. This
 | Upstream file | [FEDERATION.md](https://akkoma.dev/AkkomaGang/akkoma/src/commit/3e9ad30e1e769f26e2898c93c0df608b8af3c686/FEDERATION.md) |
 | Repository | [akkoma.dev/AkkomaGang/akkoma](https://akkoma.dev/AkkomaGang/akkoma) |
 | Mirrored from commit | `3e9ad30e1e769f26e2898c93c0df608b8af3c686` (2026-10-30) |
+| Licence of the upstream repository | GNU AGPL-3.0 (root files; `docs/` is separately licensed), per the repository's `COPYING` file at the mirrored commit; the mirrored text stays under it and is attributed to the project's authors. |
 | Status | Verbatim copy; headings demoted two levels so they nest under this page. Not yet fact-checked (`[documented]` at best). |
 
 When the upstream file changes, re-mirror it and update the commit above. Do not edit the mirrored text; corrections go in this wiki's own pages and link here.

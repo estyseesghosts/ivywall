@@ -2,7 +2,7 @@
 
 Federation needs a way to authenticate a request and decide whether its sender is authorized. Many implementations use an [HTTP signature](../glossary.md#http-signature) over request components and verify it with a public key. Key ownership, delegation, forwarded activities, and authorization require additional checks; a valid signature alone does not prove that an embedded activity is permitted. The legacy draft and RFC 9421 use different formats. `[spec]` [ActivityPub security considerations](https://www.w3.org/TR/2018/REC-activitypub-20180123/#security-considerations), [RFC 9421](https://www.rfc-editor.org/rfc/rfc9421).
 
-> **Stub.** Scaffolding only. Nothing on this page has been checked against pinned source yet; treat every statement as `[hypothesis]` unless it carries another label.
+> **Coverage incomplete.** The scheme history and the laboratory observations are cited. Not yet covered: the header lists each studied server signs and checks, digest handling, clock-skew limits and key rotation behaviour. Statements without an evidence label are general background.
 
 ## What the specification requires
 

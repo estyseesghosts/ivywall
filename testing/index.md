@@ -6,13 +6,13 @@ Manual research does not scale, and compatibility claims go stale. This section 
 
 - [An interoperability test matrix](interoperability/test-matrix.md) — what a new server should test, per area and direction.
 - [Test oracles that give false federation failures](interoperability/test-oracles.md) — harness mistakes and a five-way outcome model.
+- [Interoperability result fixture format](fixtures/result-schema.md) — the directional, versioned record each result is stored as.
 - [Reading federation benchmark results](interoperability/bench-evidence.md) — scope, test oracles and limits of a historical run.
 
-Planned:
+Not yet covered (the interoperability pages above and the fixture format exist):
 
-- Harness — controller design and server set (Mastodon, Misskey, Akkoma, GoToSocial, snac and others).
-- Fixtures — machine-readable results, naming and schema.
-- Interoperability — successful and malformed activities, arrival orders, duplicate delivery, remote downtime, key rotation, privacy-boundary checks.
+- Harness — controller design and server set (Mastodon, Misskey, Akkoma, GoToSocial, snac and others). Nothing is running.
+- Interoperability runs — successful and malformed activities, arrival orders, duplicate delivery, remote downtime, key rotation, privacy-boundary checks, run against pinned peers.
 - Benchmarks — delivery throughput, p95 latency, queue growth, memory, database size, network traffic, CPU, recovery.
 
 ## Notes and open questions

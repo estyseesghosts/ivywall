@@ -25,13 +25,13 @@ Pages:
 - [Failure mode: media not verifying](failure-modes/media-not-verifying.md) — distinguish missing attachments, fetching and byte comparison.
 - [Failure mode: missing replies](failure-modes/missing-replies.md) — delivery, fetching and response limits; reproduction remains open.
 
-Still planned, in priority order:
+Not yet covered (the pages above exist; these do not), in priority order:
 
-- Compatibility records, one per feature — rich text, MFM, Markdown, custom emoji, polls, quotes, reactions, edit histories, visibility, mentions, hashtags, media, replies, search, account migration, moderation actions, group federation. This is the highest-priority part of the wiki.
-- Activity lifecycles — the full life of a federated post and of a remote follow, step by step.
-- Delivery — queues, retries and backoff, duplicate handling, ordering, dead destinations.
-- Object types — Note, Article, Question, Group, Video and software-specific types.
-- Failure modes — missing replies, stale profiles, duplicated boosts, lost reactions, invalid signatures, broken mentions, rejected media, migration failures.
+- Compatibility records still to write: rich text, MFM, Markdown, custom emoji, visibility, hashtags, replies, search, account migration, moderation actions, group federation. This is the highest-priority part of the wiki.
+- Activity lifecycles still to write: delete, update, undo, move and group announce.
+- Delivery: retry schedules and dead-destination handling per server; ordering guarantees.
+- Object types: Note, Article, Question, Group, Video and software-specific types (no page yet).
+- Failure modes still to write: stale profiles, duplicated boosts, lost reactions, invalid signatures, broken mentions, migration failures.
 
 ## Notes and open questions
 

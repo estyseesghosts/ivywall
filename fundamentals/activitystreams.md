@@ -2,7 +2,7 @@
 
 ActivityStreams is the JSON vocabulary that describes who did what to what: an **[actor](../glossary.md#actor)** performs an activity such as `Create` or `Follow` on an object such as a `Note`. [ActivityPub](../glossary.md#activitypub) carries these documents between servers, so every other page in this wiki depends on this one.
 
-> **Stub.** Scaffolding only. Nothing on this page has been checked against pinned source yet; treat every statement as `[hypothesis]` unless it carries another label.
+> **Coverage incomplete.** The data model and example follow the specification. Not yet covered: which studied servers run a JSON-LD processor and which match fixed shapes, and how unknown `@context` extensions are handled. Statements without an evidence label are general background, not verified findings.
 
 ## What the specification requires
 

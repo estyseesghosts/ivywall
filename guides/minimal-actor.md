@@ -2,7 +2,7 @@
 
 A minimal interoperable server needs an actor document, delivery endpoints, authentication and follow handling. Peers may require WebFinger and HTTP signatures beyond the 2018 ActivityPub Recommendation. The exact requirements depend on the peer; this page is an outline, not a tested implementation. `[spec]` [ActivityPub §§4–5, 7.5 and B.1](https://www.w3.org/TR/2018/REC-activitypub-20180123/); `[documented]` [Mastodon 4.7.3 federation requirements](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/FEDERATION.md).
 
-> **Stub.** Scaffolding only. Nothing on this page has been checked against pinned source yet; treat every statement as `[hypothesis]` unless it carries another label.
+> **Coverage incomplete.** This is an outline with no implementation code yet. Not yet covered: a reference implementation to follow (snac is the proposed minimal case study) and which interoperability checks real servers need before they will follow the actor.
 
 ## Before you start
 

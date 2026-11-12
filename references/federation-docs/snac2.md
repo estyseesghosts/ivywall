@@ -9,6 +9,7 @@ snac publishes a `FEDERATION.md` describing its own federation behaviour. This p
 | Upstream file | [FEDERATION.md](https://codeberg.org/grunfink/snac2/src/commit/846137df0991f1745856b865630f5a6c5036742a/FEDERATION.md) |
 | Repository | [codeberg.org/grunfink/snac2](https://codeberg.org/grunfink/snac2) |
 | Mirrored from commit | `846137df0991f1745856b865630f5a6c5036742a` (2026-11-04) |
+| Licence of the upstream repository | MIT, per the repository's `LICENSE` file at the mirrored commit; the mirrored text stays under it and is attributed to the project's authors. |
 | Status | Verbatim copy; headings demoted two levels so they nest under this page. Not yet fact-checked (`[documented]` at best). |
 
 When the upstream file changes, re-mirror it and update the commit above. Do not edit the mirrored text; corrections go in this wiki's own pages and link here.

@@ -28,5 +28,5 @@ none of this research is my own and i do not assume credit for any of the work p
 ## Reading guide
 
 - The [glossary](glossary.md) defines common terms used throughout the wiki.
-- Version-specific behavior should carry an evidence label and cite its source. Stubs and community-written federation documents explicitly mark claims that still need verification; see [AGENTS.md](AGENTS.md) for the evidence rules.
+- Version-specific behavior should carry an evidence label and cite its source. Pages whose coverage is incomplete say what is missing, and community-written federation documents explicitly mark claims that still need verification; see [AGENTS.md](AGENTS.md) for the evidence rules.
 - Every page ends with Sources. Contributors: read [AGENTS.md](AGENTS.md) first.

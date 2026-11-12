@@ -4,13 +4,13 @@ End-to-end walkthroughs that turn the reference material into working knowledge.
 
 ## Pages
 
-Stubs so far:
+Written so far:
 
-- [A minimal ActivityPub actor](minimal-actor.md) — stub.
+- [A minimal ActivityPub actor](minimal-actor.md) — outline only; no implementation code yet.
 
-Still planned:
+Not yet covered (the minimal-actor guide above is an outline only):
 
-- Implementing a minimal ActivityPub actor and server.
+- Completing the minimal actor guide with code and a pinned-peer test run.
 - Building a headless server with a Mastodon-compatible API.
 - Adding ActivityPub federation to existing software.
 - Building a native multi-platform client.

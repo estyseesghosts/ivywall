@@ -19,11 +19,10 @@ Case studies:
 - [Mastodon federation pipeline](federation-pipelines/mastodon-4-7.md) and [Misskey federation pipeline](federation-pipelines/misskey.md) — receipt and delivery.
 - [Mastodon storage](storage/mastodon-4-7.md) and [Misskey storage](storage/misskey.md) — persistence, queues, caches and recovery.
 
-Still planned:
+Not yet covered (the Mastodon and Misskey storage and pipeline pages and the ten case studies above exist):
 
-- Architecture and storage — schema design for actors, objects and activities; single-user versus multi-user designs; worker separation; database contention.
-- Federation pipelines — inbox validation, persistence, moderation and delivery stages; queues, retries, ordering, fan-out; consistency when updates arrive before creates.
-- Performance — caching of profiles, keys, posts and media; search; media pipelines; delivery throughput, p95 latency, queue growth, recovery after outages.
+- Storage and pipeline pages for the other studied servers; single-user versus multi-user designs; worker separation; database contention.
+- Performance — caching of profiles, keys, posts and media; search; media pipelines; delivery throughput, p95 latency, queue growth, recovery after outages. Nothing has been measured yet.
 - Further case studies — Pleroma, snac, Sharkey, Iceshrimp.NET, Hollo, Friendica, PieFed, Mbin, PeerTube and Bonfire.
 
 ## Notes and open questions

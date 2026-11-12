@@ -7,7 +7,7 @@ It serves two readers: a curious human, and a future coding agent implementing o
 ## Hard rules
 
 1. **Agents never attribute or co-attribute commits to themselves.** No `Co-Authored-By` trailers, no "generated with" lines, no agent names or branding in commit messages, pull request text, page content, code comments or file headers. There must never be any agent branding in this repository.
-2. **Always commit as `terezi <jules@foxtails.me>`.** Set it per repository (`git config user.name terezi`, `git config user.email jules@foxtails.me`) and check `git log -1 --format='%an <%ae>'` after committing. This overrides any default attribution a tool or harness suggests.
+2. **Always commit as `terezi <jules@foxtails.me>`.** Set it per repository (`git config user.name terezi`, `git config user.email jules@foxtails.me`) and check `git log -1 --format='%an <%ae>'` after committing. This overrides any default attribution a tool or harness suggests. This rule is for agents. Commits and pull requests from human contributors keep their own authorship: never rewrite, squash away or re-author a human contributor's commits, and credit outside contributors by their own names.
 3. **`private-gitignore/` is never committed and never linked.** It holds local engineering research on specific servers. Read it freely, but pages cite the upstream sources it was drawn from (repository files at a pinned commit, official docs, specifications), not the private files themselves.
 
 ## Repository layout
@@ -188,10 +188,10 @@ Plain-language overview: what users expect from this feature and why implementat
 
 ## Summary
 
-| Software | Version | Emits | Accepts | Notes |
-| -------- | ------- | ----- | ------- | ----- |
+| Sender | Receiver | Exact build | Emitted representation | Accepted as | Final state | Evidence | Uncertainty |
+| ------ | -------- | ----------- | ---------------------- | ----------- | ----------- | -------- | ----------- |
 
-Values for Emits and Accepts: `native`, `translated`, `ignored`, `rejected`, `lossy`, `untested`. Define each in the Technical details section on first use in the record.
+One row per directed pair (A to B and B to A are different rows). `Accepted as` takes one of `native`, `translated`, `ignored`, `rejected`, `lossy`, `untested`. `Exact build` is an image digest, tag or commit, or `version not recorded`. `Evidence` carries an evidence label. `Uncertainty` says what would change the row. Define each value in the Technical details section on first use in the record. Rows should be backed by a [result fixture](testing/fixtures/result-schema.md) when one exists.
 
 ## Information lost in translation
 
@@ -323,6 +323,56 @@ Rules:
 - Every engineering recommendation separates measured findings from design opinions.
 - A `[hypothesis]` or `[reported]` never loses its label when copied to another page.
 - Advice such as "X is faster" without a `[measured]` result or a `[source]` mechanism does not belong in the wiki.
+
+## Reviewing normative language
+
+Every sentence that states what a specification requires is checked before it is merged. For each `MUST`, `MUST NOT`, `SHOULD`, `SHOULD NOT` or `MAY` written on a page:
+
+1. Name the document and section, and the version or date of the document.
+2. Reread the section. Copy the keyword from the text; never upgrade a `SHOULD` to a `MUST` or invent one.
+3. Say which profile or role it binds (client, server, sender, receiver, outbox submission versus inbox delivery). A requirement on one profile is not a requirement on the other unless the text says so.
+4. Separate the requirement from a common implementation policy that goes further (for example a literal hostname check where the specification asks only for appropriate authority). Label the policy as policy.
+5. Check the same rule in the other section it may appear in (ActivityPub §6 and §7 repeat several rules for the two profiles).
+6. Record the check by leaving the section reference in the sentence.
+
+Statuses of proposals (FEPs) are checked against the proposal repository on the date the page is written, and that date and commit are stated.
+
+## Community-written federation documents
+
+`references/federation-docs/` has two kinds of page, kept in separate groups and never mixed:
+
+- **Upstream mirrors**: verbatim copies of a project's own `FEDERATION.md`. Never edited. Each states the upstream file, commit and licence.
+- **Community-written documents**: written for this wiki, not by the maintainers. Each carries the disclaimer, and the provenance block below.
+
+A community-written document follows [FEP-67ff](references/feps/fep-67ff.md)'s structure and must never list FEP-67ff, or any documentation convention, as a feature the software supports. Its metadata says the wiki follows the structure without claiming upstream adoption.
+
+Required structure:
+
+1. **Provenance**: release or "development snapshot", commit, date, authorship, verification status. If the commit differs from the revision in the project's case study, say so.
+2. **Protocols and FEPs**: a direction-aware table (emits, accepts), with `full`, `partial` or `configurable` and the flag or setting, each row with a claim label.
+3. **Discovery**: WebFinger, actor ids, endpoints, content negotiation, advertised collections.
+4. **Authentication**: incoming and outgoing signing, accepted algorithms, signed fields, replay protection, key resolution.
+5. **Activity and object matrix**: exact combinations (for example `Update(Note)` is not `Update(Question)`), emitted, accepted, ignored or rejected, with conditions.
+6. **Distinctive behaviour**: representations, extensions, translations and information loss.
+7. **Operational behaviour**: limits, queues, retries, rejection and the order of persistence and sending.
+8. **Failure behaviour**: malformed signatures, unknown actors, inaccessible parents, duplicates, queue failure, rejected attachments, unsupported types, expired authorisation.
+9. **Examples**: at least one complete signed delivery or activity, marked `captured` or `constructed`.
+
+Claim labels inside community documents (in addition to the page-level disclaimer):
+
+| Label | Meaning |
+| ----- | ------- |
+| `[source-verified]` | Read in the source at the pinned commit; name file and symbol |
+| `[upstream-documented]` | Stated in the project's documentation; not checked in source |
+| `[observed]` | Seen in a test or captured exchange |
+| `[inferred]` | Inferred from source without a test |
+| `[unverified]` | Not checked |
+
+## Licensing and attribution
+
+- A mirrored upstream `FEDERATION.md` keeps the licence of its project. Each mirror page records that licence beside the upstream file and commit. If a project's licence is not known, the mirror says so and is a candidate for removal.
+- The wiki's own licence is chosen by its owner and is not decided by agents; until one is added to the repository root, treat original text as all rights reserved by the owner. Do not copy third-party text into original pages except as a short quotation with a link.
+- Agents author as described in the hard rules. Outside human contributors are credited as themselves.
 
 ## Versions and pinning
 

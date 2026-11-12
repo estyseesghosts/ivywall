@@ -10,7 +10,7 @@ Use pinned images and record every version. Fixture accounts only. For each case
 
 | Area | Required cases | Why (what broke) |
 | ---- | -------------- | ---------------- |
-| Discovery | WebFinger over HTTPS, canonical actor URI, redirects, non-standard ports | Mastodon fetched over HTTPS only and dropped the remote port ([WebFinger](../../fundamentals/webfinger.md)) |
+| Discovery | WebFinger over HTTPS, canonical actor URI, redirects, non-standard ports | HTTPS-only WebFinger is required by RFC 7033; what was Mastodon-specific in the lab was the dropped non-standard port ([WebFinger](../../fundamentals/webfinger.md)) |
 | Signatures | cached-key rotation, PEM whitespace, signed GETs, missing and bad signatures | Akkoma PEM, stale keys ([HTTP signatures](../../fundamentals/http-signatures.md)) |
 | Follow | open and locked accounts, Accept, Reject, cancel, `Undo` replay | pending versus accepted; `Undo(Follow)` id reuse ([failure mode](../../federation/failure-modes/undo-ignored-or-deduplicated.md)) |
 | Object identity | same note by inbox and by direct fetch, concurrently | duplicate rows ([failure mode](../../federation/failure-modes/duplicate-remote-objects.md)) |

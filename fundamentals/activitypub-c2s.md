@@ -16,7 +16,7 @@ A bare object submitted to the outbox MUST be wrapped in `Create`; for non-trans
 
 ### Activity side effects
 
-When delivering to another server, `Create`, `Update`, `Delete`, `Follow`, `Add`, `Remove`, `Like`, `Block`, and `Undo` activities MUST have an `object`; `Add` and `Remove` also require `target`. These are server-to-server delivery requirements, rather than a blanket rule for every client submission. `[spec]` §7.
+Two separate requirements apply, one to each profile. Clients submitting `Create`, `Update`, `Delete`, `Follow`, `Add`, `Remove`, `Like`, `Block` or `Undo` to an outbox MUST provide `object`, and clients submitting `Add` or `Remove` MUST also provide `target`. `[spec]` §6.1. The same two rules bind servers delivering those activities to other servers' inboxes or shared inboxes. `[spec]` §7. The exception is the bare non-Activity object a client may post: the server wraps it in `Create` itself, so the client supplies no `object` property for it (see above). `[spec]` §6.2.1.
 
 | Activity | Client-to-server effect |
 | --- | --- |

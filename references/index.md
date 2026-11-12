@@ -17,15 +17,16 @@ Available and planned references:
 - [WriteFreely fact sheet](software/writefreely.md) — source revision and reference facts.
 - [Mastodon fact sheet](software/mastodon.md) — pinned release and implementation facts.
 - [Misskey fact sheet](software/misskey.md) — pinned release and implementation facts.
-- [FEP-044f](feps/fep-044f.md) — stub.
-- [FEP-521a](feps/fep-521a.md) — stub.
-- [FEP-7628](feps/fep-7628.md) — stub.
+- [FEP-044f](feps/fep-044f.md) — draft; quote model and stated implementers.
+- [FEP-521a](feps/fep-521a.md) — final; `Multikey` actor keys.
+- [FEP-67ff](feps/fep-67ff.md) — final; the `FEDERATION.md` convention.
+- [FEP-7628](feps/fep-7628.md) — final; `Move` actor migration.
 
-Still planned:
+Not yet covered:
 
-- Additional software fact sheets for releases as they are researched.
-- Specifications — ActivityStreams, ActivityPub, WebFinger, NodeInfo, HTTP Message Signatures.
-- FEP records — each distinguishing proposed, final, withdrawn, experimental and deployed, and listing which software emits, accepts, partially implements or rejects it. First candidates: FEP-044f (consent-based quotes), FEP-521a (public keys), FEP-1b12 (groups), FEP-8fcf (follower synchronization), FEP-7628 (actor moves).
+- Fact sheets for the studied servers not listed above (for example snac, Sharkey, Iceshrimp.NET, Mbin, Catodon, Mobilizon).
+- Specification pages — ActivityStreams, ActivityPub, WebFinger, NodeInfo, HTTP Message Signatures (none written yet).
+- Further FEP records, each with status and a table of which software emits, accepts, partially implements or rejects it: FEP-1b12 (groups), FEP-8fcf (follower synchronization), FEP-fe34 (origin-based security), and others.
 
 ## Notes and open questions
 

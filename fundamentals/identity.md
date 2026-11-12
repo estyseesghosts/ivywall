@@ -2,7 +2,7 @@
 
 A Fediverse account can have a human handle such as `alice@example.com` and an actor identifier, typically an HTTPS URL. [WebFinger](webfinger.md) can associate the handle with an actor; the domains can differ, subject to implementation-specific verification. This page covers how identity is resolved and what happens when an account moves.
 
-> **Stub.** Scaffolding only. Nothing on this page has been checked against pinned source yet; treat every statement as `[hypothesis]` unless it carries another label.
+> **Coverage incomplete.** Actor ids and handles follow the specification and FEP-7628. Not yet covered: how each studied server verifies a `Move` and what it does with followers. Statements without an evidence label are general background.
 
 ## What the specification requires
 
