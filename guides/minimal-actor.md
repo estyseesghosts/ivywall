@@ -1,6 +1,6 @@
 # Guide: a minimal ActivityPub server
 
-A working single-user server in about 450 lines of Python, with no packages beyond the standard library and the `openssl` command. It publishes one actor, verifies signed deliveries, answers a `Follow`, delivers notes to followers and keeps its state correct under duplicates, reordering and undo. It has been run against itself (two instances over signed HTTP, 16 checks), not against Mastodon or any other implementation; the last milestone is still open. Code: [`server.py`](minimal-actor/server.py) and [`selftest.py`](minimal-actor/selftest.py).
+A working single-user server in about 270 lines of Python, with no packages beyond the standard library and the `openssl` command. It publishes one actor, verifies signed deliveries, answers a `Follow`, delivers notes to followers and keeps its state correct under duplicates, reordering and undo. It has been run against itself (two instances over signed HTTP, 16 checks), not against Mastodon or any other implementation; the last milestone is still open. Code: [`server.py`](minimal-actor/server.py) and [`selftest.py`](minimal-actor/selftest.py).
 
 ## Run it
 
@@ -10,18 +10,18 @@ python3 guides/minimal-actor/server.py --user alice --host example.org --port 80
     --data ./data --token SECRET                # behind a TLS proxy; --scheme http --allow-private for tests only
 ```
 
-Admin calls need `X-Admin-Token`: `POST /admin/follow {"acct":"bob@other.example"}` and `POST /admin/publish {"content":"hello"}`; `GET /admin/state` shows what is stored.
+Admin calls need `X-Admin-Token`: `POST /admin/follow {"handle":"bob@other.example"}` and `POST /admin/publish {"content":"hello"}`.
 
 ## Milestones
 
 | # | Milestone | Where in `server.py` | Status |
 | - | --------- | -------------------- | ------ |
 | 1 | WebFinger and actor document with inbox, outbox and public key | `Actor.webfinger`, `Actor.actor_doc`, `make_key` | self-tested |
-| 2 | Persistent signing key; signed outgoing requests; safe remote fetch | `sign_headers`, `Actor.request`, `check_url` | self-tested |
-| 3 | Inbox that verifies signed POSTs | `Actor.verify` | self-tested (modified body, no signature, stale date, wrong actor, wrong host) |
+| 2 | Persistent signing key; signed outgoing requests; safe remote fetch | `sign_headers`, `Actor.request`, `Actor.check_url` | self-tested |
+| 3 | Inbox that verifies signed POSTs | `Actor.verify`, `Actor.handle` | self-tested (modified body, no signature, stale date, wrong actor, wrong host) |
 | 4 | Receive `Follow`, persist, answer `Accept` | `on_follow`, `on_accept` | self-tested |
 | 5 | Publish a `Note` in `Create`, one POST per follower inbox, bounded retries | `Actor.publish`, `Actor.deliver` | self-tested |
-| 6 | Receive `Like` and `Announce` of your notes; replies are stored as remote notes | `on_like`, `on_announce`, `on_create` | `Like` self-tested |
+| 6 | Receive `Like` and `Announce` of your notes; replies are stored as remote notes | `record_reaction`, `on_create` | `Like` self-tested |
 | 7 | `Undo` and `Delete` without resurrecting removed state | `on_undo`, `on_delete`, tombstones | self-tested |
 | 8 | Pass a defined suite against a pinned Mastodon release | none | **not done** |
 
