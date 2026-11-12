@@ -1,0 +1,47 @@
+# Zensical configuration for the ivywall wiki.
+#
+# The wiki content lives at the repository root, so the docs directory is the
+# project root itself and the rendered site is written to site/.
+
+[project]
+site_name = "Ivywall"
+site_description = "An engineering reference for building Fediverse servers and clients: protocols, real-world behaviour, and interoperability."
+site_author = "Ivywall contributors"
+
+docs_dir = "."
+site_dir = "site"
+
+# Everything that is not a wiki page. Patterns follow .gitignore syntax and are
+# relative to the docs directory (the repository root).
+exclude_docs = """
+# Generated site output
+site/
+.cache/
+
+# Repository plumbing, not wiki pages
+.github/
+.git/
+zensical.toml
+.gitattributes
+.gitignore
+tools/
+layout.md
+
+# Local research input, never published
+private-gitignore/
+"""
+
+nav = [
+  { "Home" = "README.md" },
+  { "Glossary" = "glossary.md" },
+  { "Contributing" = "AGENTS.md" },
+  { "Fundamentals" = "fundamentals/index.md" },
+  { "Federation" = "federation/index.md" },
+  { "Clients" = "clients/index.md" },
+  { "Servers" = "servers/index.md" },
+  { "Security and privacy" = "security/index.md" },
+  { "Moderation" = "moderation/index.md" },
+  { "Testing" = "testing/index.md" },
+  { "References" = "references/index.md" },
+  { "Guides" = "guides/index.md" },
+]

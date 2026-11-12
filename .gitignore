@@ -1,0 +1,10 @@
+# Local engineering research, never committed
+private-gitignore/
+
+# Zensical build output and cache
+site/
+.cache/
+
+# Python bytecode
+__pycache__/
+*.pyc
