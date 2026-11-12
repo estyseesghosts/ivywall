@@ -12,6 +12,15 @@ Pages:
 - [Compatibility: emoji reactions](compatibility/emoji-reactions.md) — directional representations and loss.
 - [Compatibility: quote posts](compatibility/quotes.md) — legacy fields, consent and translation.
 - [Compatibility: post edits](compatibility/post-edits.md) — edit delivery and remote update handling.
+- [Observed profiles of Mastodon, Misskey, Catodon, Akkoma and Sharkey](compatibility/observed-profiles.md) — index of laboratory behaviour, by family.
+- [Compatibility: Undo, boosts and unboosts](compatibility/undo-and-reposts.md) — reversing actions across families.
+- [Compatibility: mentions and notifications](compatibility/mentions.md) — text, tag and addressing.
+- [Compatibility: remote media attachments](compatibility/media-attachments.md) — pending states and re-encoding.
+- [Failure mode: wrong-domain activity ids](failure-modes/wrong-domain-activity-ids.md) — boosts silently not counted.
+- [Failure mode: a deleted post reappears](failure-modes/delete-before-create.md) — Delete before Create.
+- [Failure mode: an Undo has no effect](failure-modes/undo-ignored-or-deduplicated.md) — id reuse and unknown activities.
+- [Failure mode: duplicate remote objects](failure-modes/duplicate-remote-objects.md) — several arrival paths.
+- [Failure mode: first-contact races](failure-modes/first-contact-races.md) — slow or failing first requests.
 - [Compatibility: polls](compatibility/polls.md) — poll shapes, vote handling and limited historical evidence.
 - [Failure mode: media not verifying](failure-modes/media-not-verifying.md) — distinguish missing attachments, fetching and byte comparison.
 - [Failure mode: missing replies](failure-modes/missing-replies.md) — delivery, fetching and response limits; reproduction remains open.

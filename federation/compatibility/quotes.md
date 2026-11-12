@@ -39,8 +39,22 @@ Mastodon's parser checks `quote`, `_misskey_quote`, `quoteUrl`, and `quoteUri` i
 
 No cross-server test has been run for these versions. With isolated pinned instances and fixture accounts, create public posts on each server and quote in each direction. Capture the complete serialized object and delivery result, then inspect the remote API's relationship and displayed fallback separately. For Mastodon's authorization path, exercise permitted and denied quote policies and record the request, response, stored approval and eventual visibility. Also test an inaccessible or deleted target, a temporary fetch failure, a legacy-only object, and a revoked authorization. Use controlled actors and redacted credentials; never infer authorization success merely from a visible link.
 
+## Quote representations seen in the laboratory
+
+A quote can be carried several ways, and recognising a quote is not the same as having its author's consent. `[reported]` from a test server's design notes, which summarise parser and serializer behaviour in Mastodon, Glitch-Soc, Misskey, Sharkey and Akkoma/Pleroma and which this wiki has not read in source.
+
+| Convention | Carrier | Families |
+| ---------- | ------- | -------- |
+| FEP-044f | `quote`, `QuoteRequest`, authorization stamp | Mastodon, Glitch-Soc parse it |
+| Misskey legacy | `_misskey_quote` (with and without a slash in the IRI) | Misskey, Sharkey, Catodon |
+| Other legacy | `quoteUrl`, `quoteUri` (Fedibird) | various |
+| Link fallback | `RE: <url>` text or a link tag | Akkoma/Pleroma and older paths |
+
+Key points: a legacy quote is not an authorized FEP-044f quote; a receiver that ignores every quote without a stamp loses Misskey-family quotes, and one that treats legacy quotes as approved bypasses consent. In the lab a Birchtree node returned HTTP 422 on Pinetree `QuoteRequest` activities (untagged enum parse failures), while ordinary quote checks still passed via fallback links, so a passing quote-display test says nothing about structured authorization. `[reported]` [Pinetree quote-posts design](https://github.com/estyseesghosts/pinetree/blob/f1665e6dd2f2ea8c115ce7c5ead98b5791a32fc6/docs/quote-posts.md), [problem log items 32 and 33](https://github.com/estyseesghosts/pinetree/blob/f1665e6dd2f2ea8c115ce7c5ead98b5791a32fc6/docs/federation-bench-2026-10-18-session2-problems.md).
+
 ## Sources
 
 - [Mastodon 4.7.3 NoteSerializer](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/serializers/activitypub/note_serializer.rb), [StatusParser](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/lib/activitypub/parser/status_parser.rb), [QuoteRequest handler](https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/app/lib/activitypub/activity/quote_request.rb) — quote serialization, parsing and approval.
 - [Misskey 2026.10.1 renderer](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/core/activitypub/ApRendererService.ts), [note importer](https://github.com/misskey-dev/misskey/blob/4840fa6d576128ba916ba69169258ca177d40faf/packages/backend/src/core/activitypub/models/ApNoteService.ts) — legacy fields, fallback and target resolution.
 - [FEP-044f](https://codeberg.org/fediverse/fep/src/branch/main/fep/044f/fep-044f.md) — consent-respecting quote vocabulary and protocol.
+- [Pinetree quote-posts design note](https://github.com/estyseesghosts/pinetree/blob/f1665e6dd2f2ea8c115ce7c5ead98b5791a32fc6/docs/quote-posts.md) — the five quote carriers and the authorization states, at Pinetree f1665e6

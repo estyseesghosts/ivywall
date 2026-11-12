@@ -21,7 +21,12 @@ Mastodon 4.7.3 accepts both legacy HTTP signatures and RFC 9421 signatures, requ
 - Clock skew and missing `Digest` headers.
 - Key not found after an actor moves or rotates keys.
 
+## Observed behaviour in interoperability tests
+
+`[reported]` from the October 2026 laboratory: Akkoma published `publicKeyPem` ending in two newline characters, and a strict PEM parser in a test server's federation library rejected it with HTTP 500 for every Akkoma-signed activity; after trimming and re-adding one newline, 646 stuck deliveries completed on retry. A receiver should be strict about key ownership and signature validity and tolerant of harmless formatting. A test receiver also kept a stale cached key for 24 hours after verification failed; a bounded forced refresh with a cooldown fixed it, matching Mastodon's behaviour. Mastodon can require signed `GET`s, which matters for fetching unknown reply parents and actor refreshes, so a server needs to distinguish requests made as a local actor, as an instance actor, and anonymously. See [problem log items 17 and 20](https://github.com/estyseesghosts/pinetree/blob/f1665e6dd2f2ea8c115ce7c5ead98b5791a32fc6/docs/federation-bench-2026-10-18-session2-problems.md) and [first-contact races](../federation/failure-modes/first-contact-races.md).
+
 ## Sources
 
 - [RFC 9421: HTTP Message Signatures](https://www.rfc-editor.org/rfc/rfc9421) — the standardised scheme
 - [Signing HTTP Messages (draft-cavage)](https://datatracker.ietf.org/doc/html/draft-cavage-http-signatures) — the older scheme in wide use
+- [Federation bench problem log, items 17 and 20](https://github.com/estyseesghosts/pinetree/blob/f1665e6dd2f2ea8c115ce7c5ead98b5791a32fc6/docs/federation-bench-2026-10-18-session2-problems.md) — Akkoma PEM whitespace and stale key refresh

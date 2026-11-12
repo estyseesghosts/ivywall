@@ -27,8 +27,24 @@ The same lab's problem log describes a Birchtree test implementation that initia
 
 On isolated servers with recorded images and commits, create a single-choice poll with a `Question`, an `endTime` in the future and options represented as `Note` objects. Deliver variants with and without each option's `type`, and compare the receiver's activity log and persisted poll, not just the HTTP acknowledgment. Resolve the poll from the voter, vote, capture the outgoing activity and inspect the origin's final count after a stated deadline. Repeat with future `closed` timestamps, delayed delivery, duplicate votes and a disabled search service. Record all versions, configuration, traffic and failure stage before assigning a cause.
 
+## Vote shapes, closure and tallies across families
+
+`[reported]` from the October 2026 laboratory unless stated. These were laboratory runs of 19 October 2026 in which two minimal test servers (Pinetree and Birchtree) acted as probes against Mastodon, Misskey, Catodon and Akkoma peers.
+
+| Topic | Observed |
+| ----- | -------- |
+| Vote carrier | A poll is a `Question`; a Mastodon-style vote arrives as `Create(Note)`; Pleroma/Akkoma send `Create(Answer)`. A server that accepts only the `Note` form silently loses Akkoma votes. `Update(Question)` redistributes totals or closure. [P6 log](https://github.com/estyseesghosts/pinetree/blob/f1665e6dd2f2ea8c115ce7c5ead98b5791a32fc6/state/logs/2026-10-17-bench-fixes-p6-and-reverify.md) |
+| `closed` | Akkoma and the Sharkey-family Catodon send `closed` carrying the end time, including future times. A parser that treats presence as "already ended" refuses votes with HTTP 422. A boolean and a timestamp need different handling. [problem log item 40](https://github.com/estyseesghosts/pinetree/blob/f1665e6dd2f2ea8c115ce7c5ead98b5791a32fc6/docs/federation-bench-2026-10-18-session2-problems.md) |
+| Option typing | Akkoma requires each option to be `{"type": "Note", "name": …}`; Misskey and Catodon emit it; Mastodon's parser tolerated its absence. [Akkoma compatibility worklog](https://github.com/estyseesghosts/pinetree/blob/f1665e6dd2f2ea8c115ce7c5ead98b5791a32fc6/state/logs/2026-10-20-akkoma-compat.md) |
+| Catodon tallies | Five Catodon-origin polls failed to tally votes from Birchtree, Misskey and Mastodon voters but counted Pinetree and Akkoma voters. The investigators noted the failing vote ids contained a `#` fragment. Confidence is moderate: no Catodon-side trace or patched rerun exists. [problem log items 55 and 56](https://github.com/estyseesghosts/pinetree/blob/f1665e6dd2f2ea8c115ce7c5ead98b5791a32fc6/docs/federation-bench-2026-10-18-session2-problems.md) |
+| Search | The lab Akkoma had no search backend (`/api/v1/search` returned 404), so a harness that discovered polls by search reported them unresolvable. Resolving by canonical URI is a different capability from full-text search. [re-run notes](https://github.com/estyseesghosts/pinetree/blob/f1665e6dd2f2ea8c115ce7c5ead98b5791a32fc6/state/logs/2026-10-17-bench-rerun.md) |
+
+A receiver should accept both vote shapes, treat vote ids as opaque (paths, fragments and query strings all legal), keep activity ids, deduplicate repeated votes, and not drop a vote only because the poll is not cached. These are design recommendations (`[hypothesis]`). Birchtree did not federate polls on purpose until run 3. [problem log item 31](https://github.com/estyseesghosts/pinetree/blob/f1665e6dd2f2ea8c115ce7c5ead98b5791a32fc6/docs/federation-bench-2026-10-18-session2-problems.md)
+
 ## Sources
 
 - [Akkoma v3.20.0 option validator](https://akkoma.dev/AkkomaGang/akkoma/src/commit/98fcccccb1534280960d7123620c03a54b4b2442/lib/pleroma/web/activity_pub/object_validators/question_options_validator.ex#L12-L28) — source-level option requirements.
 - [19 October 2026 run 5 report](https://github.com/estyseesghosts/pinetree/blob/1c1d00cc955e2ef602d1640d8f7f7d84d985de2a/docs/federation-bench-2026-10-19-phase7-run5.md) — historical setup, counts and interpretations, not independently reproduced here.
 - [Lab problem log](https://github.com/estyseesghosts/pinetree/blob/1c1d00cc955e2ef602d1640d8f7f7d84d985de2a/docs/federation-bench-2026-10-18-session2-problems.md#L155-L162) — reported future-`closed` handling and follow-up.
+- [Pinetree P6 poll-vote log](https://github.com/estyseesghosts/pinetree/blob/f1665e6dd2f2ea8c115ce7c5ead98b5791a32fc6/state/logs/2026-10-17-bench-fixes-p6-and-reverify.md) — `Create(Answer)` handling and live tallies
+- [Federation bench problem log, items 31, 40, 55, 56](https://github.com/estyseesghosts/pinetree/blob/f1665e6dd2f2ea8c115ce7c5ead98b5791a32fc6/docs/federation-bench-2026-10-18-session2-problems.md) — `closed` handling, Catodon tallies

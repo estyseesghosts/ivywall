@@ -70,6 +70,18 @@ A way of writing linked data as JSON, using a `@context` to give keys precise me
 
 The six values used in compatibility records for what a server does with a feature: **native** (handled as its own concept), **translated** (mapped to something similar), **ignored** (silently dropped), **rejected** (refused with an error), **lossy** (kept but with information lost), **untested** (nobody has checked). See [Federation](federation/index.md).
 
+<a name="tombstone"></a>
+
+### Tombstone
+
+A durable record that an object was deleted. A server keeps one so that a late-arriving `Create` for the same object is refused instead of bringing it back. See [a deleted post reappears](federation/failure-modes/delete-before-create.md).
+
+<a name="test-oracle"></a>
+
+### Test oracle
+
+The check in a test that decides pass or fail. A wrong oracle produces false failures or false passes. See [test oracles](testing/interoperability/test-oracles.md).
+
 ## Software-specific terms
 
 <a name="mfm"></a>

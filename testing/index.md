@@ -4,6 +4,8 @@ Manual research does not scale, and compatibility claims go stale. This section 
 
 ## Pages
 
+- [An interoperability test matrix](interoperability/test-matrix.md) — what a new server should test, per area and direction.
+- [Test oracles that give false federation failures](interoperability/test-oracles.md) — harness mistakes and a five-way outcome model.
 - [Reading federation benchmark results](interoperability/bench-evidence.md) — scope, test oracles and limits of a historical run.
 
 Planned:
